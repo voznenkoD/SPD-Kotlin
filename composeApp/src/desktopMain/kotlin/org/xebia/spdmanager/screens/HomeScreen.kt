@@ -1,6 +1,7 @@
 package org.xebia.spdmanager.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -15,10 +16,15 @@ import org.xebia.spdmanager.model.Pad
 fun HomeScreen(kits: List<Kit>) {
     var selectedKit by remember { mutableStateOf<Kit?>(null) }
     var selectedPad by remember { mutableStateOf<Pad?>(null) }
+    var selectedFolderPath by remember { mutableStateOf<String?>(null) }
 
     val onItemSelected: (Kit) -> Unit = { kit ->
         selectedKit = kit
         selectedPad = kit.pads.values.firstOrNull()
+    }
+
+    val onOpenClicked: (String) -> Unit = { folderPath ->
+        selectedFolderPath = folderPath
     }
 
     val onPadSelected: (Pad) -> Unit = { pad ->
@@ -30,7 +36,8 @@ fun HomeScreen(kits: List<Kit>) {
             KitScreen(selectedKit)
         }
 
-        Column(Modifier.weight(0.4f).fillMaxHeight().padding(top = 30.dp)) {
+        Column(Modifier.weight(0.4f).fillMaxHeight()) {
+            Text("File path: $selectedFolderPath")
             PadScreen(
                 onSelect = onPadSelected,
                 kit = selectedKit,
@@ -38,7 +45,7 @@ fun HomeScreen(kits: List<Kit>) {
         }
 
         Column(Modifier.weight(0.3f).fillMaxHeight()) {
-            TabsScreen(kits, onItemSelected)
+            TabsScreen(kits, onItemSelected, onOpenClicked)
         }
     }
 }

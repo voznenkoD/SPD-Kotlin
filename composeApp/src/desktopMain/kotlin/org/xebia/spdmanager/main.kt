@@ -11,7 +11,7 @@ fun main() = application {
     ) {
         window.minimumSize = java.awt.Dimension(1200, 800)
         val parser = XmlParser()
-        parser.parseAllFiles("src/desktopMain/resources/SPD-SX")
+//        parser.parseAllFiles("src/desktopMain/resources/SPD-SX")
         App()
     }
 }

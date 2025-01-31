@@ -11,12 +11,12 @@ import org.xebia.spdmanager.model.Kit
 
 @Composable
 @Preview
-fun ListView(kits: List<Kit>, onItemClicked: (Kit) -> Unit) {
+fun ListView(kits: List<Kit>, onItemSelected: (Kit) -> Unit) {
     LazyColumn(
         modifier = Modifier.fillMaxSize()
     ) {
         items(kits) { kit ->
-            ListItemView(kit, onItemClicked)
+            ListItemView(kit, onItemSelected)
         }
     }
 }

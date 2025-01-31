@@ -13,8 +13,8 @@ import org.xebia.spdmanager.model.Kit
 
 
 @Composable
-fun KitTab(kits: List<Kit>, onItemClicked: (Kit) -> Unit) {
+fun KitTab(kits: List<Kit>, onItemSelected: (Kit) -> Unit) {
     Box(Modifier.fillMaxSize()) {
-        ListView(kits, onItemClicked)
+        ListView(kits, onItemSelected)
     }
 }
