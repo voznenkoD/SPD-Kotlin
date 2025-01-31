@@ -7,8 +7,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -16,9 +14,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.xebia.spdmanager.model.Kit
 
 @Composable
-fun ListItemView(item: String, onItemClicked: (String) -> Unit) {
+fun ListItemView(item: Kit, onItemClicked: (Kit) -> Unit) {
     // Wrap the row content inside a Box to manage border only at the bottom
     Box(
         modifier = Modifier
@@ -46,7 +45,7 @@ fun ListItemView(item: String, onItemClicked: (String) -> Unit) {
             Spacer(modifier = Modifier.width(8.dp)) // Spacer between dot and text
 
             // Item Text
-            Text(text = item, fontSize = 18.sp)
+            Text(text = item.name, fontSize = 18.sp)
         }
     }
 }

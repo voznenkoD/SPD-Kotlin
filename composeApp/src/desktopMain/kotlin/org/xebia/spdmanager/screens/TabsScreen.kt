@@ -11,11 +11,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import org.xebia.spdmanager.model.Kit
 import org.xebia.spdmanager.tabs.KitTab
 import org.xebia.spdmanager.tabs.WaveTab
 
 @Composable
-fun TabsScreen(onItemClicked: (String) -> Unit) {
+fun TabsScreen(kits: List<Kit>, onItemClicked: (Kit) -> Unit) {
     var selectedTab by remember { mutableStateOf(0) } // Keep track of selected tab
 
     val tabs = listOf("Kit", "Wave")
@@ -34,7 +35,7 @@ fun TabsScreen(onItemClicked: (String) -> Unit) {
         }
 
         when (selectedTab) {
-            0 -> KitTab(onItemClicked)
+            0 -> KitTab(kits, onItemClicked)
             1 -> WaveTab()
         }
     }

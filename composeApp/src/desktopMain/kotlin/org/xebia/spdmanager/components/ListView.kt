@@ -7,17 +7,16 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import org.xebia.spdmanager.model.Kit
 
 @Composable
 @Preview
-fun ListView(onItemClicked: (String) -> Unit) {
-    val items = List(20) { "Item #$it" } // Generate a list of 20 items
-
+fun ListView(kits: List<Kit>, onItemClicked: (Kit) -> Unit) {
     LazyColumn(
         modifier = Modifier.fillMaxSize()
     ) {
-        items(items) { item ->
-            ListItemView(item, onItemClicked)
+        items(kits) { kit ->
+            ListItemView(kit, onItemClicked)
         }
     }
 }

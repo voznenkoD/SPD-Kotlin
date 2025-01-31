@@ -9,11 +9,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.xebia.spdmanager.components.ListView
+import org.xebia.spdmanager.model.Kit
 
 
 @Composable
-fun KitTab(onItemClicked: (String) -> Unit) {
+fun KitTab(kits: List<Kit>, onItemClicked: (Kit) -> Unit) {
     Box(Modifier.fillMaxSize()) {
-        ListView(onItemClicked)
+        ListView(kits, onItemClicked)
     }
 }

@@ -13,11 +13,11 @@ import org.xebia.spdmanager.model.Pad
 import org.xebia.spdmanager.model.Sound
 
 @Composable
-fun HomeScreen() {
-    var selectedItem by remember { mutableStateOf<String?>(null) }
+fun HomeScreen(kits: List<Kit>) {
+    var selectedItem by remember { mutableStateOf<Kit?>(null) }
     var selectedPad by remember { mutableStateOf<Pad?>(null) }
 
-    val onItemSelected: (String) -> Unit = { item ->
+    val onItemSelected: (Kit) -> Unit = { item ->
         selectedItem = item
     }
 
@@ -31,7 +31,7 @@ fun HomeScreen() {
         }
 
         Column(Modifier.weight(0.4f).fillMaxHeight()) {
-            Text("Selected: $selectedItem")
+            Text("Selected: ${selectedItem?.name}")
             PadScreen(
                 onSelect = onPadSelected,
                 kit = Kit(
@@ -53,7 +53,7 @@ fun HomeScreen() {
         }
 
         Column(Modifier.weight(0.3f).fillMaxHeight()) {
-            TabsScreen(onItemSelected)
+            TabsScreen(kits, onItemSelected)
         }
     }
 }
