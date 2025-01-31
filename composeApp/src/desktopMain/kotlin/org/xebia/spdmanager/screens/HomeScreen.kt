@@ -22,7 +22,8 @@ fun HomeScreen() {
             Text("Hello")
         }
         Column(Modifier.weight(0.4f).fillMaxHeight()) {
-            Text("Selected item: ${selectedItem}")
+            Text("Selected: $selectedItem")
+            PadScreen(selectedItem)
         }
         Column(Modifier.weight(0.3f).fillMaxHeight()) {
             TabsScreen(onItemSelected)
