@@ -10,14 +10,14 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 @Preview
-fun ListView() {
+fun ListView(onItemClicked: (String) -> Unit) {
     val items = List(20) { "Item #$it" } // Generate a list of 20 items
 
     LazyColumn(
         modifier = Modifier.fillMaxSize()
     ) {
         items(items) { item ->
-            ListItemView(item)
+            ListItemView(item, onItemClicked)
         }
     }
 }

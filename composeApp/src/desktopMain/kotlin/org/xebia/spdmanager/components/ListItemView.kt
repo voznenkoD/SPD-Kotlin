@@ -3,6 +3,7 @@ package org.xebia.spdmanager.components
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,13 +18,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun ListItemView(item: String) {
+fun ListItemView(item: String, onItemClicked: (String) -> Unit) {
     // Wrap the row content inside a Box to manage border only at the bottom
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 4.dp) // Padding to give space for the bottom border
             .border(BorderStroke(1.dp, Color.Gray), shape = RoundedCornerShape(4.dp)) // Apply border only at the bottom
+            .clickable {
+                onItemClicked(item)
+            },
     ) {
         Row(
             modifier = Modifier
@@ -32,7 +36,6 @@ fun ListItemView(item: String) {
                 .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically // Align items vertically centered
         ) {
-            // Dot (circle) before the item
             Box(
                 modifier = Modifier
                     .size(8.dp)

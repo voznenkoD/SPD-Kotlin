@@ -15,7 +15,7 @@ import org.xebia.spdmanager.tabs.KitTab
 import org.xebia.spdmanager.tabs.WaveTab
 
 @Composable
-fun TabsScreen() {
+fun TabsScreen(onItemClicked: (String) -> Unit) {
     var selectedTab by remember { mutableStateOf(0) } // Keep track of selected tab
 
     val tabs = listOf("Kit", "Wave")
@@ -33,9 +33,8 @@ fun TabsScreen() {
             }
         }
 
-        // 🔹 Tab Content
         when (selectedTab) {
-            0 -> KitTab()
+            0 -> KitTab(onItemClicked)
             1 -> WaveTab()
         }
     }
