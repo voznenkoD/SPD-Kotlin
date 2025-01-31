@@ -94,6 +94,8 @@ class XmlParser {
         val rawWvListSortByNumTag = parseSystemFile<WvListSortbyNumTag>(classTypeToFilename[WvListSortbyNumTag::class.java]!!, systemFiles)
         val rawWaves = parseWaves("$rootPath/WAVE/PRM")
 
+        println("hehe")
+
     }
 
     data class Coordinate(val folderNumber: String, val fileNumber: String)

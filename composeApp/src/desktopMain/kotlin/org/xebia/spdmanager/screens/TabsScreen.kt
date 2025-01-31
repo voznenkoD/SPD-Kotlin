@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import org.xebia.spdmanager.model.Kit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.xebia.spdmanager.service.XmlParser
 import org.xebia.spdmanager.tabs.KitTab
 import org.xebia.spdmanager.tabs.WaveTab
 import java.awt.FileDialog
@@ -83,6 +84,8 @@ fun BottomTabsSection(onOpenClicked: (String) -> Unit) {
             Button(
                 onClick = {
                     openFolderDialog { folder -> folderPath = folder }
+                    val parser = XmlParser()
+                    parser.parseAllFiles(folderPath)
                     onOpenClicked(folderPath)
                 },
                 modifier = Modifier.padding(top = 8.dp)
