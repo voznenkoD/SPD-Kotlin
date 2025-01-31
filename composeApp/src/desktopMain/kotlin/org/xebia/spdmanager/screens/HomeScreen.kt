@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import org.xebia.spdmanager.ListView
 
 @Composable
 fun HomeScreen() {
@@ -16,7 +15,7 @@ fun HomeScreen() {
             Text("World")
         }
         Column(Modifier.weight(0.3f).fillMaxHeight()) {
-            ListView()
+            TabsScreen()
         }
     }
 }
