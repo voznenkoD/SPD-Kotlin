@@ -27,7 +27,7 @@ fun HomeScreen() {
 
     Row {
         Column(Modifier.weight(0.3f).fillMaxHeight()) {
-            Text("Hello")
+            KitScreen()
         }
 
         Column(Modifier.weight(0.4f).fillMaxHeight()) {
