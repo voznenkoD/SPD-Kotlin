@@ -8,6 +8,6 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement
 data class WvList(
     @JacksonXmlProperty(localName = "Wv")
     @JacksonXmlElementWrapper(useWrapping = false)
-    val wvList: List<Int>
+    val wvList: List<Int?> = emptyList()
 )
 
