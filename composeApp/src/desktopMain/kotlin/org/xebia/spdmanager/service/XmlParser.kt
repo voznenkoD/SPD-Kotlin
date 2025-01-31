@@ -1,6 +1,10 @@
 package org.xebia.spdmanager.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
+import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.xebia.spdmanager.data.model.raw.kit.KitPrm
@@ -15,7 +19,9 @@ import java.nio.file.Files
 import kotlin.io.path.Path
 
 class XmlParser {
-    private val xmlMapper = XmlMapper()
+    private val xmlMapper = XmlMapper().apply {
+        registerKotlinModule()
+    }
 
     private fun readFilesInFolder(folderPath: String): List<File> {
         val folder = File(folderPath)
@@ -26,7 +32,7 @@ class XmlParser {
         return folder.listFiles()?.filter { it.isFile } ?: emptyList()
     }
 
-    private inline fun <reified T> parseFile(file:File) =  xmlMapper.readValue(file, T::class.java)
+    private inline fun <reified T> parseFile(file:File) =  xmlMapper.readValue<T>(file)
 
     private fun parseKits(kitFiles: List<File>): List<KitPrm> = kitFiles.map(::parseFile)
 
@@ -68,7 +74,7 @@ class XmlParser {
         }.flatten()
     }
 
-    suspend fun parseAllFiles(rootPath: String) {
+    fun parseAllFiles(rootPath: String) {
         val classTypeToFilename = mapOf(
             Config::class.java to "sysparam.spd",
             TagList::class.java to "tag_list.spd",

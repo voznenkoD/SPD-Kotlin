@@ -27,7 +27,7 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
             implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.18.2")
-            implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.8")
+            implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.2")
         }
     }
 }
