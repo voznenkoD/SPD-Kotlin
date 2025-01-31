@@ -1,26 +1,20 @@
 package org.xebia.spdmanager.screens
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.xebia.spdmanager.components.DropdownMenuExample
+import org.xebia.spdmanager.model.Kit
 
 @Composable
-fun KitScreen() {
+fun KitScreen(kit: Kit?) {
     var textFieldValue1 by remember { mutableStateOf(TextFieldValue("")) }
     var textFieldValue2 by remember { mutableStateOf(TextFieldValue("")) }
     var sliderValue1 by remember { mutableStateOf(0f) }
