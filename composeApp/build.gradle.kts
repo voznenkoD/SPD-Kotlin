@@ -26,6 +26,7 @@ kotlin {
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
+            implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.18.2")
         }
     }
 }
