@@ -17,7 +17,7 @@ import org.xebia.spdmanager.model.Kit
 fun KitScreen(kit: Kit?) {
     var textFieldValue1 by remember { mutableStateOf(TextFieldValue("")) }
     var textFieldValue2 by remember { mutableStateOf(TextFieldValue("")) }
-    var sliderValue1 by remember { mutableStateOf(0f) }
+    var sliderValue1 by remember { mutableStateOf(kit?.tempo?.toFloat() ?: 0f) }
     var sliderValue2 by remember { mutableStateOf(0f) }
     var switchState by remember { mutableStateOf(false) }
 
@@ -30,10 +30,10 @@ fun KitScreen(kit: Kit?) {
         Row(verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start
         ) {
-            Text("Static Text 1: ", fontSize = 14.sp, modifier = Modifier.weight(1f))
+            Text("Name: ", fontSize = 14.sp, modifier = Modifier.weight(1f))
             TextField(
-                value = textFieldValue1,
-                onValueChange = { textFieldValue1 = it },
+                value = kit?.name ?: "",
+                onValueChange = {  },
                 modifier = Modifier.weight(2f)
             )
         }
@@ -41,10 +41,10 @@ fun KitScreen(kit: Kit?) {
         Row(verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start
         ) {
-            Text("Static Text 2: ", fontSize = 14.sp, modifier = Modifier.weight(1f))
+            Text("Sub Name: ", fontSize = 14.sp, modifier = Modifier.weight(1f))
             TextField(
-                value = textFieldValue2,
-                onValueChange = { textFieldValue2 = it },
+                value = kit?.subName ?: "",
+                onValueChange = {  },
                 modifier = Modifier.weight(2f)
             )
         }
@@ -52,7 +52,7 @@ fun KitScreen(kit: Kit?) {
         Row(verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start
         ) {
-            Text("Static Text 3: ", fontSize = 14.sp, modifier = Modifier.weight(1f))
+            Text("Tempo: ", fontSize = 14.sp, modifier = Modifier.weight(1f))
             Slider(
                 value = sliderValue1,
                 onValueChange = { sliderValue1 = it },
@@ -65,7 +65,7 @@ fun KitScreen(kit: Kit?) {
         Row(verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start
         ) {
-            Text("Static Text 4: ", fontSize = 14.sp, modifier = Modifier.weight(1f))
+            Text("Volume: ", fontSize = 14.sp, modifier = Modifier.weight(1f))
             Slider(
                 value = sliderValue2,
                 onValueChange = { sliderValue2 = it },
