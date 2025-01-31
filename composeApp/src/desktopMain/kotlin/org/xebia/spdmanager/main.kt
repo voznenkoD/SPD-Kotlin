@@ -8,6 +8,8 @@ fun main() = application {
         onCloseRequest = ::exitApplication,
         title = "SPD-Manager",
     ) {
+        window.minimumSize = java.awt.Dimension(1200, 800)
+
         App()
     }
 }
