@@ -2,7 +2,6 @@ package org.xebia.spdmanager
 
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import org.xebia.spdmanager.service.XmlParser
 
 fun main() = application {
     Window(

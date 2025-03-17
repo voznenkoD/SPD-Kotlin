@@ -13,6 +13,8 @@ data class ExtPad(
     @JacksonXmlProperty(localName = "MaskTime") val maskTime: Int,
     @JacksonXmlProperty(localName = "XtalkCxl") val xtalkCxl: Int,
     @JacksonXmlProperty(localName = "RimAdjust") val rimAdjust: Int,
-    @JacksonXmlProperty(localName = "RimGain") val rimGain: Int
+    @JacksonXmlProperty(localName = "RimGain") val rimGain: Int,
+    @JacksonXmlProperty(localName = "NoiseCxl") val noiseCxl: Int,
+
 )
 

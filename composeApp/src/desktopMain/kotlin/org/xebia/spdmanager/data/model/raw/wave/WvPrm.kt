@@ -25,7 +25,7 @@ data class WvPrm(
 ) {
 
     fun waveName(): IntArray {
-        return intArrayOf(nm0, nm2, nm3, nm4, nm5, nm6, nm7, nm8, nm9)
+        return intArrayOf(nm0, nm1, nm2, nm3, nm4, nm5, nm6, nm7, nm8, nm9)
     }
 }
 

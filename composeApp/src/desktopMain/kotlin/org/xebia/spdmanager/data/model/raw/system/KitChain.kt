@@ -32,6 +32,17 @@ data class KitChain(
     @JacksonXmlProperty(localName = "Stp17") val stp17: Int,
     @JacksonXmlProperty(localName = "Stp18") val stp18: Int,
     @JacksonXmlProperty(localName = "Stp19") val stp19: Int
-)
+) {
+    fun kitChainName(): IntArray {
+        return intArrayOf(nm0, nm1, nm2, nm3, nm4, nm5, nm6, nm7, nm8, nm9)
+    }
+
+    fun getKits(): List<Int> {
+        return listOf(stp0, stp1, stp2, stp3, stp4, stp5, stp6, stp7, stp8, stp9, stp10, stp11,
+            stp12, stp13, stp14, stp15, stp16, stp17, stp18, stp19)
+    }
+
+}
+
 
 

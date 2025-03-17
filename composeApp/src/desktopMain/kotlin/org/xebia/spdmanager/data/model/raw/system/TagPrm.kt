@@ -16,5 +16,10 @@ data class TagPrm(
     @JacksonXmlProperty(localName = "Nm10") val nm10: Int,
     @JacksonXmlProperty(localName = "Nm11") val nm11: Int,
     @JacksonXmlProperty(localName = "Order") val order: Int
-)
+) {
+    fun tagName(): IntArray {
+        return intArrayOf(nm0, nm1, nm2, nm3, nm4, nm5, nm6, nm7, nm8, nm9, nm10, nm11)
+    }
+}
+
 

@@ -92,4 +92,54 @@ data class KitPrm(
             SubNm11, SubNm12, SubNm13, SubNm14, SubNm15
         )
     }
+
+    fun fx1Prm(): List<Int> {
+        return listOf(
+            Fx1Prm0,
+            Fx1Prm1,
+            Fx1Prm2,
+            Fx1Prm3,
+            Fx1Prm4,
+            Fx1Prm5,
+            Fx1Prm6,
+            Fx1Prm7,
+            Fx1Prm8,
+            Fx1Prm9,
+            Fx1Prm10,
+            Fx1Prm11,
+            Fx1Prm12,
+            Fx1Prm13,
+            Fx1Prm14,
+            Fx1Prm15,
+            Fx1Prm16,
+            Fx1Prm17,
+            Fx1Prm18,
+            Fx1Prm19
+        )
+    }
+
+    fun fx2Prm(): List<Int> {
+        return listOf(
+            Fx2Prm0,
+            Fx2Prm1,
+            Fx2Prm2,
+            Fx2Prm3,
+            Fx2Prm4,
+            Fx2Prm5,
+            Fx2Prm6,
+            Fx2Prm7,
+            Fx2Prm8,
+            Fx2Prm9,
+            Fx2Prm10,
+            Fx2Prm11,
+            Fx2Prm12,
+            Fx2Prm13,
+            Fx2Prm14,
+            Fx2Prm15,
+            Fx2Prm16,
+            Fx2Prm17,
+            Fx2Prm18,
+            Fx2Prm19
+        )
+    }
 }

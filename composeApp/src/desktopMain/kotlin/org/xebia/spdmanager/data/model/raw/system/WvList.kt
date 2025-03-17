@@ -10,4 +10,3 @@ data class WvList(
     @JacksonXmlElementWrapper(useWrapping = false)
     val wvList: List<Int?> = emptyList()
 )
-

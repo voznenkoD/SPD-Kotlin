@@ -39,5 +39,25 @@ data class SysPrm(
     @JacksonXmlProperty(localName = "VLinkKnob1CC") val vLinkKnob1CC: Int,
     @JacksonXmlProperty(localName = "VLinkKnob2CC") val vLinkKnob2CC: Int,
     @JacksonXmlProperty(localName = "VLinkCtrlOnly") val vLinkControlOnly: Int
-)
+) {
+    fun padFsControls(): IntArray {
+        return intArrayOf(
+            padCtrlPad1,
+            padCtrlPad2,
+            padCtrlPad3,
+            padCtrlPad4,
+            padCtrlPad5,
+            padCtrlPad6,
+            padCtrlPad7,
+            padCtrlPad8,
+            padCtrlPad9,
+            padCtrlExt1,
+            padCtrlExt2,
+            padCtrlExt3,
+            padCtrlExt4,
+            padCtrlFS1,
+            padCtrlFS2
+        )
+    }
+}
 
