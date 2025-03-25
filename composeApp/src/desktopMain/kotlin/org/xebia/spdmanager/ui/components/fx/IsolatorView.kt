@@ -7,7 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.xebia.spdmanager.model.system.fx.subtypes.Isolator
-import org.xebia.spdmanager.ui.components.SliderWithLabel
+import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 
 @Composable
 fun IsolatorView(isolator: Isolator) {

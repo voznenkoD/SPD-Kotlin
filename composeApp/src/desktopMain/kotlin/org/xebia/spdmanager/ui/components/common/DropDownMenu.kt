@@ -1,4 +1,4 @@
-package org.xebia.spdmanager.ui.components
+package org.xebia.spdmanager.ui.components.common
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box

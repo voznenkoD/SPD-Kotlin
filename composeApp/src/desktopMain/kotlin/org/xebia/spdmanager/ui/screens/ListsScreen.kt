@@ -18,19 +18,19 @@ import javax.swing.filechooser.FileSystemView
 fun ListsScreen(kits: List<Kit>, onItemSelected: (Kit) -> Unit, onOpenClicked: (String, Device) -> Unit) {
     Column {
         Row(Modifier.weight(1f)) {
-            HeaderTabsSection(kits, onItemSelected)
+            ListHeaderTabs(kits, onItemSelected)
         }
         Row(Modifier.height(100.dp)) {
-            BottomTabsSection(onOpenClicked)
+            SelectFolderSection(onOpenClicked)
         }
     }
 }
 
 @Composable
-fun HeaderTabsSection(kits: List<Kit>, onItemSelected: (Kit) -> Unit) {
+fun ListHeaderTabs(kits: List<Kit>, onItemSelected: (Kit) -> Unit) {
     var selectedTab by remember { mutableStateOf(0) }
 
-    val tabs = listOf("Kit", "Wave")
+    val tabs = listOf("Kits", "Waves")
 
     Column(modifier = Modifier.fillMaxSize()) {
         TabRow(
@@ -53,7 +53,7 @@ fun HeaderTabsSection(kits: List<Kit>, onItemSelected: (Kit) -> Unit) {
 }
 
 @Composable
-fun BottomTabsSection(onOpenClicked: (String, Device) -> Unit) {
+fun SelectFolderSection(onOpenClicked: (String, Device) -> Unit) {
     var folderPath by remember { mutableStateOf("") }
     val deviceManager = LocalDeviceManager.current
 

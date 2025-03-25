@@ -5,7 +5,7 @@ sealed class MuteGroup {
     data object Off : MuteGroup()
     data class Group(val number: Int) : MuteGroup() {
         init {
-            require(number in 0..9) { "Note number must be between 0 and 127" }
+            require(number in 0..9) { "MuteGroup number must be between 0 and 9" }
         }
         override fun toString(): String = number.toString()
     }

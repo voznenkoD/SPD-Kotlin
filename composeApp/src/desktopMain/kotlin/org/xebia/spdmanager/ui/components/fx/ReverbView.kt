@@ -11,8 +11,8 @@ import org.xebia.spdmanager.model.system.fx.common.HighCut
 import org.xebia.spdmanager.model.system.fx.common.LowCut
 import org.xebia.spdmanager.model.system.fx.common.ReverbType
 import org.xebia.spdmanager.model.system.fx.subtypes.Reverb
-import org.xebia.spdmanager.ui.components.ButtonRow
-import org.xebia.spdmanager.ui.components.SliderWithLabel
+import org.xebia.spdmanager.ui.components.common.ButtonRow
+import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 
 @Composable
 fun ReverbView(reverb: Reverb) {

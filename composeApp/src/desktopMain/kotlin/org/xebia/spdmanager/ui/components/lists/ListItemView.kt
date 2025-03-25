@@ -1,4 +1,4 @@
-package org.xebia.spdmanager.ui.components
+package org.xebia.spdmanager.ui.components.lists
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background

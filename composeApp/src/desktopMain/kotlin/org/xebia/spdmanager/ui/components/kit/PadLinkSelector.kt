@@ -1,4 +1,4 @@
-package org.xebia.spdmanager.ui.components
+package org.xebia.spdmanager.ui.components.kit
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.xebia.spdmanager.model.kit.pad.PadNumber
+import org.xebia.spdmanager.ui.components.common.DropdownSelector
 
 @Composable
 fun PadLinkSelector(

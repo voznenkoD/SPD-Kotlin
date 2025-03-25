@@ -1,4 +1,4 @@
-package org.xebia.spdmanager.ui.components
+package org.xebia.spdmanager.ui.components.common
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth

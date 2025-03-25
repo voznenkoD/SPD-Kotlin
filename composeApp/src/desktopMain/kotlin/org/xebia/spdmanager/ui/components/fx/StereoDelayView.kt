@@ -10,8 +10,8 @@ import org.xebia.spdmanager.model.system.fx.common.HighCut
 import org.xebia.spdmanager.model.system.fx.common.LowCut
 import org.xebia.spdmanager.model.system.fx.common.SyncSwitch
 import org.xebia.spdmanager.model.system.fx.subtypes.StereoDelay
-import org.xebia.spdmanager.ui.components.ButtonRow
-import org.xebia.spdmanager.ui.components.SliderWithLabel
+import org.xebia.spdmanager.ui.components.common.ButtonRow
+import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 
 @Composable
 fun StereoDelayView(stereoDelay: StereoDelay) {

@@ -8,8 +8,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.xebia.spdmanager.model.system.fx.common.*
 import org.xebia.spdmanager.model.system.fx.subtypes.Distortion
-import org.xebia.spdmanager.ui.components.DropdownSelector
-import org.xebia.spdmanager.ui.components.SliderWithLabel
+import org.xebia.spdmanager.ui.components.common.DropdownSelector
+import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 
 @Composable
 fun DistortionView(distortion: Distortion) {

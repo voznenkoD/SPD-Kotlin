@@ -9,11 +9,39 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.xebia.spdmanager.model.kit.Kit
 import org.xebia.spdmanager.model.kit.fx.KitFX
+import org.xebia.spdmanager.model.kit.pad.Pad
 import org.xebia.spdmanager.model.kit.pad.PadNumber
 import org.xebia.spdmanager.model.system.fx.common.SyncSwitch
 import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
-import org.xebia.spdmanager.ui.components.KitFXView
-import org.xebia.spdmanager.ui.components.PadLinkSelector
+import org.xebia.spdmanager.ui.components.kit.KitFXView
+import org.xebia.spdmanager.ui.components.kit.PadLinkSelector
+
+@Composable
+fun DetailsTabs(kit: Kit?, pad: Pad?) {
+    var selectedTab by remember { mutableStateOf(0) }
+
+    val tabs = listOf("Kit", "Pad")
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        TabRow(
+            selectedTabIndex = selectedTab
+        ) {
+            tabs.forEachIndexed { index, title ->
+                Tab(
+                    selected = selectedTab == index,
+                    onClick = { selectedTab = index },
+                    text = { Text(title) }
+                )
+            }
+        }
+
+        when (selectedTab) {
+            0 -> KitScreen(kit)
+            1 -> PadDetailsScreen(pad)
+        }
+    }
+}
+
 
 @Composable
 fun KitScreen(kit: Kit?) {

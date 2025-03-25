@@ -8,9 +8,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.xebia.spdmanager.model.system.fx.common.*
 import org.xebia.spdmanager.model.system.fx.subtypes.RingMod
-import org.xebia.spdmanager.ui.components.ButtonRow
-import org.xebia.spdmanager.ui.components.DryWetMixSlider
-import org.xebia.spdmanager.ui.components.SliderWithLabel
+import org.xebia.spdmanager.ui.components.common.ButtonRow
+import org.xebia.spdmanager.ui.components.common.DryWetMixSlider
+import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 
 @Composable
 fun RingModView(ringMod: RingMod) {

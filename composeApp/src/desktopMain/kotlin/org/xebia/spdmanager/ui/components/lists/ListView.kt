@@ -1,4 +1,4 @@
-package org.xebia.spdmanager.ui.components
+package org.xebia.spdmanager.ui.components.lists
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.lazy.LazyColumn

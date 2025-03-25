@@ -1,4 +1,4 @@
-package org.xebia.spdmanager.ui.components
+package org.xebia.spdmanager.ui.components.kit
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
