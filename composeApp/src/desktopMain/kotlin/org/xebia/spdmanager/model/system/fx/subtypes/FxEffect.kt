@@ -2,7 +2,7 @@ package org.xebia.spdmanager.model.system.fx.subtypes
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import org.xebia.spdmanager.ui.components.fx.StereoDelayView
+import org.xebia.spdmanager.ui.components.fx.*
 
 sealed class FxEffect {
     abstract val fxType: FXType
@@ -46,26 +46,25 @@ sealed class FxEffect {
         when (this) {
             is Thru -> Text("Thru has no parameters.")
             is StereoDelay -> StereoDelayView(this)
-//            is SyncDelay -> SyncDelayView(this)
-//            is TapeEcho -> TapeEchoView(this)
-//            is Chorus -> ChorusView(this)
-//            is Flanger -> FlangerView(this)
-//            is StepFLNGR -> StepFlangerView(this)
-//            is Phaser -> PhaserView(this)
-//            is StepPHASR -> StepPhaserView(this)
-//            is EQ -> EQView(this)
-//            is Compressor -> CompressorView(this)
-//            is Filter -> FilterView(this)
-//            is FiltDrive -> FiltDriveView(this)
-//            is Isolator -> IsolatorView(this)
-//            is TouchWah -> TouchWahView(this)
-//            is Distortion -> DistortionView(this)
-//            is RingMod -> RingModView(this)
-//            is Pitchshift -> PitchshiftView(this)
-//            is Vibrato -> VibratoView(this)
-//            is Reverb -> ReverbView(this)
-//            is Slicer -> SlicerView(this)
-            else -> Text("FX UI not implemented for ${fxType.name}")
+            is SyncDelay -> SyncDelayView(this)
+            is TapeEcho -> TapeEchoView(this)
+            is Chorus -> ChorusView(this)
+            is Flanger -> FlangerView(this)
+            is StepFLNGR -> StepFlangerView(this)
+            is Phaser -> PhaserView(this)
+            is StepPHASR -> StepPhaserView(this)
+            is EQ -> EqView(this)
+            is Compressor -> CompressorView(this)
+            is Filter -> FilterView(this)
+            is FiltDrive -> FiltDriveView(this)
+            is Isolator -> IsolatorView(this)
+            is TouchWah -> TouchWahView(this)
+            is Distortion -> DistortionView(this)
+            is RingMod -> RingModView(this)
+            is Pitchshift -> PitchshiftView(this)
+            is Vibrato -> Text("Vibrato has no parameters.")
+            is Reverb -> ReverbView(this)
+            is Slicer -> SlicerView(this)
         }
     }
 }
