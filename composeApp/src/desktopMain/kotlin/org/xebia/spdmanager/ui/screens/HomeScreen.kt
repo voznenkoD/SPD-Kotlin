@@ -1,7 +1,6 @@
 package org.xebia.spdmanager.ui.screens
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import org.xebia.spdmanager.model.Device
@@ -35,15 +34,13 @@ fun HomeScreen() {
         }
 
         Column(Modifier.weight(0.4f).fillMaxHeight()) {
-            Text("File path: $selectedFolderPath")
             PadScreen(
                 onSelect = onPadSelected,
                 kit = selectedKit,
             )
         }
-
         Column(Modifier.weight(0.3f).fillMaxHeight()) {
-            TabsScreen(kits, onItemSelected, onOpenClicked)
+            ListsScreen(kits, onItemSelected, onOpenClicked)
         }
     }
 }

@@ -22,8 +22,10 @@ class XmlParser {
         if (!folder.exists() || !folder.isDirectory) {
             throw IllegalArgumentException("Invalid folder path: $folderPath")
         }
-        return folder.listFiles()?.filter { it.isFile } ?: emptyList()
-    }
+        return folder.listFiles()
+            ?.filter { it.isFile }
+            ?.sortedBy { it.name }
+            ?: emptyList()    }
 
     inline fun <reified T> parseFile(file:File) =  xmlMapper.readValue<T>(file)
 

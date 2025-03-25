@@ -44,7 +44,9 @@ class DeviceManager {
         val waves = toWaves(rawWaves)
         val waveListsHolder = WaveListsHolder.fromValues(rawTagList!!, rawWvListSortByName!!, rawWvListSortByNameTag!!, rawWvListSortByNumTag!!, waves)
 
-        return Device(setupConfig, systemConfig, toKits(rawKits), toWaves(rawWaves), waveListsHolder)
+        val device = Device(setupConfig, systemConfig, toKits(rawKits), toWaves(rawWaves), waveListsHolder)
+
+        return device
     }
 
     private fun toKits(rawKits: List<KitPrm>): List<Kit> {

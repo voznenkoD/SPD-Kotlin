@@ -14,15 +14,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @Composable
-fun DropdownMenuExample() {
+fun <T> DropdownSelector(
+    label: String,
+    selectedItem: T,
+    onItemSelected: (T) -> Unit,
+    items: List<T>
+) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedOption by remember { mutableStateOf("Off") }
 
     Box(modifier = Modifier.fillMaxWidth()) {
+        Text(label, fontSize = 14.sp)
+
         Text(
-            text = "Selected: $selectedOption",
+            text = selectedItem.toString(),
             modifier = Modifier
                 .clickable { expanded = true }
                 .padding(16.dp)
@@ -32,17 +39,13 @@ fun DropdownMenuExample() {
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
-            DropdownMenuItem(onClick = {
-                selectedOption = "On"
-                expanded = false
-            }) {
-                Text("On")
-            }
-            DropdownMenuItem(onClick = {
-                selectedOption = "Off"
-                expanded = false
-            }) {
-                Text("Off")
+            items.forEach { item ->
+                DropdownMenuItem(onClick = {
+                    onItemSelected(item)
+                    expanded = false
+                }) {
+                    Text(item.toString())
+                }
             }
         }
     }
