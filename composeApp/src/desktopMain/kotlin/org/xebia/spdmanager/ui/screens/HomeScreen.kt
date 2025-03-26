@@ -26,7 +26,7 @@ fun HomeScreen() {
     }
 
     val onWaveSelected: (ListedWave) -> Unit = { listedWave ->
-        selectedWave = waves.get(listedWave.number)
+        selectedWave = waves.find { it.number == listedWave.number }
     }
 
     val onOpenClicked: (String, Device) -> Unit = { folderPath, device ->

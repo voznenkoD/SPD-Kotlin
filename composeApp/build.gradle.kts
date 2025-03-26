@@ -28,6 +28,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.swing)
             implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.18.2")
             implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.2")
+            runtimeOnly("org.jetbrains.skiko:skiko-awt-runtime-macos-arm64:0.9.3")
         }
     }
 }
