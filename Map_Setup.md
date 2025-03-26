@@ -2,13 +2,13 @@
 
 ## LCD/LED
 
-| Setting        | Options                                    |
-|----------------|--------------------------------------------|
-| LCD Contrast   | 1-10                                       |
-| LCD Bright     | 1-10                                       |
-| Pad Indicate   | OFF, Dynamic , State , All On              |
-| Tempo Indicate | Off                           , On         |
-| DispMode       | SubName                            , Level |
+| Setting        | Options                       |
+|----------------|-------------------------------|
+| LCD Contrast   | 1-10                          |
+| LCD Bright     | 1-10                          |
+| Pad Indicate   | OFF, Dynamic , State , All On |
+| Tempo Indicate | Off , On                      |
+| DispMode       | SubName  , Level              |
 
 ## Pad Sens (for each Pad and Trig)
 
@@ -36,40 +36,40 @@
 
 ## Foot SW
 
-| Setting      | Options                    |
-|--------------|----------------------------|
-| FS1 Polarity | Normal , Inverse           |
-| FS2 Polarity | Normal           , Inverse |
+| Setting      | Options           |
+|--------------|-------------------|
+| FS1 Polarity | Normal , Inverse  |
+| FS2 Polarity | Normal , Inverse  |
 
 ## MIDI
 
 ### Setup:
 
-| Setting       | Options                                                             |
-|---------------|---------------------------------------------------------------------|
-| Global CH     | OFF , 1-16 *(2)*                                                    |
-| MIDI SYNC     | OFF              , AUTO *(off)*                                     |
-| Local Control | OFF                             , ON *(on)*                         |
-| Soft Thru     | OFF                                         , ON *(on)*             |
-| USB-MIDI I/F  | OFF                                                     , ON *(on)* |
+| Setting       | Options           |
+|---------------|-------------------|
+| Global CH     | OFF, 1-16 *(2)*   |
+| MIDI SYNC     | OFF, AUTO *(off)* |
+| Local Control | OFF, ON *(on)*    |
+| Soft Thru     | OFF, ON *(on)*    |
+| USB-MIDI I/F  | OFF, ON *(on)*    |
 
 ### CTRL:
 
-| Setting          | Options                                                                 |
-|------------------|-------------------------------------------------------------------------|
-| PC Tx/Rx SW      | OFF , ON *(on)*                                                         |
-| CC Rx/Rx SW      | OFF             , ON *(on)*                                             |
-| MSTR FX Sel CC   | OFF                         , 1-95 *(off)*                              |
-| MSTR FX Ctrl1 CC | OFF                                       , 1-95 *(off)*                |
-| MSTR FX Ctrl2 CC | OFF                                                      , 1-95 *(off)* |
+| Setting          | Options           |
+|------------------|-------------------|
+| PC Tx/Rx SW      | OFF , ON *(on)*   |
+| CC Rx/Rx SW      | OFF, ON *(on)*    |
+| MSTR FX Sel CC   | OFF, 1-95 *(off)* |
+| MSTR FX Ctrl1 CC | OFF, 1-95 *(off)* |
+| MSTR FX Ctrl2 CC | OFF, 1-95 *(off)* |
 
 ## Option
 
-| Setting  | Options                                    |
-|----------|--------------------------------------------|
-| Pad Lock | On , Off *(off)*                           |
-| AutoOff  | Off              , 4Hrs *(4)*              |
-| USB Mode | WaveMGR                       , Audio/MIDI |
+| Setting  | Options             |
+|----------|---------------------|
+| Pad Lock | On, Off *(off)*     |
+| AutoOff  | Off, 4Hrs *(4)*     |
+| USB Mode | WaveMGR, Audio/MIDI |
 
 ---
 

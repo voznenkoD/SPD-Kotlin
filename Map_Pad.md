@@ -31,9 +31,9 @@
 MasterOut, KitFX1, KitFX2, SubOut, PhonesOnly
 
 ## MIDI
-| Setting         | Options                                                                                                                                          |
-|-----------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
-| Pad CH          | Global, 1..16                                                                                                                                    |
-| Midi Note       | Off, 0..127                                                                                                                                      |
-| Ext CTRL        | Off, On                                                                                                                                          |
-| Gate            | Off, Alt, 0.1..8.0s                                                                                                                              |
+| Setting         | Options             |
+|-----------------|---------------------|
+| Pad CH          | Global, 1..16       |
+| Midi Note       | Off, 0..127         |
+| Ext CTRL        | Off, On             |
+| Gate            | Off, Alt, 0.1..8.0s |

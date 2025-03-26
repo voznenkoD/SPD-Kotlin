@@ -40,14 +40,14 @@ MasterOut, SubOut, PhonesOnly
 
 
 ## Visual Control
-| Setting          | Options                                                                              |
-|------------------|--------------------------------------------------------------------------------------|
-| Visual CTRL SW   | OFF, ON                                                                              |
-| Visual CTRL MODE | MVC, VLINK                                                                           |
-| BANK             | OFF, 0..127                                                                          |
-| CH               | 1..16                                                                                |
-| CTRL KNOB1 CC    | Off, #1..95                                                                          |
-| CTRL KNOB2 CC    | Off, #1..95                                                                          |
+| Setting          | Options        |
+|------------------|----------------|
+| Visual CTRL SW   | OFF, ON        |
+| Visual CTRL MODE | MVC, VLINK     |
+| BANK             | OFF, 0..127    |
+| CH               | 1..16          |
+| CTRL KNOB1 CC    | Off, #1..95    |
+| CTRL KNOB2 CC    | Off, #1..95    |
 
 
 ## MasterEffect
@@ -117,21 +117,21 @@ MasterOut, SubOut, PhonesOnly
 
 #### Tape Echo
 
-| Setting      | Options                                                  |
-|--------------|----------------------------------------------------------|
-| FxType       | Tape Echo                                                |
-| Mode         | S, M, L, S+M, S+L, M+L, S+M+L                            |
-| Bass         | -15..+15 dB                                              |
-| Treble       | -15..+15 dB                                              |
-| Head S Pan   | L64..R63                                                 |
-| Head M Pan   | L64..R63                                                 |
-| Head L Pan   | L64..R63                                                 |
-| Tape Dist    | 0..5                                                     |
-| W/F Rate     | 0..127                                                   |
-| W/F Depth    | 0..127                                                   |
-| Echo Level   | 0-100 (96)                                               |
-| Direct Level | 0-100 (96)                                               |
-| Level        | 0-100 (96)                                               |
+| Setting      | Options                         |
+|--------------|---------------------------------|
+| FxType       | Tape Echo                       |
+| Mode         | S, M, L, S+M, S+L, M+L, S+M+L   |
+| Bass         | -15..+15 dB                     |
+| Treble       | -15..+15 dB                     |
+| Head S Pan   | L64..R63                        |
+| Head M Pan   | L64..R63                        |
+| Head L Pan   | L64..R63                        |
+| Tape Dist    | 0..5                            |
+| W/F Rate     | 0..127                          |
+| W/F Depth    | 0..127                          |
+| Echo Level   | 0-100 (96)                      |
+| Direct Level | 0-100 (96)                      |
+| Level        | 0-100 (96)                      |
 
 #### Chorus
 

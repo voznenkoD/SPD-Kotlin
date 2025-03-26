@@ -3,11 +3,11 @@ package org.xebia.spdmanager.model.system
 data class ClickConfig(
     val soundGroup: SoundGroup,
     val sound: ClickSound,
-    val wave: Int,  // Assuming wave is a raw integer value
+    val wave: Int,
     val interval: Interval,
-    val pan: Pan,
+    val clickPan: ClickPan,
     val output: Output,
-    val level: Int    // Assuming level is a raw integer value
+    val level: Int
 ) {
     companion object {
         fun fromValues(
@@ -24,7 +24,7 @@ data class ClickConfig(
                 sound = ClickSound.fromValue(sound),
                 wave = wave,
                 interval = Interval.fromValue(interval),
-                pan = Pan.fromValue(pan),
+                clickPan = ClickPan.fromValue(pan),
                 output = Output.fromValue(output),
                 level = level
             )
@@ -69,7 +69,7 @@ enum class Interval(val value: Int) {
     }
 }
 
-data class Pan(val value: Int) {
+data class ClickPan(val value: Int) {
     override fun toString(): String {
         return when {
             value < 0 -> "L${-value}"
@@ -79,10 +79,10 @@ data class Pan(val value: Int) {
     }
 
     companion object {
-        fun fromValue(rawValue: Int): Pan {
+        fun fromValue(rawValue: Int): ClickPan {
             // Map range 0..30 to -15..15
             val mappedValue = rawValue - 15
-            return Pan(mappedValue.coerceIn(-15, 15))
+            return ClickPan(mappedValue.coerceIn(-15, 15))
         }
     }
 }

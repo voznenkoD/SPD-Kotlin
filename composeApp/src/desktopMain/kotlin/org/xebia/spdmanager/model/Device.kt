@@ -10,5 +10,6 @@ data class Device(
     val systemConfig: SystemConfig,
     val kits: List<Kit>,
     val waves: List<Wave>,
-    val waveLists: WaveListsHolder
+    val waveLists: WaveListsHolder,
+    val rootPath: String
 )

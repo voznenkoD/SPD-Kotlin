@@ -1,5 +1,8 @@
 package org.xebia.spdmanager.service
 
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import org.xebia.spdmanager.data.Coordinate
 import org.xebia.spdmanager.data.decodeName
 import org.xebia.spdmanager.data.model.raw.kit.KitPrm
@@ -14,6 +17,7 @@ import org.xebia.spdmanager.model.system.SystemConfig
 
 class DeviceManager {
     val xmlParser = XmlParser()
+    var device by mutableStateOf<Device?>(null)
 
     val classTypeToFilename = mapOf(
         Config::class.java to "sysparam.spd",
@@ -23,7 +27,7 @@ class DeviceManager {
         WvListSortbyNumTag::class.java to "wavelist_tagnum.spd"
     )
 
-    fun readDevice(rootPath: String): Device {
+    fun readDevice(rootPath: String) {
         val systemFiles = xmlParser.readFilesInFolder("$rootPath/SYSTEM")
         val kitFiles = xmlParser.readFilesInFolder("$rootPath/KIT")
 
@@ -44,9 +48,7 @@ class DeviceManager {
         val waves = toWaves(rawWaves)
         val waveListsHolder = WaveListsHolder.fromValues(rawTagList!!, rawWvListSortByName!!, rawWvListSortByNameTag!!, rawWvListSortByNumTag!!, waves)
 
-        val device = Device(setupConfig, systemConfig, toKits(rawKits), toWaves(rawWaves), waveListsHolder)
-
-        return device
+        device = Device(setupConfig, systemConfig, toKits(rawKits), toWaves(rawWaves), waveListsHolder, rootPath)
     }
 
     private fun toKits(rawKits: List<KitPrm>): List<Kit> {

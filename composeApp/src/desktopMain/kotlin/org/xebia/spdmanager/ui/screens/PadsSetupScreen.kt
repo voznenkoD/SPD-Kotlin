@@ -6,7 +6,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,14 +17,13 @@ import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.xebia.spdmanager.model.kit.Kit
-import org.xebia.spdmanager.model.kit.pad.Pad
 import org.xebia.spdmanager.model.kit.pad.PadNumber
 
 @Composable
-fun PadScreen(onSelect: (Pad) -> Unit, kit: Kit?) {
-    if (kit != null) {
-        Surface(
+fun PadsSetupScreen(onSelect: (PadNumber) -> Unit) {
+    val pads = PadNumber.entries
+
+    Surface(
             color = Color.Gray,
             modifier = Modifier
                 .padding(8.dp)
@@ -41,11 +39,11 @@ fun PadScreen(onSelect: (Pad) -> Unit, kit: Kit?) {
                     modifier = Modifier.weight(0.75f)
                 ) {
                     items(
-                        kit.pads.entries
-                            .filter { (key, _) -> key in PadNumber.PAD_1..PadNumber.PAD_9 }
-                            .sortedBy { it.key.value }
-                    ) { (key, pad) ->
-                        PadItem(pad, key, onSelect)
+                        pads
+                            .filter { it in PadNumber.PAD_1..PadNumber.PAD_9 }
+                            .sortedBy { it.value }
+                    ) {
+                        PadItem(it, onSelect)
                     }
                 }
 
@@ -54,11 +52,11 @@ fun PadScreen(onSelect: (Pad) -> Unit, kit: Kit?) {
                     modifier = Modifier.weight(0.25f)
                 ) {
                     items(
-                        kit.pads.entries
-                            .filter { (key, _) -> key in PadNumber.TRIG_1..PadNumber.TRIG_4 }
-                            .sortedBy { it.key.value }
-                    ) { (key, pad) ->
-                        PadItem(pad, key, onSelect)
+                        pads
+                            .filter { it in PadNumber.TRIG_1..PadNumber.TRIG_4 }
+                            .sortedBy { it.value }
+                    ) {
+                        PadItem(it, onSelect)
                     }
                 }
 
@@ -67,20 +65,18 @@ fun PadScreen(onSelect: (Pad) -> Unit, kit: Kit?) {
                     modifier = Modifier.weight(0.15f)
                 ) {
                     items(
-                        kit.pads.entries
-                            .filter { (key, _) -> key in PadNumber.FS_1..PadNumber.FS_2 }
-                            .sortedBy { it.key.value }
-                    ) { (key, pad) ->
-                        PadItem(pad, key, onSelect, isFS = true)
+                        pads
+                            .filter {it in PadNumber.FS_1..PadNumber.FS_2 }
+                            .sortedBy { it.value }
+                    ) { PadItem(it, onSelect, isFS = true)
                     }
                 }
             }
         }
-    }
 }
 
 @Composable
-fun PadItem(pad: Pad, label: PadNumber, onSelect: (Pad) -> Unit, isFS: Boolean = false) {
+fun PadItem(padNumber: PadNumber, onSelect: (PadNumber) -> Unit, isFS: Boolean = false) {
     Surface(
         color = Color.DarkGray,
         shape = RoundedCornerShape(8.dp),
@@ -88,26 +84,15 @@ fun PadItem(pad: Pad, label: PadNumber, onSelect: (Pad) -> Unit, isFS: Boolean =
             .height(if (isFS) 80.dp else 160.dp)
             .then(if (isFS) Modifier.width(180.dp) else Modifier)
             .padding(4.dp)
-            .clickable { onSelect(pad) }
+            .clickable { onSelect(padNumber) }
             .pointerHoverIcon(PointerIcon.Hand)
     ) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.BottomEnd
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(4.dp),
-                verticalArrangement = Arrangement.SpaceAround,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(color = Color.White, text = "Wave ${pad.main.wave}", fontSize = 14.sp)
-                HorizontalDivider(color = Color.Red, thickness = 1.dp)
-                Text(color = Color.White, text = "Wave ${pad.sub.wave}", fontSize = 14.sp)
-            }
             Text(
-                text = label.name.replace("_", " "),
+                text = padNumber.name.replace("_", " "),
                 color = Color.Yellow,
                 fontSize = 12.sp,
                 textAlign = TextAlign.End,

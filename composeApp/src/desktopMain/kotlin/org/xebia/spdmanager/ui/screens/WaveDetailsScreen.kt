@@ -2,29 +2,35 @@ package org.xebia.spdmanager.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.xebia.spdmanager.audioplayer.SingleFilePlayer
+import org.xebia.spdmanager.audioplayer.readWavFile
 import org.xebia.spdmanager.model.Wave
+import org.xebia.spdmanager.ui.components.common.GroupedDetailRow
 import org.xebia.spdmanager.ui.waveform.DisplayWaveform
+import java.io.File
 
 @Composable
-fun WaveDetailsScreen(wave: Wave?) {
-    if (wave == null) {
+fun WaveDetailsScreen(wave: Wave?, path: String?) {
+    if (wave == null || path.isNullOrEmpty()) {
         Text("No wave selected", fontSize = 18.sp)
         return
     }
 
-    Spacer(modifier = Modifier.height(16.dp))
-
-    DisplayWaveform(waveformSamples = List(500) { Math.sin(it.toDouble()).toFloat() }) // Mock data for testing
+    val filePath = "$path/WAVE/DATA/${wave.path}"
 
     Column(modifier = Modifier
         .fillMaxSize()
         .padding(16.dp)) {
 
         Text("Wave Details", fontSize = 20.sp, style = MaterialTheme.typography.headlineMedium)
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        DisplayWaveform(waveformSamples = readWavFile(filePath))
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -49,21 +55,16 @@ fun WaveDetailsScreen(wave: Wave?) {
             label2 = "End:", value2 = wave.end.toString(),
             label3 = "", value3 = ""
         )
-    }
-}
 
-@Composable
-fun GroupedDetailRow(label1: String, value1: String, label2: String, value2: String, label3: String, value3: String) {
-    Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
-        Text(text = label1, fontSize = 16.sp, modifier = Modifier.weight(1f))
-        Text(text = value1, fontSize = 16.sp, modifier = Modifier.weight(2f))
+        Spacer(modifier = Modifier.height(24.dp))
 
-        Text(text = label2, fontSize = 16.sp, modifier = Modifier.weight(1f))
-        Text(text = value2, fontSize = 16.sp, modifier = Modifier.weight(2f))
-
-        if (label3.isNotEmpty()) {
-            Text(text = label3, fontSize = 16.sp, modifier = Modifier.weight(1f))
-            Text(text = value3, fontSize = 16.sp, modifier = Modifier.weight(2f))
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+            Button(onClick = { SingleFilePlayer.play(File(filePath)) }) {
+                Text("Play")
+            }
+            Button(onClick = { SingleFilePlayer.stop() }) {
+                Text("Stop")
+            }
         }
     }
 }

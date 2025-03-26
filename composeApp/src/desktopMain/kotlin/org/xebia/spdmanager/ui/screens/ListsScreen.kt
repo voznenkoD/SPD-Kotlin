@@ -7,10 +7,9 @@ import androidx.compose.ui.Modifier
 import org.xebia.spdmanager.model.kit.Kit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.xebia.spdmanager.LocalDeviceManager
-import org.xebia.spdmanager.model.Device
 import org.xebia.spdmanager.model.list.ListedWave
 import org.xebia.spdmanager.model.list.WaveListsHolder
+import org.xebia.spdmanager.ui.components.SelectFolderButton
 import org.xebia.spdmanager.ui.tabs.KitListTab
 import org.xebia.spdmanager.ui.tabs.WaveListTab
 import javax.swing.JFileChooser
@@ -22,7 +21,7 @@ fun ListsScreen(
     waveListsHolder: WaveListsHolder,
     onKitSelected: (Kit) -> Unit,
     onWaveSelected: (ListedWave) -> Unit,
-    onOpenClicked: (String, Device) -> Unit
+    onOpenClicked: (String) -> Unit
 ) {
     Column {
         Row(Modifier.weight(1f)) {
@@ -66,23 +65,8 @@ fun ListHeaderTabs(
 }
 
 @Composable
-fun SelectFolderSection(onOpenClicked: (String, Device) -> Unit) {
-    var folderPath by remember { mutableStateOf("") }
-    val deviceManager = LocalDeviceManager.current
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        Text("Selected Folder: $folderPath", fontSize = 12.sp)
-        Button(
-            content = { Text("Select Folder", fontSize = 12.sp)} ,
-            onClick = {
-                openFolderDialog { folder -> folderPath = folder }
-                onOpenClicked(folderPath, deviceManager.readDevice(folderPath))
-            }
-        )
-    }
+fun SelectFolderSection(onOpenClicked: (String) -> Unit) {
+            SelectFolderButton(onOpenClicked)
 }
 
 fun openFolderDialog(onFolderSelected: (String) -> Unit) {

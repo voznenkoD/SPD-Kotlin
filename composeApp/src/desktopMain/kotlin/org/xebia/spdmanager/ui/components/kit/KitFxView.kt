@@ -16,7 +16,6 @@ fun KitFXView(kitFX: KitFX) {
     } else {
         Column(modifier = Modifier.padding(16.dp)) {
             Text("FX Type: ${kitFX.fx.fxType}", fontSize = 16.sp)
-            // Render parameters dynamically
             kitFX.fx.renderParameters()
         }
     }

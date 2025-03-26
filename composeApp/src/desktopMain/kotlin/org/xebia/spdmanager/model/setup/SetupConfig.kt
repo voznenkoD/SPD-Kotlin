@@ -1,27 +1,31 @@
 package org.xebia.spdmanager.model.setup
 
 import org.xebia.spdmanager.data.model.raw.system.SetupPrm
+import org.xebia.spdmanager.model.system.fx.common.SyncSwitch
 
 data class SetupConfig(
-    val lcdContrast: Int,
-    val lcdBrightness: Int,
-    val padIndication: PadIndication,
-    val tempoIndication: TempoIndication,
+    val lcdContrast: Int, //LCD section slider 1..10
+    val lcdBrightness: Int, //LCD section slider 0..10
+    val padIndication: PadIndication, //LCD section dropdown
+    val tempoIndication: TempoIndication, //LCD section dropdown
+    val dispMode: DispMode, //LCD section dropdown
+    val padLock: SyncSwitch, // Option section dropdown
+    val autoPowerOff: AutoOff, //Option section dropdown
+    val usbDevMode: UsbMidiMode, //Option Section dropdown
+    val midiCh: Int, //MIDI section Setup dropdown for 0..16
+    val midiSync: MidiSync, // MIDI section Setup enum dropdown
+    val localCtrl: SyncSwitch, // MIDI section Setup enum dropdown
+    val softThru: SyncSwitch, // MIDI section Setup enum dropdown
+    val usbMIDIThru: SyncSwitch, // MIDI section Setup enum dropdown
+    val midiPCCtrl: SyncSwitch, //MIDI section CTRL enum dropdown
+    val midiCCCtrl: SyncSwitch, //MIDI section CTRL enum dropdown
+    val midiFxSelCc: Int, //MIDI section CTRL slider 0..95
+    val mstrFxCtrl1Cc: Int, //MIDI section CTRL slider 0..95
+    val mstrFxCtrl2Cc: Int, //MIDI section CTRL slider 0..95
+    val multiView: Int,
+    val startupKit: Int,
     val fs1Polarity: FootSwitchPolarity,
     val fs2Polarity: FootSwitchPolarity,
-    val midiCh: Int,
-    val midiSync: MidiSync,
-    val localCtrl: LocalControl,
-    val softThru: LocalControl,
-    val midiPCCtrl: LocalControl,
-    val midiCCCtrl: LocalControl,
-    val usbMIDIThru: LocalControl,
-    val padLock: LocalControl,
-    val autoPowerOff: Int,
-    val dispMode: DispMode,
-    val multiView: Int,
-    val usbDevMode: UsbMidiMode,
-    val startupKit: Int,
     val intPads: List<IntPad>,
     val extPads: List<ExtPad>
 ) {
@@ -29,7 +33,8 @@ data class SetupConfig(
         fun fromValues(
             lcdContrast: Int, lcdBright: Int, padIllumi: Int, tempoIndi: Int,
             fs1Polarity: Int, fs2Polarity: Int, midiCh: Int, midiSync: Int, localCtrl: Int,
-            softThru: Int, midiPCCtrl: Int, midiCCCtrl: Int, usbMIDIThru: Int,
+            softThru: Int, midiPCCtrl: Int, midiCCCtrl: Int, midiFxSelCc: Int,
+            mstrFxCtrl1Cc: Int, mstrFxCtrl2Cc: Int, usbMIDIThru: Int,
             padLock: Int, autoPowerOff: Int, dispMode: Int, multiView: Int,
             usbDevMode: Int, startupKit: Int, intPads: List<List<Int>>, extPads: List<List<Int>>
         ) = SetupConfig(
@@ -41,13 +46,16 @@ data class SetupConfig(
             fs2Polarity = FootSwitchPolarity.fromValue(fs2Polarity),
             midiCh = midiCh,
             midiSync = MidiSync.fromValue(midiSync),
-            localCtrl = LocalControl.fromValue(localCtrl),
-            softThru = LocalControl.fromValue(softThru),
-            midiPCCtrl = LocalControl.fromValue(midiPCCtrl),
-            midiCCCtrl = LocalControl.fromValue(midiCCCtrl),
-            usbMIDIThru = LocalControl.fromValue(usbMIDIThru),
-            padLock = LocalControl.fromValue(padLock),
-            autoPowerOff = autoPowerOff,
+            localCtrl = SyncSwitch.fromValue(localCtrl),
+            softThru = SyncSwitch.fromValue(softThru),
+            midiPCCtrl = SyncSwitch.fromValue(midiPCCtrl),
+            midiCCCtrl = SyncSwitch.fromValue(midiCCCtrl),
+            midiFxSelCc = midiFxSelCc,
+            mstrFxCtrl1Cc = mstrFxCtrl1Cc,
+            mstrFxCtrl2Cc = mstrFxCtrl2Cc,
+            usbMIDIThru = SyncSwitch.fromValue(usbMIDIThru),
+            padLock = SyncSwitch.fromValue(padLock),
+            autoPowerOff = AutoOff.fromValue(autoPowerOff),
             dispMode = DispMode.fromValue(dispMode),
             multiView = multiView,
             usbDevMode = UsbMidiMode.fromValue(usbDevMode),
@@ -61,7 +69,7 @@ data class SetupConfig(
 
 data class ExtPad(
     val inputMode: InputMode,
-    val padType: Int, // Could be mapped to an enum if required
+    val padType: TrigType,
     val sens: Int,
     val threshold: Int,
     val curve: VeloCurve,
@@ -80,7 +88,7 @@ data class ExtPad(
             rimAdjust: Int, rimGain: Int, noiseCxl: Int
         ) = ExtPad(
             inputMode = InputMode.fromValue(inputMode),
-            padType = padType,
+            padType = TrigType.fromValue(padType),
             sens = sens,
             threshold = threshold,
             curve = VeloCurve.fromValue(curve),
@@ -113,7 +121,7 @@ enum class UsbMidiMode(val value: Int) {
     WAVEMGR(0), AUDIO_MIDI(1);
 
     companion object {
-        fun fromValue(value: Int) = values().find { it.value == value } ?: WAVEMGR
+        fun fromValue(value: Int) = entries.find { it.value == value } ?: WAVEMGR
     }
 }
 
@@ -121,7 +129,7 @@ enum class InputMode(val value: Int) {
     HEAD_RIM(0), TRIG_X2(1);
 
     companion object {
-        fun fromValue(value: Int) = values().find { it.value == value } ?: HEAD_RIM
+        fun fromValue(value: Int) = entries.find { it.value == value } ?: HEAD_RIM
     }
 }
 
@@ -129,7 +137,7 @@ enum class FootSwitchPolarity(val value: Int) {
     NORMAL(0), INVERSE(1);
 
     companion object {
-        fun fromValue(value: Int) = values().find { it.value == value } ?: NORMAL
+        fun fromValue(value: Int) = entries.find { it.value == value } ?: NORMAL
     }
 }
 
@@ -137,15 +145,15 @@ enum class MidiSync(val value: Int) {
     OFF(0), AUTO(1);
 
     companion object {
-        fun fromValue(value: Int) = values().find { it.value == value } ?: OFF
+        fun fromValue(value: Int) = entries.find { it.value == value } ?: OFF
     }
 }
 
-enum class LocalControl(val value: Int) {
-    OFF(0), ON(1);
+enum class AutoOff(val value: Int) {
+    OFF(0), FOUR_HRS(1);
 
     companion object {
-        fun fromValue(value: Int) = values().find { it.value == value } ?: ON
+        fun fromValue(value: Int) = entries.find { it.value == value } ?: OFF
     }
 }
 
@@ -154,7 +162,7 @@ enum class VeloCurve(val value: Int) {
     SPLINE(5), LOUD1(6), LOUD2(7);
 
     companion object {
-        fun fromValue(value: Int) = values().find { it.value == value } ?: LINEAR
+        fun fromValue(value: Int) = entries.find { it.value == value } ?: LINEAR
     }
 }
 
@@ -162,7 +170,7 @@ enum class PadIndication(val value: Int) {
     OFF(0), DYNAMIC(1), STATE(2), ALL_ON(3);
 
     companion object {
-        fun fromValue(value: Int) = values().find { it.value == value } ?: OFF
+        fun fromValue(value: Int) = entries.find { it.value == value } ?: OFF
     }
 }
 
@@ -170,7 +178,7 @@ enum class TempoIndication(val value: Int) {
     OFF(0), ON(1);
 
     companion object {
-        fun fromValue(value: Int) = values().find { it.value == value } ?: OFF
+        fun fromValue(value: Int) = entries.find { it.value == value } ?: OFF
     }
 }
 
@@ -178,7 +186,7 @@ enum class DispMode(val value: Int) {
     SUBNAME(0), LEVEL(1);
 
     companion object {
-        fun fromValue(value: Int) = values().find { it.value == value } ?: SUBNAME
+        fun fromValue(value: Int) = entries.find { it.value == value } ?: SUBNAME
     }
 }
 
@@ -192,13 +200,16 @@ fun SetupConfig.Companion.fromRaw(raw: SetupPrm): SetupConfig {
         fs2Polarity = FootSwitchPolarity.fromValue(raw.fs2Porality),
         midiCh = raw.midiCh,
         midiSync = MidiSync.fromValue(raw.midiSync),
-        localCtrl = LocalControl.fromValue(raw.localCtrl),
-        softThru = LocalControl.fromValue(raw.softThru),
-        midiPCCtrl = LocalControl.fromValue(raw.midiPCCtrl),
-        midiCCCtrl = LocalControl.fromValue(raw.midiCCCtrl),
-        usbMIDIThru = LocalControl.fromValue(raw.usbMIDIThru),
-        padLock = LocalControl.fromValue(raw.padLock),
-        autoPowerOff = raw.autoPowerOff,
+        localCtrl = SyncSwitch.fromValue(raw.localCtrl),
+        softThru = SyncSwitch.fromValue(raw.softThru),
+        midiPCCtrl = SyncSwitch.fromValue(raw.midiPCCtrl),
+        midiCCCtrl = SyncSwitch.fromValue(raw.midiCCCtrl),
+        midiFxSelCc = raw.mefctCCSel,
+        mstrFxCtrl1Cc = raw.mefctCCKnob1,
+        mstrFxCtrl2Cc = raw.mefctCCKnob2,
+        usbMIDIThru = SyncSwitch.fromValue(raw.usbMIDIThru),
+        padLock = SyncSwitch.fromValue(raw.padLock),
+        autoPowerOff = AutoOff.fromValue(raw.autoPowerOff),
         dispMode = DispMode.fromValue(raw.dispMode),
         multiView = raw.multiView,
         usbDevMode = UsbMidiMode.fromValue(raw.usbDevMode),

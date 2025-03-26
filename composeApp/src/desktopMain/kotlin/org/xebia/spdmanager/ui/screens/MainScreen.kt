@@ -1,24 +1,32 @@
 package org.xebia.spdmanager.ui.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import org.xebia.spdmanager.model.Device
+import androidx.compose.ui.unit.sp
+import org.xebia.spdmanager.LocalDeviceManager
 import org.xebia.spdmanager.model.Wave
 import org.xebia.spdmanager.model.kit.Kit
 import org.xebia.spdmanager.model.kit.pad.Pad
 import org.xebia.spdmanager.model.list.ListedWave
 import org.xebia.spdmanager.model.list.WaveListsHolder
+import org.xebia.spdmanager.ui.components.SelectFolderButton
 
 @Composable
-fun HomeScreen() {
+fun MainScreen() {
+    val deviceManager = LocalDeviceManager.current
+    val device by remember { derivedStateOf { deviceManager.device } }
+
+    val kits = device?.kits.orEmpty()
+    val waves = device?.waves.orEmpty()
+    val waveListsHolder = device?.waveLists ?: WaveListsHolder(emptyList(), emptyMap(), emptyMap())
+
     var selectedKit by remember { mutableStateOf<Kit?>(null) }
     var selectedWave by remember { mutableStateOf<Wave?>(null) }
     var selectedPad by remember { mutableStateOf<Pad?>(null) }
-    var selectedFolderPath by remember { mutableStateOf<String?>(null) }
-    var kits by remember { mutableStateOf<List<Kit>>(emptyList()) }
-    var waves by remember { mutableStateOf<List<Wave>>(emptyList()) }
-    var waveListsHolder by remember { mutableStateOf(WaveListsHolder(emptyList(), emptyMap(), emptyMap())) }
+    var selectedFolderPath by remember { mutableStateOf<String?>(device?.rootPath) }
 
     val onKitSelected: (Kit) -> Unit = { kit ->
         selectedKit = kit
@@ -29,15 +37,23 @@ fun HomeScreen() {
         selectedWave = waves.find { it.number == listedWave.number }
     }
 
-    val onOpenClicked: (String, Device) -> Unit = { folderPath, device ->
+    val onOpenClicked: (String) -> Unit = { folderPath ->
         selectedFolderPath = folderPath
-        kits = device.kits
-        waves = device.waves
-        waveListsHolder = device.waveLists
+        deviceManager.readDevice(folderPath)
     }
 
     val onPadSelected: (Pad) -> Unit = { pad ->
         selectedPad = pad
+    }
+
+    if (device == null) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            SelectFolderButton(onOpenClicked)
+        }
+        return
     }
 
     Row {
@@ -50,10 +66,12 @@ fun HomeScreen() {
                 onSelect = onPadSelected,
                 kit = selectedKit,
             )
-            WaveDetailsScreen(wave = selectedWave)
+            WaveDetailsScreen(wave = selectedWave, selectedFolderPath)
         }
+
         Column(Modifier.weight(0.3f).fillMaxHeight()) {
             ListsScreen(kits, waveListsHolder, onKitSelected, onWaveSelected, onOpenClicked)
+            Text("Selected Folder: $selectedFolderPath", fontSize = 12.sp)
         }
     }
 }
