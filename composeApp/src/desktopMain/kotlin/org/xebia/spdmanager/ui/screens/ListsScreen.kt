@@ -9,16 +9,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.xebia.spdmanager.LocalDeviceManager
 import org.xebia.spdmanager.model.Device
-import org.xebia.spdmanager.ui.tabs.KitTab
-import org.xebia.spdmanager.ui.tabs.WaveTab
+import org.xebia.spdmanager.model.list.ListedWave
+import org.xebia.spdmanager.model.list.WaveListsHolder
+import org.xebia.spdmanager.ui.tabs.KitListTab
+import org.xebia.spdmanager.ui.tabs.WaveListTab
 import javax.swing.JFileChooser
 import javax.swing.filechooser.FileSystemView
 
 @Composable
-fun ListsScreen(kits: List<Kit>, onItemSelected: (Kit) -> Unit, onOpenClicked: (String, Device) -> Unit) {
+fun ListsScreen(
+    kits: List<Kit>,
+    waveListsHolder: WaveListsHolder,
+    onKitSelected: (Kit) -> Unit,
+    onWaveSelected: (ListedWave) -> Unit,
+    onOpenClicked: (String, Device) -> Unit
+) {
     Column {
         Row(Modifier.weight(1f)) {
-            ListHeaderTabs(kits, onItemSelected)
+            ListHeaderTabs(kits, waveListsHolder, onKitSelected, onWaveSelected)
         }
         Row(Modifier.height(100.dp)) {
             SelectFolderSection(onOpenClicked)
@@ -27,7 +35,12 @@ fun ListsScreen(kits: List<Kit>, onItemSelected: (Kit) -> Unit, onOpenClicked: (
 }
 
 @Composable
-fun ListHeaderTabs(kits: List<Kit>, onItemSelected: (Kit) -> Unit) {
+fun ListHeaderTabs(
+    kits: List<Kit>,
+    waveListsHolder: WaveListsHolder,
+    onKitSelected: (Kit) -> Unit,
+    onWaveSelected: (ListedWave) -> Unit
+) {
     var selectedTab by remember { mutableStateOf(0) }
 
     val tabs = listOf("Kits", "Waves")
@@ -46,8 +59,8 @@ fun ListHeaderTabs(kits: List<Kit>, onItemSelected: (Kit) -> Unit) {
         }
 
         when (selectedTab) {
-            0 -> KitTab(kits, onItemSelected)
-            1 -> WaveTab()
+            0 -> KitListTab(kits, onKitSelected) { kit -> Text(text = kit.name, fontSize = 18.sp) }
+            1 -> WaveListTab(waveListsHolder, onWaveSelected)
         }
     }
 }

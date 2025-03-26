@@ -3,13 +3,8 @@ package org.xebia.spdmanager.ui.components.pad
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import org.xebia.spdmanager.model.system.fx.common.*
 import org.xebia.spdmanager.ui.components.common.ButtonRow
 import org.xebia.spdmanager.ui.components.common.DropdownSelector
 import org.xebia.spdmanager.model.kit.pad.MidiParams
@@ -21,51 +16,40 @@ import org.xebia.spdmanager.model.kit.pad.midi.PadCH
 @Composable
 fun MidiParamsView(midiParams: MidiParams) {
     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-        Text("MIDI Parameters", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-
-        // PadCH - Dropdown
         DropdownSelector(
             label = "Pad Channel",
             selectedItem = midiParams.padCH,
             items = getPadCHOptions(),
             onItemSelected = { newPadCH ->
-                // Handle Pad Channel change
             }
         )
 
-        // MidiNote - Dropdown
         DropdownSelector(
             label = "MIDI Note",
             selectedItem = midiParams.midiNote,
             items = getMidiNoteOptions(),
             onItemSelected = { newMidiNote ->
-                // Handle Midi Note change
             }
         )
 
-        // External Control - ButtonRow for enum
         ButtonRow(
             label = "External Control",
             items = ExternalControl.entries.toTypedArray(),
             selectedItem = midiParams.externalControl,
             onItemSelected = { newExternalControl ->
-                // Handle external control change
             }
         )
 
-        // Gate - Dropdown for Gate values
         DropdownSelector(
             label = "Gate",
             selectedItem = midiParams.gate,
             items = getGateOptions(),
             onItemSelected = { newGate ->
-                // Handle Gate change
             }
         )
     }
 }
 
-// Function to generate options for PadCH (Dropdown)
 fun getPadCHOptions(): List<PadCH> {
     return listOf(
         PadCH.Global,
@@ -107,7 +91,6 @@ fun getMidiNoteOptions(): List<MidiNote> {
         MidiNote.Channel(13),
         MidiNote.Channel(14),
         MidiNote.Channel(15),
-        // Continue with other MidiNote numbers from 0 to 127
     )
 }
 

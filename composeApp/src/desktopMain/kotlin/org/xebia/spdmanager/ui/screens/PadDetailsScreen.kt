@@ -24,21 +24,12 @@ fun PadDetailsScreen(pad: Pad?) {
     // Show message if no Pad is selected
     selectedPad?.let {
         Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-            Text("Pad Details", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-
-            // Main Sound Section
             SoundSection(title = "Main", sound = it.main)
-
-            // Sub Sound Section
             SoundSection(title = "Sub", sound = it.sub)
-
-            // Mute Group Section (Button Row)
             MuteGroupSelector(
                 selectedGroup = it.muteGroup,
                 onGroupSelected = { newGroup -> selectedPad = it.copy(muteGroup = newGroup) }
             )
-
-            // Tempo Sync Section (Button Row)
             ButtonRow(
                 label = "Tempo Sync",
                 items = SyncSwitch.entries.toTypedArray(),

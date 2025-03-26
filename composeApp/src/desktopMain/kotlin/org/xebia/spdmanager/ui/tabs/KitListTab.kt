@@ -4,13 +4,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import org.xebia.spdmanager.ui.components.lists.ListView
 import org.xebia.spdmanager.model.kit.Kit
-
+import org.xebia.spdmanager.ui.components.lists.GenericListView
 
 @Composable
-fun KitTab(kits: List<Kit>, onItemSelected: (Kit) -> Unit) {
+fun KitListTab(
+    items: List<Kit>,
+    onItemSelected: (Kit) -> Unit,
+    content: @Composable (Kit) -> Unit
+) {
     Box(Modifier.fillMaxSize()) {
-        ListView(kits, onItemSelected)
+        GenericListView(items, onItemSelected, content)
     }
 }
