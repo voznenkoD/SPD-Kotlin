@@ -26,12 +26,11 @@ fun PadsSetupScreen(onSelect: (PadNumber) -> Unit) {
     Surface(
             color = Color.Gray,
             modifier = Modifier
-                .padding(8.dp)
-                .height(800.dp)
+                .height(500.dp)
         ) {
             Column(
                 modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
+                verticalArrangement = Arrangement.spacedBy(2.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 LazyVerticalGrid(
@@ -81,8 +80,8 @@ fun PadItem(padNumber: PadNumber, onSelect: (PadNumber) -> Unit, isFS: Boolean =
         color = Color.DarkGray,
         shape = RoundedCornerShape(8.dp),
         modifier = Modifier
-            .height(if (isFS) 80.dp else 160.dp)
-            .then(if (isFS) Modifier.width(180.dp) else Modifier)
+            .height(if (isFS) 50.dp else 100.dp)
+            .then(if (isFS) Modifier.width(30.dp) else Modifier.width(20.dp))
             .padding(4.dp)
             .clickable { onSelect(padNumber) }
             .pointerHoverIcon(PointerIcon.Hand)
@@ -94,7 +93,7 @@ fun PadItem(padNumber: PadNumber, onSelect: (PadNumber) -> Unit, isFS: Boolean =
             Text(
                 text = padNumber.name.replace("_", " "),
                 color = Color.Yellow,
-                fontSize = 12.sp,
+                fontSize = 20.sp,
                 textAlign = TextAlign.End,
                 modifier = Modifier
                     .padding(4.dp)

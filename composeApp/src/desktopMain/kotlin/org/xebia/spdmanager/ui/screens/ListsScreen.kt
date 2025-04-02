@@ -5,32 +5,20 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import org.xebia.spdmanager.model.kit.Kit
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.xebia.spdmanager.model.list.ListedWave
 import org.xebia.spdmanager.model.list.WaveListsHolder
-import org.xebia.spdmanager.ui.components.SelectFolderButton
 import org.xebia.spdmanager.ui.tabs.KitListTab
 import org.xebia.spdmanager.ui.tabs.WaveListTab
-import javax.swing.JFileChooser
-import javax.swing.filechooser.FileSystemView
 
 @Composable
 fun ListsScreen(
     kits: List<Kit>,
     waveListsHolder: WaveListsHolder,
     onKitSelected: (Kit) -> Unit,
-    onWaveSelected: (ListedWave) -> Unit,
-    onOpenClicked: (String) -> Unit
+    onWaveSelected: (ListedWave) -> Unit
 ) {
-    Column {
-        Row(Modifier.weight(1f)) {
-            ListHeaderTabs(kits, waveListsHolder, onKitSelected, onWaveSelected)
-        }
-        Row(Modifier.height(100.dp)) {
-            SelectFolderSection(onOpenClicked)
-        }
-    }
+    ListHeaderTabs(kits, waveListsHolder, onKitSelected, onWaveSelected)
 }
 
 @Composable
@@ -61,23 +49,5 @@ fun ListHeaderTabs(
             0 -> KitListTab(kits, onKitSelected) { kit -> Text(text = kit.name, fontSize = 18.sp) }
             1 -> WaveListTab(waveListsHolder, onWaveSelected)
         }
-    }
-}
-
-@Composable
-fun SelectFolderSection(onOpenClicked: (String) -> Unit) {
-            SelectFolderButton(onOpenClicked)
-}
-
-fun openFolderDialog(onFolderSelected: (String) -> Unit) {
-    val fileChooser = JFileChooser(FileSystemView.getFileSystemView()).apply {
-        fileSelectionMode = JFileChooser.DIRECTORIES_ONLY // Restrict selection to folders
-        isAcceptAllFileFilterUsed = false
-    }
-
-    val result = fileChooser.showOpenDialog(null) // Open the dialog
-    if (result == JFileChooser.APPROVE_OPTION) {
-        val selectedFolder = fileChooser.selectedFile.absolutePath
-        onFolderSelected(selectedFolder)
     }
 }

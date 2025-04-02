@@ -8,5 +8,9 @@ enum class SyncSwitch(val value: Int) {
         fun fromValue(value: Int): SyncSwitch {
             return entries.find { it.value == value } ?: OFF
         }
+
+        fun fromBoolean(value: Boolean): SyncSwitch {
+            return if (value) ON else OFF
+        }
     }
 }

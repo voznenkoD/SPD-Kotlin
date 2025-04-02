@@ -25,10 +25,7 @@ fun PadLinkSelector(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
     ) {
-        Text("Pad Link:", fontSize = 16.sp, modifier = Modifier.weight(1f))
-
         Box(
             modifier = Modifier
                 .weight(2f)
@@ -36,14 +33,14 @@ fun PadLinkSelector(
                 .padding(4.dp)
         ) {
             DropdownSelector(
-                label = "From",
+                label = "Pad Link from :",
                 selectedItem = padLink1,
                 onItemSelected = onPadLink1Selected,
                 items = PadNumber.entries
             )
         }
 
-        Text("-->", fontSize = 20.sp, modifier = Modifier.padding(horizontal = 8.dp))
+        Text("---->", fontSize = 20.sp, modifier = Modifier.padding(horizontal = 8.dp))
 
         Box(
             modifier = Modifier
@@ -52,7 +49,7 @@ fun PadLinkSelector(
                 .padding(4.dp)
         ) {
             DropdownSelector(
-                label = "To",
+                label = "Pad Link to :",
                 selectedItem = padLink2,
                 onItemSelected = onPadLink2Selected,
                 items = PadNumber.entries

@@ -18,9 +18,7 @@ fun GroupedDetailRow(label1: String, value1: String, label2: String, value2: Str
         Text(text = label2, fontSize = 16.sp, modifier = Modifier.weight(1f))
         Text(text = value2, fontSize = 16.sp, modifier = Modifier.weight(2f))
 
-        if (label3.isNotEmpty()) {
-            Text(text = label3, fontSize = 16.sp, modifier = Modifier.weight(1f))
-            Text(text = value3, fontSize = 16.sp, modifier = Modifier.weight(2f))
-        }
+        Text(text = label3, fontSize = 16.sp, modifier = Modifier.weight(1f))
+        Text(text = value3, fontSize = 16.sp, modifier = Modifier.weight(2f))
     }
 }

@@ -7,7 +7,7 @@ data class SetupConfig(
     val lcdContrast: Int, //LCD section slider 1..10
     val lcdBrightness: Int, //LCD section slider 0..10
     val padIndication: PadIndication, //LCD section dropdown
-    val tempoIndication: TempoIndication, //LCD section dropdown
+    val tempoIndication: SyncSwitch, //LCD section dropdown
     val dispMode: DispMode, //LCD section dropdown
     val padLock: SyncSwitch, // Option section dropdown
     val autoPowerOff: AutoOff, //Option section dropdown
@@ -41,7 +41,7 @@ data class SetupConfig(
             lcdContrast = lcdContrast,
             lcdBrightness = lcdBright,
             padIndication = PadIndication.fromValue(padIllumi),
-            tempoIndication = TempoIndication.fromValue(tempoIndi),
+            tempoIndication = SyncSwitch.fromValue(tempoIndi),
             fs1Polarity = FootSwitchPolarity.fromValue(fs1Polarity),
             fs2Polarity = FootSwitchPolarity.fromValue(fs2Polarity),
             midiCh = midiCh,
@@ -174,14 +174,6 @@ enum class PadIndication(val value: Int) {
     }
 }
 
-enum class TempoIndication(val value: Int) {
-    OFF(0), ON(1);
-
-    companion object {
-        fun fromValue(value: Int) = entries.find { it.value == value } ?: OFF
-    }
-}
-
 enum class DispMode(val value: Int) {
     SUBNAME(0), LEVEL(1);
 
@@ -195,7 +187,7 @@ fun SetupConfig.Companion.fromRaw(raw: SetupPrm): SetupConfig {
         lcdContrast = raw.lcdContrast,
         lcdBrightness = raw.lcdBright,
         padIndication = PadIndication.fromValue(raw.padIllumi),
-        tempoIndication = TempoIndication.fromValue(raw.tempoIndi),
+        tempoIndication = SyncSwitch.fromValue(raw.tempoIndi),
         fs1Polarity = FootSwitchPolarity.fromValue(raw.fs1Porality),
         fs2Polarity = FootSwitchPolarity.fromValue(raw.fs2Porality),
         midiCh = raw.midiCh,

@@ -11,6 +11,7 @@ import org.xebia.spdmanager.model.system.fx.common.LowCut
 import org.xebia.spdmanager.model.system.fx.common.SyncSwitch
 import org.xebia.spdmanager.model.system.fx.subtypes.StereoDelay
 import org.xebia.spdmanager.ui.components.common.ButtonRow
+import org.xebia.spdmanager.ui.components.common.ButtonRowCompact
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 
 @Composable
@@ -26,7 +27,6 @@ fun StereoDelayView(stereoDelay: StereoDelay) {
     Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
         Text("Stereo Delay", fontSize = 18.sp)
 
-        // Replace with ButtonRow for Delay Type
         ButtonRow(
             label = "Delay Type",
             selectedItem = selectedType,
@@ -34,7 +34,6 @@ fun StereoDelayView(stereoDelay: StereoDelay) {
             onItemSelected = { selectedType = it }
         )
 
-        // Replace with ButtonRow for Sync Switch
         ButtonRow(
             label = "Sync Switch",
             selectedItem = selectedSyncSW,
@@ -42,7 +41,6 @@ fun StereoDelayView(stereoDelay: StereoDelay) {
             onItemSelected = { selectedSyncSW = it }
         )
 
-        // Delay Time Slider
         SliderWithLabel(
             label = "Delay Time",
             value = delayTime,
@@ -50,7 +48,6 @@ fun StereoDelayView(stereoDelay: StereoDelay) {
             valueRange = 0f..100f
         )
 
-        // Tap Time Slider
         SliderWithLabel(
             label = "Tap Time",
             value = tapTime,
@@ -58,23 +55,20 @@ fun StereoDelayView(stereoDelay: StereoDelay) {
             valueRange = 0f..100f
         )
 
-        // Replace with ButtonRow for Low Cut
-        ButtonRow(
+        ButtonRowCompact(
             label = "Low Cut",
             selectedItem = selectedLowCut,
             items = LowCut.entries.toTypedArray(),
             onItemSelected = { selectedLowCut = it }
         )
 
-        // Replace with ButtonRow for High Cut
-        ButtonRow(
+        ButtonRowCompact(
             label = "High Cut",
             selectedItem = selectedHighCut,
             items = HighCut.entries.toTypedArray(),
             onItemSelected = { selectedHighCut = it }
         )
 
-        // Direct Level Slider
         SliderWithLabel(
             label = "Direct Level",
             value = directLevel,

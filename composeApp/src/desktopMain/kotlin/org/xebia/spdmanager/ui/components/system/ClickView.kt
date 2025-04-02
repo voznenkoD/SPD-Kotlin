@@ -9,6 +9,7 @@ import androidx.compose.ui.unit.dp
 import org.xebia.spdmanager.model.Wave
 import org.xebia.spdmanager.model.system.*
 import org.xebia.spdmanager.ui.components.common.DropdownSelector
+import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 
 @Composable
 fun ClickView(clickConfig: ClickConfig, waves: List<Wave>) {
@@ -35,7 +36,6 @@ fun ClickView(clickConfig: ClickConfig, waves: List<Wave>) {
             }
         }
 
-
         if (selectedSoundGroup == SoundGroup.PRESET) {
             DropdownSelector(
                 label = "Sound",
@@ -59,7 +59,6 @@ fun ClickView(clickConfig: ClickConfig, waves: List<Wave>) {
             items = Interval.entries.toList()
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
         ClickPanSlider("Pan", selectedPan) { selectedPan = it }
 
         DropdownSelector(
@@ -69,12 +68,11 @@ fun ClickView(clickConfig: ClickConfig, waves: List<Wave>) {
             items = Output.entries.toList()
         )
 
-        Text("Level: ${level.toInt()}", style = MaterialTheme.typography.bodyLarge)
-        Slider(
+        SliderWithLabel(
+            label = "Level",
             value = level,
             onValueChange = { level = it },
             valueRange = 0f..100f,
-            modifier = Modifier.fillMaxWidth()
         )
     }
 }

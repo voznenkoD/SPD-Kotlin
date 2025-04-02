@@ -13,6 +13,8 @@ import org.xebia.spdmanager.model.kit.pad.Pad
 import org.xebia.spdmanager.model.kit.pad.PadNumber
 import org.xebia.spdmanager.model.system.fx.common.SyncSwitch
 import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
+import org.xebia.spdmanager.ui.components.common.IntStepSliderWithLabel
+import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 import org.xebia.spdmanager.ui.components.kit.KitFXView
 import org.xebia.spdmanager.ui.components.kit.PadLinkSelector
 
@@ -55,7 +57,6 @@ fun KitScreen(kit: Kit?) {
     var fx1 by remember { mutableStateOf(kit?.fx1 ?: KitFX(SyncSwitch.OFF, FxEffect.fromValues(0, listOf(0)))) }
     var fx2 by remember { mutableStateOf(kit?.fx2 ?: KitFX(SyncSwitch.OFF, FxEffect.fromValues(0, listOf(0))))  }
 
-
     LaunchedEffect(kit) {
         name = kit?.name ?: ""
         subName = kit?.subName ?: ""
@@ -70,52 +71,36 @@ fun KitScreen(kit: Kit?) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+            .padding(5.dp),
+        verticalArrangement = Arrangement.spacedBy(5.dp)
     ) {
-        // Name Input Field
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("Name: ", fontSize = 14.sp, modifier = Modifier.weight(1f))
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            Text("Name: ", fontSize = 14.sp, modifier = Modifier.weight(0.5f))
             TextField(
                 value = name,
                 onValueChange = { name = it },
-                modifier = Modifier.weight(2f)
+                modifier = Modifier.weight(1f)
             )
-        }
-
-        // SubName Input Field
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("Sub Name: ", fontSize = 14.sp, modifier = Modifier.weight(1f))
+            Text("Sub Name: ", fontSize = 14.sp, modifier = Modifier.weight(0.5f))
             TextField(
                 value = subName,
                 onValueChange = { subName = it },
-                modifier = Modifier.weight(2f)
+                modifier = Modifier.weight(1f)
             )
         }
+        SliderWithLabel(
+            label = "Tempo",
+            value = tempo.toFloat(),
+            onValueChange = { tempo = it.toDouble() },
+            valueRange = 20f..260f
+        )
 
-        // Tempo Slider (20.0 - 260.0)
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("Tempo: ", fontSize = 14.sp, modifier = Modifier.weight(1f))
-            Slider(
-                value = tempo.toFloat(),
-                onValueChange = { tempo = it.toDouble() },
-                valueRange = 20f..260f,
-                modifier = Modifier.weight(2f)
-            )
-            Text("${tempo.toInt()}", fontSize = 18.sp)
-        }
-
-        // Volume Slider (0 - 100)
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("Volume: ", fontSize = 14.sp, modifier = Modifier.weight(1f))
-            Slider(
-                value = volume.toFloat(),
-                onValueChange = { volume = it.toInt() },
-                valueRange = 0f..100f,
-                modifier = Modifier.weight(2f)
-            )
-            Text("${volume.toInt()}", fontSize = 18.sp)
-        }
+        IntStepSliderWithLabel(
+            label = "Volume",
+            value = volume,
+            onValueChange = { volume = it },
+            range = 0..100
+        )
 
         PadLinkSelector(
             padLink1 = padLink1,
@@ -141,7 +126,5 @@ fun KitScreen(kit: Kit?) {
             0 -> KitFXView(fx1)
             1 -> KitFXView(fx2)
         }
-
-        Spacer(modifier = Modifier.fillMaxSize())
     }
 }

@@ -10,11 +10,13 @@ import org.xebia.spdmanager.ui.components.common.ButtonRow
 
 @Composable
 fun PadModeView(padMode: PadMode) {
+    var mode by remember { mutableStateOf(padMode) }
+
     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
         ButtonRow(
             label = "Template",
             items = PadTemplate.entries.toTypedArray(),
-            selectedItem = padMode.template,
+            selectedItem = mode.template,
             onItemSelected = { newTemplate ->
             }
         )
@@ -22,7 +24,7 @@ fun PadModeView(padMode: PadMode) {
         ButtonRow(
             label = "Loop",
             items = PadLoop.entries.toTypedArray(),
-            selectedItem = padMode.loop,
+            selectedItem = mode.loop,
             onItemSelected = { newLoop ->
                 // Handle loop selection
             }
@@ -31,7 +33,7 @@ fun PadModeView(padMode: PadMode) {
         ButtonRow(
             label = "Trigger Type",
             items = TrigType.entries.toTypedArray(),
-            selectedItem = padMode.trigType,
+            selectedItem = mode.trigType,
             onItemSelected = { newTrigType ->
             }
         )
@@ -39,7 +41,7 @@ fun PadModeView(padMode: PadMode) {
         ButtonRow(
             label = "Dynamics",
             items = SyncSwitch.entries.toTypedArray(),
-            selectedItem = padMode.dynamics,
+            selectedItem = mode.dynamics,
             onItemSelected = { newDynamics ->
             }
         )
@@ -47,7 +49,7 @@ fun PadModeView(padMode: PadMode) {
         ButtonRow(
             label = "PolyMono",
             items = PolyMono.entries.toTypedArray(),
-            selectedItem = padMode.polyMono,
+            selectedItem = mode.polyMono,
             onItemSelected = { newPolyMono ->
             }
         )

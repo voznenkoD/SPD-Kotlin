@@ -35,7 +35,7 @@ kotlin {
 
 compose.desktop {
     application {
-        mainClass = "org.xebia.spdmanager.MainKt"
+        mainClass = "org.xebia.spdmanager.AppKt"
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)

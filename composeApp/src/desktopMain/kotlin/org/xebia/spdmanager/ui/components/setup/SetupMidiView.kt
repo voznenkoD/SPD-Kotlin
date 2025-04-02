@@ -8,6 +8,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.xebia.spdmanager.model.setup.*
 import org.xebia.spdmanager.model.system.fx.common.SyncSwitch
+import org.xebia.spdmanager.ui.components.common.DropdownSelector
+import org.xebia.spdmanager.ui.components.common.IntStepSliderWithLabel
+import org.xebia.spdmanager.ui.components.common.SwitchWithLabel
 
 @Composable
 fun SetupMidiView(setupConfig: SetupConfig, onUpdate: (SetupConfig) -> Unit) {
@@ -23,85 +26,76 @@ fun SetupMidiView(setupConfig: SetupConfig, onUpdate: (SetupConfig) -> Unit) {
     var mstrFxCtrl2Cc by remember { mutableStateOf(setupConfig.mstrFxCtrl2Cc) } // MIDI CTRL slider (0..95)
 
     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-        Text("MIDI Setup", fontSize = 12.sp, modifier = Modifier.padding(bottom = 5.dp))
-
-        Row(modifier = Modifier.weight(0.5f).fillMaxWidth().padding(5.dp)) {
-            DropdownWithLabel(
+        Row(modifier = Modifier.fillMaxWidth()) {
+            DropdownSelector(
                 label = "MIDI Channel",
-                selected = midiCh,
-                options = (0..16).toList(),
-                onSelected = { midiCh = it; onUpdate(setupConfig.copy(midiCh = it)) }
+                selectedItem = midiCh,
+                items = (0..16).toList(),
+                onItemSelected = { midiCh = it; onUpdate(setupConfig.copy(midiCh = it)) }
             )
+            DropdownSelector(
+                label = "MIDI Sync",
+                selectedItem = midiSync,
+                items = MidiSync.entries,
+                onItemSelected = { midiSync = it; onUpdate(setupConfig.copy(midiSync = it)) }
+            )
+        }
+        Row (
+            modifier = Modifier
+                .weight(1f)
+                .height(60.dp)
+        ) {
+                SwitchWithLabel("Local Control", localCtrl) {
+                    localCtrl = SyncSwitch.fromBoolean(it);
+                    onUpdate(setupConfig.copy(localCtrl = SyncSwitch.fromBoolean(it)))
+                }
 
+                SwitchWithLabel("Soft Thru", softThru) {
+                    softThru = SyncSwitch.fromBoolean(it);
+                    onUpdate(setupConfig.copy(softThru = SyncSwitch.fromBoolean(it)))
+                }
+
+                SwitchWithLabel("USB MIDI Thru", usbMIDIThru) {
+                    usbMIDIThru = SyncSwitch.fromBoolean(it);
+                    onUpdate(setupConfig.copy(usbMIDIThru = SyncSwitch.fromBoolean(it)))
+                }
+
+            }
+        Row(
+            modifier = Modifier
+                .weight(1f)
+                .height(60.dp)
+        ) {
+            SwitchWithLabel("MIDI PC Control", midiPCCtrl) {
+                midiPCCtrl = SyncSwitch.fromBoolean(it);
+                onUpdate(setupConfig.copy(midiPCCtrl = SyncSwitch.fromBoolean(it)))
+            }
+            SwitchWithLabel("MIDI CC Control", midiCCCtrl) {
+                midiCCCtrl = SyncSwitch.fromBoolean(it);
+                onUpdate(setupConfig.copy(midiCCCtrl = SyncSwitch.fromBoolean(it)))
+            }
         }
 
 
-        DropdownWithLabel(
-            label = "MIDI Sync",
-            selected = midiSync,
-            options = MidiSync.entries,
-            onSelected = { midiSync = it; onUpdate(setupConfig.copy(midiSync = it)) }
-        )
-
-        DropdownWithLabel(
-            label = "Local Control",
-            selected = localCtrl,
-            options = SyncSwitch.entries,
-            onSelected = { localCtrl = it; onUpdate(setupConfig.copy(localCtrl = it)) }
-        )
-
-        DropdownWithLabel(
-            label = "Soft Thru",
-            selected = softThru,
-            options = SyncSwitch.entries,
-            onSelected = { softThru = it; onUpdate(setupConfig.copy(softThru = it)) }
-        )
-
-        DropdownWithLabel(
-            label = "USB MIDI Thru",
-            selected = usbMIDIThru,
-            options = SyncSwitch.entries,
-            onSelected = { usbMIDIThru = it; onUpdate(setupConfig.copy(usbMIDIThru = it)) }
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // MIDI Control Section
-        Text("MIDI Control", fontSize = 18.sp, modifier = Modifier.padding(bottom = 8.dp))
-
-        DropdownWithLabel(
-            label = "MIDI PC Control",
-            selected = midiPCCtrl,
-            options = SyncSwitch.entries,
-            onSelected = { midiPCCtrl = it; onUpdate(setupConfig.copy(midiPCCtrl = it)) }
-        )
-
-        DropdownWithLabel(
-            label = "MIDI CC Control",
-            selected = midiCCCtrl,
-            options = SyncSwitch.entries,
-            onSelected = { midiCCCtrl = it; onUpdate(setupConfig.copy(midiCCCtrl = it)) }
-        )
-
-        SliderWithLabel(
+        IntStepSliderWithLabel(
             label = "MIDI FX Select CC",
-            value = midiFxSelCc.toFloat(),
-            valueRange = 0f..95f,
-            onValueChange = { midiFxSelCc = it.toInt(); onUpdate(setupConfig.copy(midiFxSelCc = it.toInt())) }
+            value = midiFxSelCc,
+            range = 0..95,
+            onValueChange = { midiFxSelCc = it.toInt(); onUpdate(setupConfig.copy(midiFxSelCc = it)) }
         )
 
-        SliderWithLabel(
+        IntStepSliderWithLabel(
             label = "Master FX Control 1 CC",
-            value = mstrFxCtrl1Cc.toFloat(),
-            valueRange = 0f..95f,
-            onValueChange = { mstrFxCtrl1Cc = it.toInt(); onUpdate(setupConfig.copy(mstrFxCtrl1Cc = it.toInt())) }
+            value = mstrFxCtrl1Cc,
+            range = 0..95,
+            onValueChange = { mstrFxCtrl1Cc = it; onUpdate(setupConfig.copy(mstrFxCtrl1Cc = it)) }
         )
 
-        SliderWithLabel(
+        IntStepSliderWithLabel(
             label = "Master FX Control 2 CC",
-            value = mstrFxCtrl2Cc.toFloat(),
-            valueRange = 0f..95f,
-            onValueChange = { mstrFxCtrl2Cc = it.toInt(); onUpdate(setupConfig.copy(mstrFxCtrl2Cc = it.toInt())) }
+            value = mstrFxCtrl2Cc,
+            range = 0..95,
+            onValueChange = { mstrFxCtrl2Cc = it; onUpdate(setupConfig.copy(mstrFxCtrl2Cc = it)) }
         )
     }
 }

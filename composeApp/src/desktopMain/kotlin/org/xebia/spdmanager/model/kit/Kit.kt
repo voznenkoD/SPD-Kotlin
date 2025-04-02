@@ -34,5 +34,9 @@ data class Kit(
 
             return Kit(name, subName, tempo, rawKit.Level, padLink, fx1, fx2, pads)
         }
+
+        fun formatKitNumber(kitNumber: Int): String {
+            return "%03d".format(kitNumber)
+        }
     }
 }

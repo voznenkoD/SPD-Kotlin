@@ -1,8 +1,10 @@
 package org.xebia.spdmanager.ui.screens
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import org.xebia.spdmanager.LocalDeviceManager
 import org.xebia.spdmanager.model.kit.pad.PadNumber
@@ -20,9 +22,9 @@ fun SetupScreen() {
     var padFsControl by remember { mutableStateOf(device!!.systemConfig.padFsControl) }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        Row(modifier = Modifier.weight(0.7f).fillMaxWidth().padding(5.dp)) {
+        Row(modifier = Modifier.weight(0.6f).fillMaxWidth()) {
             Column(
-                modifier = Modifier.weight(0.2f).fillMaxHeight().padding(8.dp)
+                modifier = Modifier.weight(0.2f).fillMaxHeight().border(width = 2.dp, color = Color.DarkGray)
             ) {
                 SetupGeneralView(currentSetupConfig) { updatedConfig ->
                     currentSetupConfig = updatedConfig
@@ -31,13 +33,13 @@ fun SetupScreen() {
 
             }
             Column(
-                modifier = Modifier.weight(0.6f).fillMaxHeight().padding(8.dp)
+                modifier = Modifier.weight(0.5f).fillMaxHeight().border(width = 2.dp, color = Color.DarkGray)
             ) {
                 PadsSetupScreen(onSelect = { selectedPad = it })
             }
 
             Column(
-                modifier = Modifier.weight(0.2f).fillMaxHeight().padding(8.dp)
+                modifier = Modifier.weight(0.3f).fillMaxHeight().border(width = 2.dp, color = Color.DarkGray)
             ) {
                 SetupMidiView(setupConfig = currentSetupConfig) { updatedConfig ->
                     currentSetupConfig = updatedConfig
@@ -45,7 +47,7 @@ fun SetupScreen() {
                 }
             }
         }
-        Row(modifier = Modifier.weight(0.3f).fillMaxWidth().padding(5.dp)) {
+        Row(modifier = Modifier.weight(0.4f).fillMaxWidth().border(width = 2.dp, color = Color.DarkGray)) {
             PadSetupView(currentSetupConfig, selectedPad, padFsControl.get(selectedPad)!!)
         }
     }

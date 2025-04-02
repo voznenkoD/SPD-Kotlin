@@ -1,24 +1,22 @@
 package org.xebia.spdmanager.ui.components.setup
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import org.xebia.spdmanager.model.setup.SetupConfig
 import org.xebia.spdmanager.model.setup.PadIndication
-import org.xebia.spdmanager.model.setup.TempoIndication
 import org.xebia.spdmanager.model.setup.DispMode
 import org.xebia.spdmanager.model.setup.AutoOff
 import org.xebia.spdmanager.model.setup.UsbMidiMode
 import org.xebia.spdmanager.model.system.fx.common.SyncSwitch
+import org.xebia.spdmanager.ui.components.common.DropdownSelector
+import org.xebia.spdmanager.ui.components.common.SliderWithLabel
+import org.xebia.spdmanager.ui.components.common.SwitchWithLabel
 
 @Composable
 fun SetupGeneralView(setupConfig: SetupConfig, onUpdate: (SetupConfig) -> Unit) {
     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-        Text("LCD Settings", fontSize = 18.sp, modifier = Modifier.padding(bottom = 8.dp))
-
         SliderWithLabel(
             label = "LCD Contrast",
             value = setupConfig.lcdContrast.toFloat(),
@@ -33,81 +31,46 @@ fun SetupGeneralView(setupConfig: SetupConfig, onUpdate: (SetupConfig) -> Unit) 
             onValueChange = { onUpdate(setupConfig.copy(lcdBrightness = it.toInt())) }
         )
 
-        DropdownWithLabel(
+        DropdownSelector(
             label = "Pad Indication",
-            selected = setupConfig.padIndication,
-            options = PadIndication.entries,
-            onSelected = { onUpdate(setupConfig.copy(padIndication = it)) }
+            selectedItem = setupConfig.padIndication,
+            items = PadIndication.entries,
+            onItemSelected = { onUpdate(setupConfig.copy(padIndication = it)) }
         )
 
-        DropdownWithLabel(
-            label = "Tempo Indication",
-            selected = setupConfig.tempoIndication,
-            options = TempoIndication.entries,
-            onSelected = { onUpdate(setupConfig.copy(tempoIndication = it)) }
-        )
-
-        DropdownWithLabel(
+        DropdownSelector(
             label = "Display Mode",
-            selected = setupConfig.dispMode,
-            options = DispMode.entries,
-            onSelected = { onUpdate(setupConfig.copy(dispMode = it)) }
+            selectedItem = setupConfig.dispMode,
+            items = DispMode.entries,
+            onItemSelected = { onUpdate(setupConfig.copy(dispMode = it)) }
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Option Section
-        Text("Option Settings", fontSize = 18.sp, modifier = Modifier.padding(bottom = 8.dp))
+        SwitchWithLabel(
+            label = "Tempo Indication",
+            syncSwitch = setupConfig.tempoIndication,
+            onValueChange = { onUpdate(setupConfig.copy(tempoIndication = SyncSwitch.fromBoolean(it))) }
+        )
 
-        DropdownWithLabel(
+        SwitchWithLabel(
             label = "Pad Lock",
-            selected = setupConfig.padLock,
-            options = SyncSwitch.entries,
-            onSelected = { onUpdate(setupConfig.copy(padLock = it)) }
+            syncSwitch = setupConfig.padLock,
+            onValueChange = { onUpdate(setupConfig.copy(padLock = SyncSwitch.fromBoolean(it))) }
         )
 
-        DropdownWithLabel(
+        DropdownSelector(
             label = "Auto Power Off",
-            selected = setupConfig.autoPowerOff,
-            options = AutoOff.entries,
-            onSelected = { onUpdate(setupConfig.copy(autoPowerOff = it)) }
+            selectedItem = setupConfig.autoPowerOff,
+            items = AutoOff.entries,
+            onItemSelected = { onUpdate(setupConfig.copy(autoPowerOff = it)) }
         )
 
-        DropdownWithLabel(
+        DropdownSelector(
             label = "USB Device Mode",
-            selected = setupConfig.usbDevMode,
-            options = UsbMidiMode.entries,
-            onSelected = { onUpdate(setupConfig.copy(usbDevMode = it)) }
+            selectedItem = setupConfig.usbDevMode,
+            items = UsbMidiMode.entries,
+            onItemSelected = { onUpdate(setupConfig.copy(usbDevMode = it)) }
         )
-    }
-}
-
-@Composable
-fun SliderWithLabel(label: String, value: Float, valueRange: ClosedFloatingPointRange<Float>, onValueChange: (Float) -> Unit) {
-    Column {
-        Text("$label: ${value.toInt()}", fontSize = 14.sp)
-        Slider(value = value, onValueChange = onValueChange, valueRange = valueRange)
-    }
-}
-
-@Composable
-fun <T> DropdownWithLabel(label: String, selected: T, options: List<T>, onSelected: (T) -> Unit) {
-    var expanded by remember { mutableStateOf(false) }
-
-    Column {
-        Text(label, fontSize = 14.sp)
-        Box {
-            Button(onClick = { expanded = true }) {
-                Text(selected.toString())
-            }
-            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                options.forEach { option ->
-                    DropdownMenuItem(text = { Text(option.toString()) }, onClick = {
-                        onSelected(option)
-                        expanded = false
-                    })
-                }
-            }
-        }
     }
 }

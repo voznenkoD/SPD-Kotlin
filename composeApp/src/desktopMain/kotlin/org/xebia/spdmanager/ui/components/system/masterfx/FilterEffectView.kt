@@ -13,8 +13,8 @@ import org.xebia.spdmanager.model.system.fx.common.*
 import org.xebia.spdmanager.model.system.fx.mainTypes.FilterEffect
 import org.xebia.spdmanager.model.system.fx.mainTypes.FilterPreset
 import org.xebia.spdmanager.ui.components.common.ButtonRow
-import org.xebia.spdmanager.ui.components.setup.DropdownWithLabel
-import org.xebia.spdmanager.ui.components.setup.SliderWithLabel
+import org.xebia.spdmanager.ui.components.common.DropdownSelector
+import org.xebia.spdmanager.ui.components.common.IntStepSliderWithLabel
 
 
 @Composable
@@ -61,17 +61,20 @@ fun FilterEffectView(initialConfig: FilterEffect, onUpdate: (FilterEffect) -> Un
                 modRate = ModRate.EnumRate(it)
             }
         } else {
-            SliderWithLabel("Mod Rate (ms)", (modRate as ModRate.IntRate).intRate, 0..100) {
+            IntStepSliderWithLabel("Mod Rate (ms)", (modRate as ModRate.IntRate).intRate, 0..100) {
                 modRate = ModRate.IntRate(it)
             }
         }
 
-        SliderWithLabel("Mod Depth", modDepth, 0..100) {
+        IntStepSliderWithLabel("Mod Depth", modDepth, 0..100) {
             modDepth = it
         }
 
-        DropdownWithLabel("LFO Wave", lfoWave, LfoWave.entries) {
-            lfoWave = it
-        }
+        DropdownSelector(
+            label = "LFO Wave",
+            selectedItem = lfoWave,
+            items = LfoWave.entries,
+            onItemSelected = { lfoWave = it }
+        )
     }
 }

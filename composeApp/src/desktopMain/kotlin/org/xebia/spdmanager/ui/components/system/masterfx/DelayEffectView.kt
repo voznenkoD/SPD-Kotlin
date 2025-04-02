@@ -13,7 +13,7 @@ import org.xebia.spdmanager.model.system.fx.common.*
 import org.xebia.spdmanager.model.system.fx.mainTypes.DelayEffect
 import org.xebia.spdmanager.model.system.fx.mainTypes.DelayPreset
 import org.xebia.spdmanager.ui.components.common.ButtonRow
-import org.xebia.spdmanager.ui.components.setup.SliderWithLabel
+import org.xebia.spdmanager.ui.components.common.IntStepSliderWithLabel
 
 @Composable
 fun DelayEffectView(initialConfig: DelayEffect, onUpdate: (DelayEffect) -> Unit) {
@@ -58,13 +58,13 @@ fun DelayEffectView(initialConfig: DelayEffect, onUpdate: (DelayEffect) -> Unit)
                 delayTime = DelayTime.EnumTime(it)
             }
         } else {
-            SliderWithLabel("Delay Time (ms)", (delayTime as DelayTime.IntTime).intTime, 0..1300) {
+            IntStepSliderWithLabel("Delay Time (ms)", (delayTime as DelayTime.IntTime).intTime, 0..1300) {
                 delayTime = DelayTime.IntTime(it)
             }
         }
 
-        SliderWithLabel("Tap Time", tapTime.toFloat(), 0f..100f) {
-            tapTime = it.toInt()
+        IntStepSliderWithLabel("Tap Time", tapTime, 0..100) {
+            tapTime = it
         }
 
         ButtonRow("Low Cut", lowCut, LowCut.entries.toTypedArray()) {
@@ -75,8 +75,8 @@ fun DelayEffectView(initialConfig: DelayEffect, onUpdate: (DelayEffect) -> Unit)
             highCut = it
         }
 
-        SliderWithLabel("Direct Level", directLevel.toFloat(), 0f..100f) {
-            directLevel = it.toInt()
+        IntStepSliderWithLabel("Direct Level", directLevel, 0..100) {
+            directLevel = it
         }
     }
 }

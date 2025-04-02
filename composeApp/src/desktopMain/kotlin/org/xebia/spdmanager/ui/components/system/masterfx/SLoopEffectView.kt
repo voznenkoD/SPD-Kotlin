@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import org.xebia.spdmanager.model.system.fx.common.SyncSwitch
 import org.xebia.spdmanager.model.system.fx.mainTypes.*
 import org.xebia.spdmanager.ui.components.common.ButtonRow
-import org.xebia.spdmanager.ui.components.setup.SliderWithLabel
+import org.xebia.spdmanager.ui.components.common.IntStepSliderWithLabel
 
 @Composable
 fun SLoopEffectView(initialConfig: SLoopEffect, onUpdate: (SLoopEffect) -> Unit) {
@@ -53,7 +53,7 @@ fun SLoopEffectView(initialConfig: SLoopEffect, onUpdate: (SLoopEffect) -> Unit)
                 rate = SLoopRate.EnumRate(it)
             }
         } else {
-            SliderWithLabel("Rate ", (rate as SLoopRate.IntRate).intRate, 0..127) {
+            IntStepSliderWithLabel("Rate ", (rate as SLoopRate.IntRate).intRate, 0..127) {
                 rate = SLoopRate.IntRate(it)
             }
         }

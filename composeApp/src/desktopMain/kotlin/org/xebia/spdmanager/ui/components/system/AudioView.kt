@@ -10,8 +10,9 @@ import org.xebia.spdmanager.model.system.Output
 import org.xebia.spdmanager.model.system.SystemAudioConfig
 import org.xebia.spdmanager.model.system.SystemGain
 import org.xebia.spdmanager.model.system.fx.common.EqFreq
-import org.xebia.spdmanager.ui.components.setup.DropdownWithLabel
-import org.xebia.spdmanager.ui.components.setup.SliderWithLabel
+import org.xebia.spdmanager.ui.components.common.DropdownSelector
+import org.xebia.spdmanager.ui.components.common.IntStepSliderWithLabel
+import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 
 @Composable
 fun AudioView(systemAudioConfig: SystemAudioConfig, onAudioConfigChanged: (SystemAudioConfig) -> Unit) {
@@ -31,7 +32,7 @@ fun AudioView(systemAudioConfig: SystemAudioConfig, onAudioConfigChanged: (Syste
         Column(modifier = Modifier.weight(1f).padding(8.dp)) {
             Text("Audio Settings")
 
-            SliderWithLabel(
+            IntStepSliderWithLabel(
                 label = "Audio In Volume",
                 value = audioInVolume,
                 range = 0..100,
@@ -41,7 +42,7 @@ fun AudioView(systemAudioConfig: SystemAudioConfig, onAudioConfigChanged: (Syste
                 }
             )
 
-            SliderWithLabel(
+            IntStepSliderWithLabel(
                 label = "USB In Volume",
                 value = usbInVolume,
                 range = 0..100,
@@ -51,7 +52,7 @@ fun AudioView(systemAudioConfig: SystemAudioConfig, onAudioConfigChanged: (Syste
                 }
             )
 
-            SliderWithLabel(
+            IntStepSliderWithLabel(
                 label = "Sub Out Volume",
                 value = subOutVolume,
                 range = 0..100,
@@ -61,35 +62,35 @@ fun AudioView(systemAudioConfig: SystemAudioConfig, onAudioConfigChanged: (Syste
                 }
             )
 
-            DropdownWithLabel(
-                label = "System Gain",
-                selected = systemGain,
-                onSelected = {
-                    systemGain = it
-                    onAudioConfigChanged(systemAudioConfig.copy(systemGain = systemGain))
-                },
-                options = SystemGain.entries.toList()
-            )
 
             Row(modifier = Modifier.fillMaxSize()) {
-                DropdownWithLabel(
+                DropdownSelector(
+                    label = "System Gain",
+                    selectedItem = systemGain,
+                    onItemSelected = {
+                        systemGain = it
+                        onAudioConfigChanged(systemAudioConfig.copy(systemGain = systemGain))
+                    },
+                    items = SystemGain.entries.toList()
+                )
+                DropdownSelector(
                     label = "Audio In Output",
-                    selected = audioInOutput,
-                    onSelected = {
+                    selectedItem = audioInOutput,
+                    onItemSelected = {
                         audioInOutput = it
                         onAudioConfigChanged(systemAudioConfig.copy(audioInOutput = audioInOutput))
                     },
-                    options = Output.entries.toList()
+                    items = Output.entries.toList()
                 )
 
-                DropdownWithLabel(
+                DropdownSelector(
                     label = "FX2 Output",
-                    selected = fx2Output,
-                    onSelected = {
+                    selectedItem = fx2Output,
+                    onItemSelected = {
                         fx2Output = it
                         onAudioConfigChanged(systemAudioConfig.copy(fx2Output = fx2Output))
                     },
-                    options = FxOutput.entries.toList()
+                    items = FxOutput.entries.toList()
                 )
             }
         }
@@ -97,58 +98,45 @@ fun AudioView(systemAudioConfig: SystemAudioConfig, onAudioConfigChanged: (Syste
         Column(modifier = Modifier.weight(1f).padding(8.dp)) {
             Text("System EQ")
 
-            FloatSliderWithLabel(
+            SliderWithLabel(
                 label = "Low Gain (dB)",
                 value = lowGain,
-                range = -12f..12f,
+                valueRange = -12f..12f,
                 onValueChange = {
                     lowGain = it
                     onAudioConfigChanged(systemAudioConfig.copy(systemEq = systemAudioConfig.systemEq.copy(lowGain = lowGain)))
                 }
             )
 
-            DropdownWithLabel(
+            DropdownSelector(
                 label = "Mid Frequency",
-                selected = midFreq,
-                onSelected = {
+                selectedItem = midFreq,
+                onItemSelected = {
                     midFreq = it
                     onAudioConfigChanged(systemAudioConfig.copy(systemEq = systemAudioConfig.systemEq.copy(midFreq = midFreq)))
                 },
-                options = EqFreq.entries.toList()
+                items = EqFreq.entries.toList()
             )
 
-            FloatSliderWithLabel(
+            SliderWithLabel(
                 label = "Mid Gain (dB)",
                 value = midGain,
-                range = -12f..12f,
+                valueRange = -12f..12f,
                 onValueChange = {
                     midGain = it
                     onAudioConfigChanged(systemAudioConfig.copy(systemEq = systemAudioConfig.systemEq.copy(midGain = midGain)))
                 }
             )
 
-            FloatSliderWithLabel(
+            SliderWithLabel(
                 label = "High Gain (dB)",
                 value = highGain,
-                range = -12f..12f,
+                valueRange = -12f..12f,
                 onValueChange = {
                     highGain = it
                     onAudioConfigChanged(systemAudioConfig.copy(systemEq = systemAudioConfig.systemEq.copy(highGain = highGain)))
                 }
             )
         }
-    }
-}
-
-
-@Composable
-fun FloatSliderWithLabel(label: String, value: Float, range: ClosedFloatingPointRange<Float>, onValueChange: (Float) -> Unit) {
-    Column {
-        Text("$label: ${value.toInt()} dB")
-        Slider(
-            value = value,
-            onValueChange = onValueChange,
-            valueRange = range
-        )
     }
 }

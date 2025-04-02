@@ -11,7 +11,7 @@ import org.xebia.spdmanager.model.system.vControl.Bank
 import org.xebia.spdmanager.model.system.vControl.KnobCC
 import org.xebia.spdmanager.model.system.vControl.VControlMode
 import org.xebia.spdmanager.model.system.vControl.VisualControl
-import org.xebia.spdmanager.ui.components.setup.DropdownWithLabel
+import org.xebia.spdmanager.ui.components.common.DropdownSelector
 
 @Composable
 fun VisualControlView(visualControl: VisualControl, onVisualControlChanged: (VisualControl) -> Unit) {
@@ -34,57 +34,57 @@ fun VisualControlView(visualControl: VisualControl, onVisualControlChanged: (Vis
             )
         }
 
-        DropdownWithLabel(
+        DropdownSelector(
             label = "Control Mode",
-            selected = selectedVControlMode,
-            onSelected = {
+            selectedItem = selectedVControlMode,
+             onItemSelected = {
                 selectedVControlMode = it
                 onVisualControlChanged(visualControl.copy(vControlMode = selectedVControlMode))
             },
-            options = VControlMode.entries.toList()
+            items = VControlMode.entries.toList()
         )
 
-        DropdownWithLabel(
+        DropdownSelector(
             label = "Bank",
-            selected = selectedBank,
-            onSelected = {
+            selectedItem = selectedBank,
+             onItemSelected = {
                 selectedBank = it
                 onVisualControlChanged(visualControl.copy(bank = selectedBank))
             },
-            options = listOf(
+            items = listOf(
                 Bank.Off,
                 *List(128) { Bank.BankNumber(it) }.toTypedArray()
             ).toList()
         )
 
-        DropdownWithLabel(
+        DropdownSelector(
             label = "MIDI Channel",
-            selected = selectedChannel,
-            options = (0..16).toList(),
-            onSelected = { selectedChannel = it; onVisualControlChanged(visualControl.copy(ch = it)) }
+            selectedItem = selectedChannel,
+            items = (0..16).toList(),
+             onItemSelected = { selectedChannel = it; onVisualControlChanged(visualControl.copy(ch = it)) }
         )
 
-        DropdownWithLabel(
+        DropdownSelector(
             label = "KnobCC1",
-            selected = selectedCtrlKnob1CC,
-            onSelected = {
+            selectedItem = selectedCtrlKnob1CC,
+             onItemSelected = {
                 selectedCtrlKnob1CC = it
                 onVisualControlChanged(visualControl.copy(ctrlKnob1CC = selectedCtrlKnob1CC))
             },
-            options = listOf(
+            items = listOf(
                 KnobCC.Off,
                 *List(128) { KnobCC.KnobCcNumber(it) }.toTypedArray()
             ).toList()
         )
 
-        DropdownWithLabel(
+        DropdownSelector(
             label = "KnobCC2",
-            selected = selectedCtrlKnob2CC,
-            onSelected = {
+            selectedItem = selectedCtrlKnob2CC,
+             onItemSelected = {
                 selectedCtrlKnob2CC = it
                 onVisualControlChanged(visualControl.copy(ctrlKnob2CC = selectedCtrlKnob2CC))
             },
-            options = listOf(
+            items = listOf(
                 KnobCC.Off,
                 *List(128) { KnobCC.KnobCcNumber(it) }.toTypedArray()
             ).toList()

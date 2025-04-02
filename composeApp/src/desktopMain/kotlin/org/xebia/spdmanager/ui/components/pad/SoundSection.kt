@@ -15,19 +15,9 @@ import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 
 @Composable
 fun SoundSection(title: String, sound: Sound) {
-    Column(modifier = Modifier.padding(vertical = 8.dp)) {
-        Text(title, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+    Column(modifier = Modifier.padding(vertical = 3.dp)) {
+        Text(title + "  " + sound.wave.toString(), fontSize = 16.sp, fontWeight = FontWeight.Bold)
 
-        // Wave Display
-        TextField(
-            value = sound.wave.toString(),
-            onValueChange = {},
-            label = { Text("Wave") },
-            readOnly = true,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        // Volume Slider
         SliderWithLabel(
             label = "Volume",
             value = sound.volume.toFloat(),
@@ -35,7 +25,6 @@ fun SoundSection(title: String, sound: Sound) {
             valueRange = 0f..100f
         )
 
-        // Pan Control (Custom PadPan Slider)
         PadPanSlider(
             label = "Pan",
             pan = sound.pan,
