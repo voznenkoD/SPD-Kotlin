@@ -1,4 +1,4 @@
-package org.xebia.spdmanager.ui.screens
+package org.xebia.spdmanager.ui.components.pad
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -13,7 +13,6 @@ import org.xebia.spdmanager.model.kit.pad.PadOutput
 import org.xebia.spdmanager.model.system.fx.common.SyncSwitch
 import org.xebia.spdmanager.ui.components.common.DropdownSelector
 import org.xebia.spdmanager.ui.components.common.SwitchWithLabel
-import org.xebia.spdmanager.ui.components.pad.*
 
 @Composable
 fun PadDetailsScreen(pad: Pad?) {

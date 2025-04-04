@@ -9,6 +9,7 @@ import androidx.compose.ui.unit.dp
 import org.xebia.spdmanager.LocalDeviceManager
 import org.xebia.spdmanager.model.kit.pad.PadNumber
 import org.xebia.spdmanager.ui.components.setup.PadSetupView
+import org.xebia.spdmanager.ui.components.setup.PadsSetupScreen
 import org.xebia.spdmanager.ui.components.setup.SetupGeneralView
 import org.xebia.spdmanager.ui.components.setup.SetupMidiView
 

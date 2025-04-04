@@ -1,4 +1,4 @@
-package org.xebia.spdmanager.ui.screens
+package org.xebia.spdmanager.ui.components.setup
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*

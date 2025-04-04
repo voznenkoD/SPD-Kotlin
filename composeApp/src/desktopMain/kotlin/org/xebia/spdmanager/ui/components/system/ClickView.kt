@@ -46,9 +46,12 @@ fun ClickView(clickConfig: ClickConfig, waves: List<Wave>) {
         } else {
             DropdownSelector(
                 label = "Wave",
-                selectedItem = waves.firstOrNull { it.number == selectedWave } ?: waves.first(),
+                selectedItem =  waves.firstOrNull { it.number == selectedWave } ?: waves.first(),
                 onItemSelected = { selectedWave = it.number },
-                items = waves
+                items = waves,
+                content = { wave ->
+                    Text("${wave.number} - ${wave.name}")
+                }
             )
         }
 

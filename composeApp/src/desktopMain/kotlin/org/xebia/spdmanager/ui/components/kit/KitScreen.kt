@@ -1,4 +1,4 @@
-package org.xebia.spdmanager.ui.screens
+package org.xebia.spdmanager.ui.components.kit
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -15,35 +15,7 @@ import org.xebia.spdmanager.model.system.fx.common.SyncSwitch
 import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
 import org.xebia.spdmanager.ui.components.common.IntStepSliderWithLabel
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
-import org.xebia.spdmanager.ui.components.kit.KitFXView
-import org.xebia.spdmanager.ui.components.kit.PadLinkSelector
-
-@Composable
-fun DetailsTabs(kit: Kit?, pad: Pad?) {
-    var selectedTab by remember { mutableStateOf(0) }
-
-    val tabs = listOf("Kit", "Pad")
-
-    Column(modifier = Modifier.fillMaxSize()) {
-        TabRow(
-            selectedTabIndex = selectedTab
-        ) {
-            tabs.forEachIndexed { index, title ->
-                Tab(
-                    selected = selectedTab == index,
-                    onClick = { selectedTab = index },
-                    text = { Text(title) }
-                )
-            }
-        }
-
-        when (selectedTab) {
-            0 -> KitScreen(kit)
-            1 -> PadDetailsScreen(pad)
-        }
-    }
-}
-
+import org.xebia.spdmanager.ui.components.pad.PadDetailsScreen
 
 @Composable
 fun KitScreen(kit: Kit?) {
@@ -125,6 +97,32 @@ fun KitScreen(kit: Kit?) {
         when (selectedTabIndex) {
             0 -> KitFXView(fx1)
             1 -> KitFXView(fx2)
+        }
+    }
+}
+
+@Composable
+fun DetailsTabs(kit: Kit?, pad: Pad?) {
+    var selectedTab by remember { mutableStateOf(0) }
+
+    val tabs = listOf("Kit", "Pad")
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        TabRow(
+            selectedTabIndex = selectedTab
+        ) {
+            tabs.forEachIndexed { index, title ->
+                Tab(
+                    selected = selectedTab == index,
+                    onClick = { selectedTab = index },
+                    text = { Text(title) }
+                )
+            }
+        }
+
+        when (selectedTab) {
+            0 -> KitScreen(kit)
+            1 -> PadDetailsScreen(pad)
         }
     }
 }

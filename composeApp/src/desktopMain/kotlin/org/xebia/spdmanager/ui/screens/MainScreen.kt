@@ -14,6 +14,9 @@ import org.xebia.spdmanager.model.kit.pad.Pad
 import org.xebia.spdmanager.model.list.ListedWave
 import org.xebia.spdmanager.model.list.WaveListsHolder
 import org.xebia.spdmanager.ui.components.common.SelectFolderButton
+import org.xebia.spdmanager.ui.components.kit.DetailsTabs
+import org.xebia.spdmanager.ui.components.lists.ListsScreen
+import org.xebia.spdmanager.ui.components.pad.PadScreen
 
 @Composable
 fun MainScreen() {
