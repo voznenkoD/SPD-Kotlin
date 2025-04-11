@@ -11,6 +11,7 @@ import org.xebia.spdmanager.audioplayer.readWavFile
 import org.xebia.spdmanager.model.Device
 import org.xebia.spdmanager.model.Wave
 import org.xebia.spdmanager.ui.components.common.GroupedDetailRow
+import org.xebia.spdmanager.ui.waveform.DisplayBitmapWaveformWithGrid
 import org.xebia.spdmanager.ui.waveform.DisplayWaveformWithGrid
 import java.io.File
 
