@@ -35,11 +35,34 @@ fun WaveDetailsScreen(wave: Wave?, device: Device?) {
         return
     }
 
+    var zoomLevel by remember { mutableStateOf(1f) } // for zooming
+    var progress by remember { mutableStateOf(0f) } // for tracking progress
+    var isPlaying by remember { mutableStateOf(false) } // for play/pause state
+
+    // LaunchedEffect to update progress based on audio playback
+    LaunchedEffect(isPlaying) {
+        if (isPlaying) {
+            while (isPlaying) {
+                val clip = SingleFilePlayer.getPlayingClip()  // Get current playing clip
+                val currentProgress = clip?.microsecondPosition?.toFloat() ?: 0f
+                val duration = clip?.microsecondLength?.toFloat() ?: 1f
+                progress = currentProgress / duration
+                kotlinx.coroutines.delay(100) // update progress every 100 ms
+            }
+        }
+    }
 
     Column(modifier = Modifier
-        .fillMaxSize().padding(8.dp)) {
+        .fillMaxSize()
+        .padding(8.dp)) {
 
-        DisplayWaveformWithGrid(waveformData)
+        DisplayWaveformWithGrid(
+            waveformData = waveformData,
+            progress = progress,
+            zoomLevel = zoomLevel
+        )
+
+        // Wave details
         GroupedDetailRow(
             label1 = "Number:", value1 = wave.number.toString(),
             label2 = "Name:", value2 = wave.name,
@@ -52,19 +75,34 @@ fun WaveDetailsScreen(wave: Wave?, device: Device?) {
             label3 = "Measure:", value3 = wave.measure.toString()
         )
 
+        // Row with play, stop, and zoom controls
         Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
             Text(text = "Start:", fontSize = 16.sp, modifier = Modifier.weight(1f))
             Text(text = wave.start.toString(), fontSize = 16.sp, modifier = Modifier.weight(2f))
 
             Text(text = "End:", fontSize = 16.sp, modifier = Modifier.weight(1f))
-            Text(text =  wave.end.toString(), fontSize = 16.sp, modifier = Modifier.weight(2f))
+            Text(text = wave.end.toString(), fontSize = 16.sp, modifier = Modifier.weight(2f))
 
-            Button(onClick = { SingleFilePlayer.play(File(filePath)) }) {
+            // Play button
+            Button(onClick = {
+                SingleFilePlayer.play(File(filePath))
+                isPlaying = true
+            }) {
                 Text("Play")
             }
-            Button(onClick = { SingleFilePlayer.stop() }) {
+
+            // Stop button
+            Button(onClick = {
+                SingleFilePlayer.stop()
+                isPlaying = false
+            }) {
                 Text("Stop")
             }
+
+            Button(onClick = { zoomLevel *= 1.25f }) { Text("+") }
+            Button(onClick = { zoomLevel /= 1.25f }) { Text("-") }
+
         }
     }
 }
+
