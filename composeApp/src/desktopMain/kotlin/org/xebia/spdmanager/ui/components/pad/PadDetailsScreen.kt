@@ -17,18 +17,19 @@ import org.xebia.spdmanager.ui.components.common.SwitchWithLabel
 @Composable
 fun PadDetailsScreen(pad: Pad?) {
     var selectedTab by remember { mutableStateOf(0) }
-    var selectedPad by remember { mutableStateOf(pad) }
 
-    if (selectedPad == null) {
+    if (pad == null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text("Choose Pad please", fontSize = 20.sp, fontWeight = FontWeight.Bold)
         }
         return
     }
 
+    var editablePad by remember(pad) { mutableStateOf(pad) }
+
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        SoundSection(title = "Main", sound = selectedPad!!.main)
-        SoundSection(title = "Sub", sound = selectedPad!!.sub)
+        SoundSection(title = "Main", sound = editablePad.main)
+        SoundSection(title = "Sub", sound = editablePad.sub)
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -40,8 +41,8 @@ fun PadDetailsScreen(pad: Pad?) {
                     .height(60.dp)
             ) {
                 MuteGroupSelector(
-                    selectedMuteGroup = selectedPad!!.muteGroup,
-                    onMuteGroupSelected = { newGroup -> selectedPad = selectedPad!!.copy(muteGroup = newGroup) }
+                    selectedMuteGroup = editablePad.muteGroup,
+                    onMuteGroupSelected = { newGroup -> editablePad = editablePad.copy(muteGroup = newGroup) }
                 )
             }
             Column(
@@ -51,8 +52,8 @@ fun PadDetailsScreen(pad: Pad?) {
             ) {
                 SwitchWithLabel(
                     "Tempo Sync",
-                    syncSwitch = selectedPad!!.tempoSync,
-                    onValueChange = { newSync -> selectedPad = selectedPad!!.copy(tempoSync = SyncSwitch.fromBoolean(newSync)) }
+                    syncSwitch = editablePad.tempoSync,
+                    onValueChange = { newSync -> editablePad = editablePad.copy(tempoSync = SyncSwitch.fromBoolean(newSync)) }
                 )
             }
             Column(
@@ -62,8 +63,8 @@ fun PadDetailsScreen(pad: Pad?) {
             ) {
                 DropdownSelector(
                     label = "Output",
-                    selectedItem = selectedPad!!.output,
-                    onItemSelected = { newOutput -> selectedPad = selectedPad!!.copy(output = newOutput) },
+                    selectedItem = editablePad.output,
+                    onItemSelected = { newOutput -> editablePad = editablePad.copy(output = newOutput) },
                     items = PadOutput.entries
                 )
             }
@@ -80,9 +81,10 @@ fun PadDetailsScreen(pad: Pad?) {
                 )
             }
         }
+
         when (selectedTab) {
-            0 -> PadModeView(selectedPad!!.padMode)
-            1 -> MidiParamsView(selectedPad!!.midiParams)
+            0 -> PadModeView(editablePad.padMode)
+            1 -> MidiParamsView(editablePad.midiParams)
         }
     }
 }

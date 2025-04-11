@@ -11,25 +11,34 @@ import org.xebia.spdmanager.audioplayer.readWavFile
 import org.xebia.spdmanager.model.Device
 import org.xebia.spdmanager.model.Wave
 import org.xebia.spdmanager.ui.components.common.GroupedDetailRow
-import org.xebia.spdmanager.ui.waveform.DisplayWaveform
+import org.xebia.spdmanager.ui.waveform.DisplayWaveformWithGrid
 import java.io.File
 
 @Composable
 fun WaveDetailsScreen(wave: Wave?, device: Device?) {
     val path by remember { mutableStateOf(device?.rootPath) }
+    var filePath = ""
 
-    if (wave == null || path.isNullOrEmpty()) {
+    // Only load waveform data once when the wave or path changes
+    val waveformData = remember(wave, path) {
+        if (wave != null && !path.isNullOrEmpty()) {
+            filePath = "$path/WAVE/DATA/${wave.path}"
+            readWavFile("$path/WAVE/DATA/${wave.path}")
+        } else {
+            null
+        }
+    }
+
+    if (wave == null || waveformData == null) {
         Text("No wave selected", fontSize = 18.sp)
         return
     }
 
-    val filePath = "$path/WAVE/DATA/${wave.path}"
 
     Column(modifier = Modifier
         .fillMaxSize().padding(8.dp)) {
 
-        DisplayWaveform(waveformSamples = readWavFile(filePath))
-
+        DisplayWaveformWithGrid(waveformData)
         GroupedDetailRow(
             label1 = "Number:", value1 = wave.number.toString(),
             label2 = "Name:", value2 = wave.name,
