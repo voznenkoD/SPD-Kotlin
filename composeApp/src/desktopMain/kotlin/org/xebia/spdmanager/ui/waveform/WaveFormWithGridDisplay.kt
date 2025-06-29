@@ -24,7 +24,7 @@ fun DisplayWaveformWithGrid(
     waveformData: WaveformData,
     progress: Float = 0f,
     zoomLevel: Float = 1f,
-    height: Int = 140,
+    height: Int = 120,
     baseWidth: Int = 800
 ) {
     val samples = remember(waveformData.samples) { waveformData.samples }
