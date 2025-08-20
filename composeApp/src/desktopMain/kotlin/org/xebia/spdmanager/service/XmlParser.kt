@@ -23,7 +23,7 @@ class XmlParser {
             throw IllegalArgumentException("Invalid folder path: $folderPath")
         }
         return folder.listFiles()
-            ?.filter { it.isFile }
+            ?.filter { it.isFile && !it.name.startsWith(".") }
             ?.sortedBy { it.name }
             ?: emptyList()    }
 

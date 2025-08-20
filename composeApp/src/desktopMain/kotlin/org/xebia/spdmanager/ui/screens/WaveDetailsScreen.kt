@@ -18,20 +18,27 @@ import java.io.File
 @Composable
 fun WaveDetailsScreen(wave: Wave?, device: Device?) {
     val path by remember { mutableStateOf(device?.rootPath) }
-    var filePath = ""
+    val filePath = remember(wave, path) {
+        if (wave != null && !path.isNullOrEmpty()) {
+            "$path/WAVE/DATA/${wave.path}"
+        } else {
+            ""
+        }
+    }
 
     // Only load waveform data once when the wave or path changes
     val waveformData = remember(wave, path) {
         if (wave != null && !path.isNullOrEmpty()) {
-            filePath = "$path/WAVE/DATA/${wave.path}"
-            readWavFile("$path/WAVE/DATA/${wave.path}")
+            readWavFile(filePath)
         } else {
             null
         }
     }
 
     if (wave == null || waveformData == null) {
-        Text("No wave selected", fontSize = 18.sp)
+        Column(modifier = Modifier.fillMaxSize().padding(8.dp)) {
+            Text("No wave selected", fontSize = 18.sp)
+        }
         return
     }
 
