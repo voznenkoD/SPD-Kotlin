@@ -10,81 +10,88 @@ import androidx.compose.ui.unit.sp
 import org.xebia.spdmanager.model.system.fx.common.HighCut
 import org.xebia.spdmanager.model.system.fx.common.LowCut
 import org.xebia.spdmanager.model.system.fx.common.ReverbType
+import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
 import org.xebia.spdmanager.model.system.fx.subtypes.Reverb
 import org.xebia.spdmanager.ui.components.common.ButtonRow
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 
 @Composable
-fun ReverbView(reverb: Reverb) {
-    var selectedType by remember { mutableStateOf(reverb.type) }
-    var selectedLowCut by remember { mutableStateOf(reverb.lowCut) }
-    var selectedHighCut by remember { mutableStateOf(reverb.highCut) }
-    var reverbTime by remember { mutableStateOf(reverb.reverbTime.toFloat()) }
-    var preDelay by remember { mutableStateOf(reverb.preDelay.toFloat()) }
-    var density by remember { mutableStateOf(reverb.density.toFloat()) }
-    var directLevel by remember { mutableStateOf(reverb.directLevel.toFloat()) }
-    var globalReverbLevel by remember { mutableStateOf(reverb.glblRevLvl.toFloat()) }
-
+fun ReverbView(
+    reverb: Reverb,
+    onFxChange: (FxEffect) -> Unit
+) {
     Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
         Text("Reverb", fontSize = 18.sp, fontWeight = FontWeight.Bold)
 
-        // Reverb Type Selection
         ButtonRow(
             label = "Reverb Type",
             items = ReverbType.entries.toTypedArray(),
-            selectedItem = selectedType,
-            onItemSelected = { selectedType = it }
+            selectedItem = reverb.type,
+            onItemSelected = { newType ->
+                onFxChange(reverb.copy(type = newType))
+            }
         )
 
-        // Low Cut Selection
         ButtonRow(
             label = "Low Cut",
             items = LowCut.entries.toTypedArray(),
-            selectedItem = selectedLowCut,
-            onItemSelected = { selectedLowCut = it }
+            selectedItem = reverb.lowCut,
+            onItemSelected = { newLowCut ->
+                onFxChange(reverb.copy(lowCut = newLowCut))
+            }
         )
 
-        // High Cut Selection
         ButtonRow(
             label = "High Cut",
             items = HighCut.entries.toTypedArray(),
-            selectedItem = selectedHighCut,
-            onItemSelected = { selectedHighCut = it }
+            selectedItem = reverb.highCut,
+            onItemSelected = { newHighCut ->
+                onFxChange(reverb.copy(highCut = newHighCut))
+            }
         )
 
-        // Sliders
         SliderWithLabel(
             label = "Reverb Time",
-            value = reverbTime,
-            onValueChange = { reverbTime = it },
+            value = reverb.reverbTime.toFloat(),
+            onValueChange = { newReverbTime ->
+                onFxChange(reverb.copy(reverbTime = newReverbTime.toInt()))
+            },
             valueRange = 0f..100f
         )
 
         SliderWithLabel(
             label = "Pre Delay",
-            value = preDelay,
-            onValueChange = { preDelay = it },
+            value = reverb.preDelay.toFloat(),
+            onValueChange = { newPreDelay ->
+                onFxChange(reverb.copy(preDelay = newPreDelay.toInt()))
+            },
             valueRange = 0f..500f
         )
 
         SliderWithLabel(
             label = "Density",
-            value = density,
-            onValueChange = { density = it },
+            value = reverb.density.toFloat(),
+            onValueChange = { newDensity ->
+                onFxChange(reverb.copy(density = newDensity.toInt()))
+            },
             valueRange = 0f..100f
         )
 
         SliderWithLabel(
             label = "Direct Level",
-            value = directLevel,
-            onValueChange = { directLevel = it },
+            value = reverb.directLevel.toFloat(),
+            onValueChange = { newDirectLevel ->
+                onFxChange(reverb.copy(directLevel = newDirectLevel.toInt()))
+            },
             valueRange = 0f..100f
         )
 
         SliderWithLabel(
             label = "Global Reverb Level",
-            value = globalReverbLevel,
-            onValueChange = { globalReverbLevel = it },
+            value = reverb.glblRevLvl.toFloat(),
+            onValueChange = { newGlblRevLvl ->
+                onFxChange(reverb.copy(glblRevLvl = newGlblRevLvl.toInt()))
+            },
             valueRange = 0f..100f
         )
     }

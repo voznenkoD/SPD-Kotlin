@@ -8,40 +8,43 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.xebia.spdmanager.model.system.fx.common.*
+import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
 import org.xebia.spdmanager.model.system.fx.subtypes.Slicer
 import org.xebia.spdmanager.ui.components.common.ButtonRow
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 
 @Composable
-fun SlicerView(slicer: Slicer) {
-    var pattern by remember { mutableStateOf(slicer.pattern.toFloat()) }
-    var selectedRateSync by remember { mutableStateOf(slicer.rateSync) }
-    var attack by remember { mutableStateOf(slicer.attack.toFloat()) }
-
+fun SlicerView(
+    slicer: Slicer,
+    onFxChange: (FxEffect) -> Unit
+) {
     Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
         Text("Slicer", fontSize = 18.sp, fontWeight = FontWeight.Bold)
 
-        // Pattern Selection (Slider)
         SliderWithLabel(
             label = "Pattern",
-            value = pattern,
-            onValueChange = { pattern = it },
+            value = slicer.pattern.toFloat(),
+            onValueChange = { newPattern ->
+                onFxChange(slicer.copy(pattern = newPattern.toInt()))
+            },
             valueRange = 0f..100f
         )
 
-        // Rate Sync Selection (Button Row)
         ButtonRow(
             label = "Rate Sync",
             items = SyncSwitch.entries.toTypedArray(),
-            selectedItem = selectedRateSync,
-            onItemSelected = { selectedRateSync = it }
+            selectedItem = slicer.rateSync,
+            onItemSelected = { newRateSync ->
+                onFxChange(slicer.copy(rateSync = newRateSync))
+            }
         )
 
-        // Attack Selection (Slider)
         SliderWithLabel(
             label = "Attack",
-            value = attack,
-            onValueChange = { attack = it },
+            value = slicer.attack.toFloat(),
+            onValueChange = { newAttack ->
+                onFxChange(slicer.copy(attack = newAttack.toInt()))
+            },
             valueRange = 0f..100f
         )
     }

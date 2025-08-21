@@ -6,17 +6,19 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 
-
 @Composable
-fun IntStepSliderWithLabel(label: String, value: Int, range: IntRange, step: Int = 1, onValueChange: (Int) -> Unit = {}) {
-    var sliderValue by remember { mutableStateOf(value.toFloat()) }
-
+fun IntStepSliderWithLabel(
+    label: String,
+    value: Int,
+    range: IntRange,
+    step: Int = 1,
+    onValueChange: (Int) -> Unit = {}
+) {
     Column {
-        Text("$label: ${sliderValue.toInt()}", style = MaterialTheme.typography.bodyLarge)
+        Text("$label: $value", style = MaterialTheme.typography.bodyLarge)
         Slider(
-            value = sliderValue,
+            value = value.toFloat(),
             onValueChange = { newValue ->
-                sliderValue = newValue
                 onValueChange(newValue.toInt())
             },
             valueRange = range.first.toFloat()..range.last.toFloat(),

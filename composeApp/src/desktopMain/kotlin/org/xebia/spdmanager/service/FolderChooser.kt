@@ -11,7 +11,6 @@ fun openFolderDialog(onFolderSelected: (String) -> Unit) {
 
     val result = fileChooser.showOpenDialog(null)
     if (result == JFileChooser.APPROVE_OPTION) {
-        // Pass folder path back to the composable context
         onFolderSelected(fileChooser.selectedFile.absolutePath)
     }
 }

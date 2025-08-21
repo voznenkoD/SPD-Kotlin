@@ -7,58 +7,61 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.xebia.spdmanager.model.system.fx.common.*
+import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
 import org.xebia.spdmanager.model.system.fx.subtypes.RingMod
 import org.xebia.spdmanager.ui.components.common.ButtonRow
 import org.xebia.spdmanager.ui.components.common.DryWetMixSlider
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 
 @Composable
-fun RingModView(ringMod: RingMod) {
-    var selectedPolarity by remember { mutableStateOf(ringMod.polarity) }
-    var lowGain by remember { mutableStateOf(ringMod.lowGain) }
-    var hiGain by remember { mutableStateOf(ringMod.hiGain) }
-    var balance by remember { mutableStateOf(ringMod.balance) }
-    var level by remember { mutableStateOf(ringMod.level.toFloat()) }
-
+fun RingModView(
+    ringMod: RingMod,
+    onFxChange: (FxEffect) -> Unit
+) {
     Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
         Text("Ring Modulator", fontSize = 18.sp)
 
-        // Polarity ButtonRow
         ButtonRow(
             label = "Polarity",
-            selectedItem = selectedPolarity,
+            selectedItem = ringMod.polarity,
             items = Polarity.entries.toTypedArray(),
-            onItemSelected = { selectedPolarity = it }
+            onItemSelected = { newPolarity ->
+                onFxChange(ringMod.copy(polarity = newPolarity))
+            }
         )
 
-        // Low Gain Slider
         SliderWithLabel(
             label = "Low Gain",
-            value = lowGain,
-            onValueChange = { lowGain = it },
+            value = ringMod.lowGain,
+            onValueChange = { newLowGain ->
+                onFxChange(ringMod.copy(lowGain = newLowGain))
+            },
             valueRange = -15f..15f
         )
 
-        // High Gain Slider
         SliderWithLabel(
             label = "High Gain",
-            value = hiGain,
-            onValueChange = { hiGain = it },
+            value = ringMod.hiGain,
+            onValueChange = { newHiGain ->
+                onFxChange(ringMod.copy(hiGain = newHiGain))
+            },
             valueRange = -15f..15f
         )
 
-        // Balance (Dry/Wet Mix) Slider
         DryWetMixSlider(
             label = "Balance (Dry/Wet)",
-            value = balance,
-            onValueChange = { balance = it }
+            value = ringMod.balance,
+            onValueChange = { newBalance ->
+                onFxChange(ringMod.copy(balance = newBalance))
+            }
         )
 
-        // Level Slider
         SliderWithLabel(
             label = "Level",
-            value = level,
-            onValueChange = { level = it },
+            value = ringMod.level.toFloat(),
+            onValueChange = { newLevel ->
+                onFxChange(ringMod.copy(level = newLevel.toInt()))
+            },
             valueRange = 0f..100f
         )
     }

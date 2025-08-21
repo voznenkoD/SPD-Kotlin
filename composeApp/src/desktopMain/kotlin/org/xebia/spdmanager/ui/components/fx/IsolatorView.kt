@@ -6,30 +6,33 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
 import org.xebia.spdmanager.model.system.fx.subtypes.Isolator
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 
 @Composable
-fun IsolatorView(isolator: Isolator) {
-    var mid by remember { mutableStateOf(isolator.mid) }
-    var level by remember { mutableStateOf(isolator.level) }
-
+fun IsolatorView(
+    isolator: Isolator,
+    onFxChange: (FxEffect) -> Unit
+) {
     Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
         Text("Isolator Settings", fontSize = 18.sp)
 
-        // Mid (Slider)
         SliderWithLabel(
             label = "Mid",
-            value = mid,
-            onValueChange = { mid = it },
+            value = isolator.mid,
+            onValueChange = { newMid ->
+                onFxChange(isolator.copy(mid = newMid))
+            },
             valueRange = 0f..100f
         )
 
-        // Level (Slider)
         SliderWithLabel(
             label = "Level",
-            value = level.toFloat(),
-            onValueChange = { level = it.toInt() },
+            value = isolator.level.toFloat(),
+            onValueChange = { newLevel ->
+                onFxChange(isolator.copy(level = newLevel.toInt()))
+            },
             valueRange = 0f..100f
         )
     }

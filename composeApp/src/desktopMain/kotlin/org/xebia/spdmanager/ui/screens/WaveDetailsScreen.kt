@@ -26,7 +26,6 @@ fun WaveDetailsScreen(wave: Wave?, device: Device?) {
         }
     }
 
-    // Only load waveform data once when the wave or path changes
     val waveformData = remember(wave, path) {
         if (wave != null && !path.isNullOrEmpty()) {
             readWavFile(filePath)
@@ -46,11 +45,10 @@ fun WaveDetailsScreen(wave: Wave?, device: Device?) {
     var progress by remember { mutableStateOf(0f) } // for tracking progress
     var isPlaying by remember { mutableStateOf(false) } // for play/pause state
 
-    // LaunchedEffect to update progress based on audio playback
     LaunchedEffect(isPlaying) {
         if (isPlaying) {
             while (isPlaying) {
-                val clip = SingleFilePlayer.getPlayingClip()  // Get current playing clip
+                val clip = SingleFilePlayer.getPlayingClip()
                 val currentProgress = clip?.microsecondPosition?.toFloat() ?: 0f
                 val duration = clip?.microsecondLength?.toFloat() ?: 1f
                 progress = currentProgress / duration

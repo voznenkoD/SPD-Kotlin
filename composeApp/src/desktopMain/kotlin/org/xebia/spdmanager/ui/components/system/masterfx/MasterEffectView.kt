@@ -7,9 +7,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.xebia.spdmanager.model.system.fx.MasterEffectConfig
 
-
 @Composable
-fun MasterEffectView(config: MasterEffectConfig, onUpdate: (MasterEffectConfig) -> Unit) {
+fun MasterEffectView(
+    masterEffectConfig: MasterEffectConfig,
+    onUpdate: (MasterEffectConfig) -> Unit
+) {
     var selectedTab by remember { mutableStateOf(0) }
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -26,16 +28,30 @@ fun MasterEffectView(config: MasterEffectConfig, onUpdate: (MasterEffectConfig) 
         Spacer(modifier = Modifier.height(16.dp))
 
         when (selectedTab) {
-            0 -> FilterEffectView(config.filterEffect) { updatedFilter ->
-                onUpdate(config.copy(filterEffect = updatedFilter))
-            }
-            1 -> DelayEffectView(config.delayEffect) { updatedDelay ->
-                onUpdate(config.copy(delayEffect = updatedDelay))
-            }
-            2 -> SLoopEffectView(config.sLoopEffect) { updatedSLoop ->
-                onUpdate(config.copy(sLoopEffect = updatedSLoop))
-            }
-            3 -> FxEffectView(config.fxEffect)
+            0 -> FilterEffectView(
+                filterEffect = masterEffectConfig.filterEffect,
+                onFilterChange = { updatedFilter ->
+                    onUpdate(masterEffectConfig.copy(filterEffect = updatedFilter))
+                }
+            )
+            1 -> DelayEffectView(
+                delayEffect = masterEffectConfig.delayEffect,
+                onDelayChange = { updatedDelay ->
+                    onUpdate(masterEffectConfig.copy(delayEffect = updatedDelay))
+                }
+            )
+            2 -> SLoopEffectView(
+                sLoopEffect = masterEffectConfig.sLoopEffect,
+                onSLoopChange = { updatedSLoop ->
+                    onUpdate(masterEffectConfig.copy(sLoopEffect = updatedSLoop))
+                }
+            )
+            3 -> FxEffectView(
+                fx = masterEffectConfig.fxEffect,
+                onFxChange = { updatedFx ->
+                    onUpdate(masterEffectConfig.copy(fxEffect = updatedFx))
+                }
+            )
         }
     }
 }

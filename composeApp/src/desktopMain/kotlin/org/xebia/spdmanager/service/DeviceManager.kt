@@ -10,6 +10,8 @@ import org.xebia.spdmanager.data.model.raw.system.*
 import org.xebia.spdmanager.data.model.raw.wave.WvPrm
 import org.xebia.spdmanager.model.*
 import org.xebia.spdmanager.model.kit.Kit
+import org.xebia.spdmanager.model.kit.pad.Pad
+import org.xebia.spdmanager.model.kit.pad.PadNumber
 import org.xebia.spdmanager.model.list.WaveListsHolder
 import org.xebia.spdmanager.model.setup.SetupConfig
 import org.xebia.spdmanager.model.setup.fromRaw
@@ -67,5 +69,121 @@ class DeviceManager {
             waves.add(Wave(number, name, wvPrm.path, wvPrm.tag, wvPrm.tempo, wvPrm.beat, wvPrm.measure, wvPrm.start, wvPrm.end))
         }
         return waves
+    }
+
+    fun updateKit(kitIndex: Int, transform: (Kit) -> Kit) {
+        device?.let { currentDevice ->
+            val updatedKits = currentDevice.kits.toMutableList()
+            if (kitIndex in updatedKits.indices) {
+                updatedKits[kitIndex] = transform(updatedKits[kitIndex])
+                device = currentDevice.copy(kits = updatedKits)
+                saveDevice()
+            }
+        }
+    }
+
+    fun updatePad(kitIndex: Int, padNumber: PadNumber, transform: (Pad) -> Pad) {
+        device?.let { currentDevice ->
+            val updatedKits = currentDevice.kits.toMutableList()
+            if (kitIndex in updatedKits.indices) {
+                val kit = updatedKits[kitIndex]
+                val updatedPads = kit.pads.toMutableMap()
+                updatedPads[padNumber]?.let { pad ->
+                    updatedPads[padNumber] = transform(pad)
+                }
+                updatedKits[kitIndex] = kit.copy(pads = updatedPads)
+                device = currentDevice.copy(kits = updatedKits)
+                saveDevice()
+            }
+        }
+    }
+
+    fun updateWave(waveNumber: Int, transform: (Wave) -> Wave) {
+        device?.let { currentDevice ->
+            val updatedWaves = currentDevice.waves.map { wave ->
+                if (wave.number == waveNumber) transform(wave) else wave
+            }
+            device = currentDevice.copy(waves = updatedWaves)
+            saveDevice()
+        }
+    }
+
+    /**
+     * Updates the system configuration
+     */
+    fun updateSystemConfig(newSystemConfig: SystemConfig) {
+        device?.let { currentDevice ->
+            device = currentDevice.copy(systemConfig = newSystemConfig)
+            saveDevice()
+        }
+    }
+
+    /**
+     * Updates a specific kit
+     */
+    fun updateKit(kitIndex: Int, updatedKit: Kit) {
+        device?.let { currentDevice ->
+            val updatedKits = currentDevice.kits.toMutableList()
+            if (kitIndex in updatedKits.indices) {
+                updatedKits[kitIndex] = updatedKit
+                device = currentDevice.copy(kits = updatedKits)
+                saveDevice()
+            }
+        }
+    }
+
+    /**
+     * Updates a specific pad within a kit
+     */
+    fun updatePad(kitIndex: Int, padNumber: PadNumber, updatedPad: Pad) {
+        device?.let { currentDevice ->
+            val kit = currentDevice.kits.getOrNull(kitIndex) ?: return
+
+            val updatedPads = kit.pads.toMutableMap()
+            updatedPads[padNumber] = updatedPad
+
+            val updatedKit = kit.copy(pads = updatedPads)
+
+            updateKit(kitIndex, updatedKit)
+        }
+    }
+
+    /**
+     * Updates the wave list
+     */
+    fun updateWaves(waves: List<Wave>) {
+        device?.let { currentDevice ->
+            device = currentDevice.copy(waves = waves)
+            saveDevice()
+        }
+    }
+
+    /**
+     * Updates a specific wave
+     */
+    fun updateWave(waveIndex: Int, updatedWave: Wave) {
+        device?.let { currentDevice ->
+            val updatedWaves = currentDevice.waves.toMutableList()
+            if (waveIndex in updatedWaves.indices) {
+                updatedWaves[waveIndex] = updatedWave
+                device = currentDevice.copy(waves = updatedWaves)
+                saveDevice()
+            }
+        }
+    }
+
+    /**
+     * Updates wave lists holder
+     */
+    fun updateWaveLists(waveListsHolder: WaveListsHolder) {
+        device?.let { currentDevice ->
+            device = currentDevice.copy(waveLists = waveListsHolder)
+            saveDevice()
+        }
+    }
+
+    private fun saveDevice() {
+        // TODO: Implement saving logic if needed
+        // This would write the changes back to the XML files
     }
 }

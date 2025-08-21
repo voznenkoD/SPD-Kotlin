@@ -7,39 +7,42 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
 import org.xebia.spdmanager.model.system.fx.subtypes.Pitchshift
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 
 @Composable
-fun PitchshiftView(pitchshift: Pitchshift) {
-    var fine by remember { mutableStateOf(pitchshift.fine) }
-    var effectLevel by remember { mutableStateOf(pitchshift.effectLevel.toFloat()) }
-    var directLevel by remember { mutableStateOf(pitchshift.directLevel.toFloat()) }
-
+fun PitchshiftView(
+    pitchshift: Pitchshift,
+    onFxChange: (FxEffect) -> Unit
+) {
     Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
         Text("Pitch Shift", fontSize = 18.sp, fontWeight = FontWeight.Bold)
 
-        // Fine Pitch Control (-50 to +50 cents)
         SliderWithLabel(
             label = "Fine",
-            value = fine,
-            onValueChange = { fine = it },
+            value = pitchshift.fine,
+            onValueChange = { newFine ->
+                onFxChange(pitchshift.copy(fine = newFine))
+            },
             valueRange = -50f..50f
         )
 
-        // Effect Level (0 to 100)
         SliderWithLabel(
             label = "Effect Level",
-            value = effectLevel,
-            onValueChange = { effectLevel = it },
+            value = pitchshift.effectLevel.toFloat(),
+            onValueChange = { newEffectLevel ->
+                onFxChange(pitchshift.copy(effectLevel = newEffectLevel.toInt()))
+            },
             valueRange = 0f..100f
         )
 
-        // Direct Level (0 to 100)
         SliderWithLabel(
             label = "Direct Level",
-            value = directLevel,
-            onValueChange = { directLevel = it },
+            value = pitchshift.directLevel.toFloat(),
+            onValueChange = { newDirectLevel ->
+                onFxChange(pitchshift.copy(directLevel = newDirectLevel.toInt()))
+            },
             valueRange = 0f..100f
         )
     }

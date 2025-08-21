@@ -37,7 +37,6 @@ fun <T> DropdownSelector(
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             contentAlignment = Alignment.CenterStart
         ) {
-            // Render selected item using content
             content(selectedItem)
         }
 

@@ -7,95 +7,98 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.xebia.spdmanager.model.system.fx.common.*
+import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
 import org.xebia.spdmanager.model.system.fx.subtypes.StepFLNGR
 import org.xebia.spdmanager.ui.components.common.ButtonRow
 import org.xebia.spdmanager.ui.components.common.DropdownSelector
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 
 @Composable
-fun StepFlangerView(fx: StepFLNGR) {
-    var selectedRateSync by remember { mutableStateOf(fx.rateSync) }
-    var selectedStepSync by remember { mutableStateOf(fx.stepSync) }
-    var depth by remember { mutableStateOf(fx.depth.toFloat()) }
-    var manual by remember { mutableStateOf(fx.manual.toFloat()) }
-    var resonance by remember { mutableStateOf(fx.resonance.toFloat()) }
-    var separation by remember { mutableStateOf(fx.separation.toFloat()) }
-    var selectedLowCut by remember { mutableStateOf(fx.lowCut) }
-    var effectLevel by remember { mutableStateOf(fx.effectLevel.toFloat()) }
-    var directLevel by remember { mutableStateOf(fx.directLevel.toFloat()) }
-
+fun StepFlangerView(
+    fx: StepFLNGR,
+    onFxChange: (FxEffect) -> Unit
+) {
     Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
         Text("Step Flanger", fontSize = 18.sp)
 
-        // Rate Sync (Switchable Button)
         ButtonRow(
             label = "Rate Sync",
-            selectedItem = selectedRateSync,
+            selectedItem = fx.rateSync,
             items = SyncSwitch.entries.toTypedArray(),
-            onItemSelected = { selectedRateSync = it }
+            onItemSelected = { newRateSync ->
+                onFxChange(fx.copy(rateSync = newRateSync))
+            }
         )
 
-        // Step Sync (Switchable Button)
         ButtonRow(
             label = "Step Sync",
-            selectedItem = selectedStepSync,
+            selectedItem = fx.stepSync,
             items = SyncSwitch.entries.toTypedArray(),
-            onItemSelected = { selectedStepSync = it }
+            onItemSelected = { newStepSync ->
+                onFxChange(fx.copy(stepSync = newStepSync))
+            }
         )
 
-        // Depth (0..100)
         SliderWithLabel(
             label = "Depth",
-            value = depth,
-            onValueChange = { depth = it },
+            value = fx.depth.toFloat(),
+            onValueChange = { newDepth ->
+                onFxChange(fx.copy(depth = newDepth.toInt()))
+            },
             valueRange = 0f..100f
         )
 
-        // Manual (0..100)
         SliderWithLabel(
             label = "Manual",
-            value = manual,
-            onValueChange = { manual = it },
+            value = fx.manual.toFloat(),
+            onValueChange = { newManual ->
+                onFxChange(fx.copy(manual = newManual.toInt()))
+            },
             valueRange = 0f..100f
         )
 
-        // Resonance (0..100)
         SliderWithLabel(
             label = "Resonance",
-            value = resonance,
-            onValueChange = { resonance = it },
+            value = fx.resonance.toFloat(),
+            onValueChange = { newResonance ->
+                onFxChange(fx.copy(resonance = newResonance.toInt()))
+            },
             valueRange = 0f..100f
         )
 
-        // Separation (0..100)
         SliderWithLabel(
             label = "Separation",
-            value = separation,
-            onValueChange = { separation = it },
+            value = fx.separation.toFloat(),
+            onValueChange = { newSeparation ->
+                onFxChange(fx.copy(separation = newSeparation.toInt()))
+            },
             valueRange = 0f..100f
         )
 
-        // Low Cut (Dropdown of LowCut values)
         DropdownSelector(
             label = "Low Cut",
-            selectedItem = selectedLowCut,
+            selectedItem = fx.lowCut,
             items = LowCut.entries.toList(),
-            onItemSelected = { selectedLowCut = it }
+            onItemSelected = { newLowCut ->
+                onFxChange(fx.copy(lowCut = newLowCut))
+            }
         )
 
-        // Effect Level (0..100)
         SliderWithLabel(
             label = "Effect Level",
-            value = effectLevel,
-            onValueChange = { effectLevel = it },
+            value = fx.effectLevel.toFloat(),
+            onValueChange = { newEffectLevel ->
+                onFxChange(fx.copy(effectLevel = newEffectLevel.toInt()))
+            },
             valueRange = 0f..100f
         )
 
-        // Direct Level (0..100)
         SliderWithLabel(
             label = "Direct Level",
-            value = directLevel,
-            onValueChange = { directLevel = it },
+            value = fx.directLevel.toFloat(),
+            onValueChange = { newDirectLevel ->
+                onFxChange(fx.copy(directLevel = newDirectLevel.toInt()))
+            },
             valueRange = 0f..100f
         )
     }

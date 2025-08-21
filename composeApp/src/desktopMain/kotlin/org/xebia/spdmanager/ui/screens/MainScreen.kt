@@ -8,41 +8,33 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import org.xebia.spdmanager.LocalDeviceManager
-import org.xebia.spdmanager.model.Wave
-import org.xebia.spdmanager.model.kit.Kit
-import org.xebia.spdmanager.model.kit.pad.Pad
-import org.xebia.spdmanager.model.list.ListedWave
 import org.xebia.spdmanager.model.list.WaveListsHolder
 import org.xebia.spdmanager.ui.components.common.SelectFolderButton
 import org.xebia.spdmanager.ui.components.kit.DetailsTabs
 import org.xebia.spdmanager.ui.components.lists.ListsScreen
 import org.xebia.spdmanager.ui.components.pad.PadScreen
+import org.xebia.spdmanager.viewmodel.MainViewModel
 
 @Composable
 fun MainScreen() {
     val deviceManager = LocalDeviceManager.current
-    val device by remember { derivedStateOf { deviceManager.device } }
+
+    val mainViewModel = remember(deviceManager) {
+        MainViewModel(deviceManager)
+    }
+
+    val device = deviceManager.device
+
+    val selectedKitIndex by mainViewModel.selectedKitIndex.collectAsState()
+    val selectedKit = selectedKitIndex?.let { device?.kits?.getOrNull(it) }
+    val selectedWave by mainViewModel.selectedWave.collectAsState()
+    val selectedPad by mainViewModel.selectedPad.collectAsState()
+    val selectedPadNumber by mainViewModel.selectedPadNumber.collectAsState()
+    val isMainSelected by mainViewModel.isMainSelected.collectAsState()
 
     val kits = device?.kits.orEmpty()
     val waves = device?.waves.orEmpty()
     val waveListsHolder = device?.waveLists ?: WaveListsHolder(emptyList(), emptyMap(), emptyMap())
-
-    var selectedKit by remember { mutableStateOf<Kit?>(null) }
-    var selectedWave by remember { mutableStateOf<Wave?>(null) }
-    var selectedPad by remember { mutableStateOf<Pad?>(null) }
-
-    val onKitSelected: (Kit) -> Unit = { kit ->
-        selectedKit = kit
-        selectedPad = kit.pads.values.firstOrNull()
-    }
-
-    val onWaveSelected: (ListedWave) -> Unit = { listedWave ->
-        selectedWave = waves.find { it.number == listedWave.number }
-    }
-
-    val onPadSelected: (Pad) -> Unit = { pad ->
-        selectedPad = pad
-    }
 
     if (device == null) {
         Box(
@@ -56,19 +48,44 @@ fun MainScreen() {
 
     Row {
         Column(Modifier.weight(0.3f).fillMaxHeight()) {
-            DetailsTabs(selectedKit, selectedPad)
+            DetailsTabs(
+                kitIndex = selectedKitIndex,
+                kit = selectedKit,
+                pad = selectedPad,
+                deviceManager = deviceManager
+            )
         }
 
-        Column(Modifier.weight(0.4f).fillMaxHeight().border(width = 2.dp, color = Color.DarkGray)) {
+        Column(
+            Modifier
+                .weight(0.4f)
+                .fillMaxHeight()
+                .border(width = 2.dp, color = Color.DarkGray)
+        ) {
             PadScreen(
-                onSelect = onPadSelected,
+                onSelect = { padNumber, isMain ->
+                    mainViewModel.selectPad(padNumber, selectedKit, isMain)
+                },
                 kit = selectedKit,
+                selectedPadNumber = selectedPadNumber,
+                isMainSelected = isMainSelected
             )
-            WaveDetailsScreen(wave = selectedWave, device = device)
+
+            WaveDetailsScreen(
+                wave = selectedWave,
+                device = device
+            )
         }
 
         Column(Modifier.weight(0.3f).fillMaxHeight()) {
-            ListsScreen(kits, waveListsHolder, onKitSelected, onWaveSelected)
+            ListsScreen(
+                kits = kits,
+                waveListsHolder = waveListsHolder,
+                onKitSelected = mainViewModel::selectKit,
+                onWaveSelected = { listedWave ->
+                    mainViewModel.selectWave(waves, listedWave)
+                }
+            )
         }
     }
 }

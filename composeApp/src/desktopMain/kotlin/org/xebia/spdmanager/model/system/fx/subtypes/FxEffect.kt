@@ -8,10 +8,6 @@ sealed class FxEffect {
     abstract val fxType: FXType
 
     companion object {
-        /**
-         * Converts a universal list of 20 Int parameters into the corresponding FxEffect.
-         * The first parameter indicates the FX type.
-         */
         fun fromValues(fxTypeInt: Int, params: List<Int>): FxEffect {
             require(params.isNotEmpty()) { "Parameter list must not be empty" }
             val fxType = FXType.fromValue(fxTypeInt)
@@ -42,29 +38,29 @@ sealed class FxEffect {
     }
 
     @Composable
-    fun renderParameters() {
+    fun renderEditableParameters(onFxChange: (FxEffect) -> Unit) {
         when (this) {
             is Thru -> Text("Thru has no parameters.")
-            is StereoDelay -> StereoDelayView(this)
-            is SyncDelay -> SyncDelayView(this)
-            is TapeEcho -> TapeEchoView(this)
-            is Chorus -> ChorusView(this)
-            is Flanger -> FlangerView(this)
-            is StepFLNGR -> StepFlangerView(this)
-            is Phaser -> PhaserView(this)
-            is StepPHASR -> StepPhaserView(this)
-            is EQ -> EqView(this)
-            is Compressor -> CompressorView(this)
-            is Filter -> FilterView(this)
-            is FiltDrive -> FiltDriveView(this)
-            is Isolator -> IsolatorView(this)
-            is TouchWah -> TouchWahView(this)
-            is Distortion -> DistortionView(this)
-            is RingMod -> RingModView(this)
-            is Pitchshift -> PitchshiftView(this)
+            is StereoDelay -> StereoDelayView(this, onFxChange)
+            is SyncDelay -> SyncDelayView(this, onFxChange)
+            is TapeEcho -> TapeEchoView(this, onFxChange)
+            is Chorus -> ChorusView(this, onFxChange)
+            is Flanger -> FlangerView(this, onFxChange)
+            is StepFLNGR -> StepFlangerView(this, onFxChange)
+            is Phaser -> PhaserView(this, onFxChange)
+            is StepPHASR -> StepPhaserView(this, onFxChange)
+            is EQ -> EqView(this, onFxChange)
+            is Compressor -> CompressorView(this, onFxChange)
+            is Filter -> FilterView(this, onFxChange)
+            is FiltDrive -> FiltDriveView(this, onFxChange)
+            is Isolator -> IsolatorView(this, onFxChange)
+            is TouchWah -> TouchWahView(this, onFxChange)
+            is Distortion -> DistortionView(this, onFxChange)
+            is RingMod -> RingModView(this, onFxChange)
+            is Pitchshift -> PitchshiftView(this, onFxChange)
             is Vibrato -> Text("Vibrato has no parameters.")
-            is Reverb -> ReverbView(this)
-            is Slicer -> SlicerView(this)
+            is Reverb -> ReverbView(this, onFxChange)
+            is Slicer -> SlicerView(this, onFxChange)
         }
     }
 }

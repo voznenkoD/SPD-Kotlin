@@ -14,13 +14,17 @@ import org.xebia.spdmanager.model.kit.pad.midi.MidiNote
 import org.xebia.spdmanager.model.kit.pad.midi.PadCH
 
 @Composable
-fun MidiParamsView(midiParams: MidiParams) {
+fun MidiParamsView(
+    midiParams: MidiParams,
+    onMidiParamsChange: (MidiParams) -> Unit
+) {
     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
         DropdownSelector(
             label = "Pad Channel",
             selectedItem = midiParams.padCH,
             items = getPadCHOptions(),
             onItemSelected = { newPadCH ->
+                onMidiParamsChange(midiParams.copy(padCH = newPadCH))
             }
         )
 
@@ -29,6 +33,7 @@ fun MidiParamsView(midiParams: MidiParams) {
             selectedItem = midiParams.midiNote,
             items = getMidiNoteOptions(),
             onItemSelected = { newMidiNote ->
+                onMidiParamsChange(midiParams.copy(midiNote = newMidiNote))
             }
         )
 
@@ -37,6 +42,7 @@ fun MidiParamsView(midiParams: MidiParams) {
             items = ExternalControl.entries.toTypedArray(),
             selectedItem = midiParams.externalControl,
             onItemSelected = { newExternalControl ->
+                onMidiParamsChange(midiParams.copy(externalControl = newExternalControl))
             }
         )
 
@@ -45,6 +51,7 @@ fun MidiParamsView(midiParams: MidiParams) {
             selectedItem = midiParams.gate,
             items = getGateOptions(),
             onItemSelected = { newGate ->
+                onMidiParamsChange(midiParams.copy(gate = newGate))
             }
         )
     }

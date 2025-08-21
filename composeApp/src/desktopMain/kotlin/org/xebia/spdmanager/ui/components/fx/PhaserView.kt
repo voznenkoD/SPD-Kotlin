@@ -7,78 +7,80 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.xebia.spdmanager.model.system.fx.common.*
+import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
 import org.xebia.spdmanager.model.system.fx.subtypes.Phaser
 import org.xebia.spdmanager.ui.components.common.ButtonRow
 import org.xebia.spdmanager.ui.components.common.DropdownSelector
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 
-
 @Composable
-fun PhaserView(fx: Phaser) {
-    var selectedType by remember { mutableStateOf(fx.type) }
-    var selectedRateSyncSW by remember { mutableStateOf(fx.rateSyncSW) }
-    var manual by remember { mutableStateOf(fx.manual.toFloat()) }
-    var resonance by remember { mutableStateOf(fx.resonance.toFloat()) }
-    var separation by remember { mutableStateOf(fx.separation.toFloat()) }
-    var effectLevel by remember { mutableStateOf(fx.effectLevel.toFloat()) }
-    var directLevel by remember { mutableStateOf(fx.directLevel.toFloat()) }
-
+fun PhaserView(
+    fx: Phaser,
+    onFxChange: (FxEffect) -> Unit
+) {
     Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
         Text("Phaser", fontSize = 18.sp)
 
-        // Phaser Type (Dropdown or Button Row)
         DropdownSelector(
             label = "Phaser Type",
-            selectedItem = selectedType,
+            selectedItem = fx.type,
             items = PhaserType.entries.toList(),
-            onItemSelected = { selectedType = it }
+            onItemSelected = { newType ->
+                onFxChange(fx.copy(type = newType))
+            }
         )
 
-        // Rate Sync Switch (Button Row)
         ButtonRow(
             label = "Rate Sync Switch",
-            selectedItem = selectedRateSyncSW,
+            selectedItem = fx.rateSyncSW,
             items = SyncSwitch.entries.toTypedArray(),
-            onItemSelected = { selectedRateSyncSW = it }
+            onItemSelected = { newRateSyncSW ->
+                onFxChange(fx.copy(rateSyncSW = newRateSyncSW))
+            }
         )
 
-        // Manual (0..100)
         SliderWithLabel(
             label = "Manual",
-            value = manual,
-            onValueChange = { manual = it },
+            value = fx.manual.toFloat(),
+            onValueChange = { newManual ->
+                onFxChange(fx.copy(manual = newManual.toInt()))
+            },
             valueRange = 0f..100f
         )
 
-        // Resonance (0..100)
         SliderWithLabel(
             label = "Resonance",
-            value = resonance,
-            onValueChange = { resonance = it },
+            value = fx.resonance.toFloat(),
+            onValueChange = { newResonance ->
+                onFxChange(fx.copy(resonance = newResonance.toInt()))
+            },
             valueRange = 0f..100f
         )
 
-        // Separation (0..100)
         SliderWithLabel(
             label = "Separation",
-            value = separation,
-            onValueChange = { separation = it },
+            value = fx.separation.toFloat(),
+            onValueChange = { newSeparation ->
+                onFxChange(fx.copy(separation = newSeparation.toInt()))
+            },
             valueRange = 0f..100f
         )
 
-        // Effect Level (0..100)
         SliderWithLabel(
             label = "Effect Level",
-            value = effectLevel,
-            onValueChange = { effectLevel = it },
+            value = fx.effectLevel.toFloat(),
+            onValueChange = { newEffectLevel ->
+                onFxChange(fx.copy(effectLevel = newEffectLevel.toInt()))
+            },
             valueRange = 0f..100f
         )
 
-        // Direct Level (0..100)
         SliderWithLabel(
             label = "Direct Level",
-            value = directLevel,
-            onValueChange = { directLevel = it },
+            value = fx.directLevel.toFloat(),
+            onValueChange = { newDirectLevel ->
+                onFxChange(fx.copy(directLevel = newDirectLevel.toInt()))
+            },
             valueRange = 0f..100f
         )
     }

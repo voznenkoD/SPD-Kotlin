@@ -1,16 +1,11 @@
 package org.xebia.spdmanager.ui.components.pad
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import org.xebia.spdmanager.LocalDeviceManager
 import org.xebia.spdmanager.model.Wave
 import org.xebia.spdmanager.model.kit.pad.Sound
@@ -18,33 +13,48 @@ import org.xebia.spdmanager.ui.components.common.DropdownSelector
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 
 @Composable
-fun SoundSection(title: String, sound: Sound) {
+fun SoundSection(
+    title: String,
+    sound: Sound,
+    onSoundChange: (Sound) -> Unit
+) {
     Column(modifier = Modifier.padding(vertical = 3.dp)) {
-        var selectedWave = sound.wave
-        val waves = LocalDeviceManager.current.device!!.waves.sortedBy { wave: Wave -> wave.number  }
+        val waves = LocalDeviceManager.current.device?.waves?.sortedBy { wave: Wave -> wave.number } ?: emptyList()
 
-        DropdownSelector(
-            label = title,
-            selectedItem = waves.firstOrNull { it.number == selectedWave } ?: waves.first(),
-            onItemSelected = { selectedWave = it.number },
-            items = waves,
-            content = { wave ->
-                Text("${wave.number} - ${wave.name}")
-            },
-            width = 300.dp
-        )
+        val selectedWave = waves.firstOrNull { it.number == sound.wave }
+
+        if (waves.isNotEmpty()) {
+            DropdownSelector(
+                label = title,
+                selectedItem = selectedWave ?: waves.first(),
+                onItemSelected = { wave ->
+                    onSoundChange(sound.copy(wave = wave.number))
+                },
+                items = waves,
+                content = { wave ->
+                    Text("${wave.number} - ${wave.name}")
+                },
+                width = 300.dp
+            )
+        } else {
+            Text("$title: No waves available")
+        }
 
         SliderWithLabel(
             label = "Volume",
             value = sound.volume.toFloat(),
-            onValueChange = { /* Handle volume change */ },
+            onValueChange = { newVolume ->
+                onSoundChange(sound.copy(volume = newVolume.toInt()))
+            },
             valueRange = 0f..100f
         )
 
         PadPanSlider(
             label = "Pan",
             pan = sound.pan,
-            onPanChange = { /* Handle pan change */ }
+            onPanChange = { newPan ->
+                onSoundChange(sound.copy(pan = newPan))
+            }
         )
     }
 }

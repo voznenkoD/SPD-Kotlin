@@ -16,67 +16,105 @@ import org.xebia.spdmanager.ui.components.common.ButtonRow
 import org.xebia.spdmanager.ui.components.common.IntStepSliderWithLabel
 
 @Composable
-fun DelayEffectView(initialConfig: DelayEffect, onUpdate: (DelayEffect) -> Unit) {
-    var preset by remember { mutableStateOf(initialConfig.preset) }
-    var type by remember { mutableStateOf(initialConfig.type) }
-    var syncSW by remember { mutableStateOf(initialConfig.syncSW) }
-    var delayTime by remember { mutableStateOf(initialConfig.delayTime) }
-    var tapTime by remember { mutableStateOf(initialConfig.tapTime) }
-    var lowCut by remember { mutableStateOf(initialConfig.lowCut) }
-    var highCut by remember { mutableStateOf(initialConfig.highCut) }
-    var directLevel by remember { mutableStateOf(initialConfig.directLevel) }
-
-
-    LaunchedEffect(preset, type, syncSW, delayTime, tapTime, lowCut, highCut, directLevel) {
-        onUpdate(DelayEffect(preset, type, syncSW, delayTime, tapTime, lowCut, highCut, directLevel))
-    }
-
+fun DelayEffectView(
+    delayEffect: DelayEffect,
+    onDelayChange: (DelayEffect) -> Unit
+) {
     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
         Text("Delay Effect", style = MaterialTheme.typography.titleMedium)
 
-        ButtonRow("Preset", preset, DelayPreset.entries.toTypedArray()) {
-            preset = it
-        }
-        ButtonRow("Type", type, DelayType.entries.toTypedArray()) {
-            type = it
-        }
-
-        Switch(
-            checked = syncSW == SyncSwitch.ON,
-            onCheckedChange = {
-                syncSW = if (it) SyncSwitch.ON else SyncSwitch.OFF
-                delayTime = if (syncSW == SyncSwitch.ON) {
-                    DelayTime.EnumTime(DelayTimeEnum.fromIndex(0)) // Default EnumTime
-                } else {
-                    DelayTime.IntTime(0) // Default IntTime
-                }
+        ButtonRow(
+            label = "Preset",
+            selectedItem = delayEffect.preset,
+            items = DelayPreset.entries.toTypedArray(),
+            onItemSelected = { newPreset ->
+                onDelayChange(delayEffect.copy(preset = newPreset))
             }
         )
 
-        if (syncSW == SyncSwitch.ON) {
-            ButtonRow("Delay Time", (delayTime as DelayTime.EnumTime).delayTimeEnum, DelayTimeEnum.entries.toTypedArray()) {
-                delayTime = DelayTime.EnumTime(it)
+        ButtonRow(
+            label = "Type",
+            selectedItem = delayEffect.type,
+            items = DelayType.entries.toTypedArray(),
+            onItemSelected = { newType ->
+                onDelayChange(delayEffect.copy(type = newType))
             }
+        )
+
+        Switch(
+            checked = delayEffect.syncSW == SyncSwitch.ON,
+            onCheckedChange = { isOn ->
+                val newSyncSW = if (isOn) SyncSwitch.ON else SyncSwitch.OFF
+                val newDelayTime = if (isOn) {
+                    DelayTime.EnumTime(DelayTimeEnum.fromIndex(0))
+                } else {
+                    DelayTime.IntTime(
+                        (delayEffect.delayTime as? DelayTime.EnumTime)?.delayTimeEnum?.ordinal ?: 0
+                    )
+                }
+                onDelayChange(
+                    delayEffect.copy(
+                        syncSW = newSyncSW,
+                        delayTime = newDelayTime
+                    )
+                )
+            }
+        )
+
+        if (delayEffect.syncSW == SyncSwitch.ON) {
+            ButtonRow(
+                label = "Delay Time",
+                selectedItem = (delayEffect.delayTime as? DelayTime.EnumTime)?.delayTimeEnum ?: DelayTimeEnum.fromIndex(0),
+                items = DelayTimeEnum.entries.toTypedArray(),
+                onItemSelected = { newDelayTimeEnum ->
+                    onDelayChange(delayEffect.copy(delayTime = DelayTime.EnumTime(newDelayTimeEnum)))
+                }
+            )
         } else {
-            IntStepSliderWithLabel("Delay Time (ms)", (delayTime as DelayTime.IntTime).intTime, 0..1300) {
-                delayTime = DelayTime.IntTime(it)
+            IntStepSliderWithLabel(
+                label = "Delay Time (ms)",
+                value = (delayEffect.delayTime as? DelayTime.IntTime)?.intTime ?: 0,
+                range = 0..1300,
+                onValueChange = { newIntTime ->
+                    onDelayChange(delayEffect.copy(delayTime = DelayTime.IntTime(newIntTime)))
+                }
+            )
+        }
+
+        IntStepSliderWithLabel(
+            label = "Tap Time",
+            value = delayEffect.tapTime,
+            range = 0..100,
+            onValueChange = { newTapTime ->
+                onDelayChange(delayEffect.copy(tapTime = newTapTime))
             }
-        }
+        )
 
-        IntStepSliderWithLabel("Tap Time", tapTime, 0..100) {
-            tapTime = it
-        }
+        ButtonRow(
+            label = "Low Cut",
+            selectedItem = delayEffect.lowCut,
+            items = LowCut.entries.toTypedArray(),
+            onItemSelected = { newLowCut ->
+                onDelayChange(delayEffect.copy(lowCut = newLowCut))
+            }
+        )
 
-        ButtonRow("Low Cut", lowCut, LowCut.entries.toTypedArray()) {
-            lowCut = it
-        }
+        ButtonRow(
+            label = "High Cut",
+            selectedItem = delayEffect.highCut,
+            items = HighCut.entries.toTypedArray(),
+            onItemSelected = { newHighCut ->
+                onDelayChange(delayEffect.copy(highCut = newHighCut))
+            }
+        )
 
-        ButtonRow("High Cut", highCut, HighCut.entries.toTypedArray()) {
-            highCut = it
-        }
-
-        IntStepSliderWithLabel("Direct Level", directLevel, 0..100) {
-            directLevel = it
-        }
+        IntStepSliderWithLabel(
+            label = "Direct Level",
+            value = delayEffect.directLevel,
+            range = 0..100,
+            onValueChange = { newDirectLevel ->
+                onDelayChange(delayEffect.copy(directLevel = newDirectLevel))
+            }
+        )
     }
 }

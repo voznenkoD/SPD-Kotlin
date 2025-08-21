@@ -16,65 +16,97 @@ import org.xebia.spdmanager.ui.components.common.ButtonRow
 import org.xebia.spdmanager.ui.components.common.DropdownSelector
 import org.xebia.spdmanager.ui.components.common.IntStepSliderWithLabel
 
-
 @Composable
-fun FilterEffectView(initialConfig: FilterEffect, onUpdate: (FilterEffect) -> Unit) {
-    var preset by remember { mutableStateOf(initialConfig.preset) }
-    var type by remember { mutableStateOf(initialConfig.type) }
-    var slope by remember { mutableStateOf(initialConfig.slope) }
-    var rateSync by remember { mutableStateOf(initialConfig.rateSync) }
-    var modRate by remember { mutableStateOf(initialConfig.modRate) }
-    var modDepth by remember { mutableStateOf(initialConfig.modDepth) }
-    var lfoWave by remember { mutableStateOf(initialConfig.lfoWave) }
-
-    LaunchedEffect(preset, type, slope, rateSync, modRate, modDepth, lfoWave) {
-        onUpdate(FilterEffect(preset, type, slope, rateSync, modRate, modDepth, lfoWave))
-    }
-
+fun FilterEffectView(
+    filterEffect: FilterEffect,
+    onFilterChange: (FilterEffect) -> Unit
+) {
     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
         Text("Filter Effect", style = MaterialTheme.typography.titleMedium)
 
-        ButtonRow("Preset", preset, FilterPreset.entries.toTypedArray()) {
-            preset = it
-        }
-        ButtonRow("Type", type, FilterType.entries.toTypedArray()) {
-            type = it
-        }
-        ButtonRow("Slope", slope, FilterSlope.entries.toTypedArray()) {
-            slope = it
-        }
-
-        Switch(
-            checked = rateSync == SyncSwitch.ON,
-            onCheckedChange = {
-                rateSync = if (it) SyncSwitch.ON else SyncSwitch.OFF
-                modRate = if (rateSync == SyncSwitch.ON) {
-                    ModRate.EnumRate(ModRateEnum.fromIndex(0)) // Default EnumRate
-                } else {
-                    ModRate.IntRate(0) // Default IntRate
-                }
+        ButtonRow(
+            label = "Preset",
+            selectedItem = filterEffect.preset,
+            items = FilterPreset.entries.toTypedArray(),
+            onItemSelected = { newPreset ->
+                onFilterChange(filterEffect.copy(preset = newPreset))
             }
         )
 
-        if (rateSync == SyncSwitch.ON) {
-            ButtonRow("Mod Rate", (modRate as ModRate.EnumRate).modRateEnum, ModRateEnum.entries.toTypedArray()) {
-                modRate = ModRate.EnumRate(it)
+        ButtonRow(
+            label = "Type",
+            selectedItem = filterEffect.type,
+            items = FilterType.entries.toTypedArray(),
+            onItemSelected = { newType ->
+                onFilterChange(filterEffect.copy(type = newType))
             }
+        )
+
+        ButtonRow(
+            label = "Slope",
+            selectedItem = filterEffect.slope,
+            items = FilterSlope.entries.toTypedArray(),
+            onItemSelected = { newSlope ->
+                onFilterChange(filterEffect.copy(slope = newSlope))
+            }
+        )
+
+        Switch(
+            checked = filterEffect.rateSync == SyncSwitch.ON,
+            onCheckedChange = { isOn ->
+                val newRateSync = if (isOn) SyncSwitch.ON else SyncSwitch.OFF
+                val newModRate = if (isOn) {
+                    ModRate.EnumRate(ModRateEnum.fromIndex(0))
+                } else {
+                    ModRate.IntRate(
+                        (filterEffect.modRate as? ModRate.EnumRate)?.modRateEnum?.ordinal ?: 0
+                    )
+                }
+                onFilterChange(
+                    filterEffect.copy(
+                        rateSync = newRateSync,
+                        modRate = newModRate
+                    )
+                )
+            }
+        )
+
+        if (filterEffect.rateSync == SyncSwitch.ON) {
+            ButtonRow(
+                label = "Mod Rate",
+                selectedItem = (filterEffect.modRate as? ModRate.EnumRate)?.modRateEnum ?: ModRateEnum.fromIndex(0),
+                items = ModRateEnum.entries.toTypedArray(),
+                onItemSelected = { newModRateEnum ->
+                    onFilterChange(filterEffect.copy(modRate = ModRate.EnumRate(newModRateEnum)))
+                }
+            )
         } else {
-            IntStepSliderWithLabel("Mod Rate (ms)", (modRate as ModRate.IntRate).intRate, 0..100) {
-                modRate = ModRate.IntRate(it)
-            }
+            IntStepSliderWithLabel(
+                label = "Mod Rate (ms)",
+                value = (filterEffect.modRate as? ModRate.IntRate)?.intRate ?: 0,
+                range = 0..100,
+                onValueChange = { newIntRate ->
+                    onFilterChange(filterEffect.copy(modRate = ModRate.IntRate(newIntRate)))
+                }
+            )
         }
 
-        IntStepSliderWithLabel("Mod Depth", modDepth, 0..100) {
-            modDepth = it
-        }
+        IntStepSliderWithLabel(
+            label = "Mod Depth",
+            value = filterEffect.modDepth,
+            range = 0..100,
+            onValueChange = { newModDepth ->
+                onFilterChange(filterEffect.copy(modDepth = newModDepth))
+            }
+        )
 
         DropdownSelector(
             label = "LFO Wave",
-            selectedItem = lfoWave,
+            selectedItem = filterEffect.lfoWave,
             items = LfoWave.entries,
-            onItemSelected = { lfoWave = it }
+            onItemSelected = { newLfoWave ->
+                onFilterChange(filterEffect.copy(lfoWave = newLfoWave))
+            }
         )
     }
 }

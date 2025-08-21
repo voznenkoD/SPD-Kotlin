@@ -29,11 +29,11 @@ fun <T : Enum<T>> ButtonRowCompact(
                     colors = ButtonDefaults.buttonColors(
                         containerColor = if (selectedItem == item) Color.Gray else Color.LightGray
                     ),
-                    contentPadding = PaddingValues(0.dp), // Remove extra padding
-                    shape = RectangleShape, // Make it a perfect square
+                    contentPadding = PaddingValues(0.dp),
+                    shape = RectangleShape,
                     modifier = Modifier
                         .weight(1f)
-                        .aspectRatio(1f) // Ensures a square shape
+                        .aspectRatio(1f)
                 ) {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Text(item.name, fontSize = 10.sp)

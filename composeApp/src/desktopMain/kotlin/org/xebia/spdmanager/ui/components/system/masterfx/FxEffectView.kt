@@ -10,9 +10,12 @@ import androidx.compose.ui.unit.sp
 import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
 
 @Composable
-fun FxEffectView(fx: FxEffect) {
+fun FxEffectView(
+    fx: FxEffect,
+    onFxChange: (FxEffect) -> Unit
+) {
     Column(modifier = Modifier.padding(16.dp)) {
         Text("FX Type: ${fx.fxType}", fontSize = 16.sp)
-        fx.renderParameters()
+        fx.renderEditableParameters(onFxChange)
     }
 }

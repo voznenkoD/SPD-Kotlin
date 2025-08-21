@@ -8,57 +8,60 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.xebia.spdmanager.model.system.fx.common.*
 import org.xebia.spdmanager.model.system.fx.subtypes.Distortion
+import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
 import org.xebia.spdmanager.ui.components.common.DropdownSelector
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 
 @Composable
-fun DistortionView(distortion: Distortion) {
-    var selectedType by remember { mutableStateOf(distortion.type) }
-    var drive by remember { mutableStateOf(distortion.drive.toFloat()) }
-    var bottom by remember { mutableStateOf(distortion.bottom) }
-    var tone by remember { mutableStateOf(distortion.tone) }
-    var effectLevel by remember { mutableStateOf(distortion.effectLevel.toFloat()) }
-
+fun DistortionView(
+    distortion: Distortion,
+    onFxChange: (FxEffect) -> Unit
+) {
     Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
         Text("Distortion", fontSize = 18.sp)
 
-        // Type DropdownSelector
         DropdownSelector(
             label = "Distortion Type",
-            selectedItem = selectedType,
+            selectedItem = distortion.type,
             items = DistortionType.entries,
-            onItemSelected = { selectedType = it }
+            onItemSelected = { newType ->
+                onFxChange(distortion.copy(type = newType))
+            }
         )
 
-        // Drive Slider
         SliderWithLabel(
             label = "Drive",
-            value = drive,
-            onValueChange = { drive = it },
+            value = distortion.drive.toFloat(),
+            onValueChange = { newDrive ->
+                onFxChange(distortion.copy(drive = newDrive.toInt()))
+            },
             valueRange = 0f..100f
         )
 
-        // Bottom Slider
         SliderWithLabel(
             label = "Bottom",
-            value = bottom,
-            onValueChange = { bottom = it },
+            value = distortion.bottom,
+            onValueChange = { newBottom ->
+                onFxChange(distortion.copy(bottom = newBottom))
+            },
             valueRange = 0f..100f
         )
 
-        // Tone Slider
         SliderWithLabel(
             label = "Tone",
-            value = tone,
-            onValueChange = { tone = it },
+            value = distortion.tone,
+            onValueChange = { newTone ->
+                onFxChange(distortion.copy(tone = newTone))
+            },
             valueRange = 0f..100f
         )
 
-        // Effect Level Slider
         SliderWithLabel(
             label = "Effect Level",
-            value = effectLevel,
-            onValueChange = { effectLevel = it },
+            value = distortion.effectLevel.toFloat(),
+            onValueChange = { newEffectLevel ->
+                onFxChange(distortion.copy(effectLevel = newEffectLevel.toInt()))
+            },
             valueRange = 0f..100f
         )
     }

@@ -8,28 +8,51 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.xebia.spdmanager.model.kit.pad.Pad
+import org.xebia.spdmanager.model.kit.pad.PadNumber
 import org.xebia.spdmanager.model.kit.pad.PadOutput
 import org.xebia.spdmanager.model.system.fx.common.SyncSwitch
+import org.xebia.spdmanager.service.DeviceManager
 import org.xebia.spdmanager.ui.components.common.DropdownSelector
 import org.xebia.spdmanager.ui.components.common.SwitchWithLabel
+import org.xebia.spdmanager.viewmodel.PadViewModel
 
 @Composable
-fun PadDetailsScreen(pad: Pad?) {
+fun PadDetailsScreen(
+    padNumber: PadNumber,
+    kitIndex: Int,
+    deviceManager: DeviceManager
+) {
+    val viewModel = remember(kitIndex, padNumber) {
+        PadViewModel(kitIndex, padNumber, deviceManager)
+    }
+
+    val pad = viewModel.pad
+
     var selectedTab by remember { mutableStateOf(0) }
 
     if (pad == null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text("Choose Pad please", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            Text("Pad not found", fontSize = 20.sp, fontWeight = FontWeight.Bold)
         }
         return
     }
 
-    var editablePad by remember(pad) { mutableStateOf(pad) }
-
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        SoundSection(title = "Main", sound = editablePad.main)
-        SoundSection(title = "Sub", sound = editablePad.sub)
+        SoundSection(
+            title = "Main",
+            sound = pad.main,
+            onSoundChange = { newSound ->
+                viewModel.updateMainSound(newSound)
+            }
+        )
+
+        SoundSection(
+            title = "Sub",
+            sound = pad.sub,
+            onSoundChange = { newSound ->
+                viewModel.updateSubSound(newSound)
+            }
+        )
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -41,21 +64,25 @@ fun PadDetailsScreen(pad: Pad?) {
                     .height(60.dp)
             ) {
                 MuteGroupSelector(
-                    selectedMuteGroup = editablePad.muteGroup,
-                    onMuteGroupSelected = { newGroup -> editablePad = editablePad.copy(muteGroup = newGroup) }
+                    selectedMuteGroup = pad.muteGroup,
+                    onMuteGroupSelected = viewModel::updateMuteGroup
                 )
             }
+
             Column(
                 modifier = Modifier
                     .weight(1f)
                     .height(60.dp)
             ) {
                 SwitchWithLabel(
-                    "Tempo Sync",
-                    syncSwitch = editablePad.tempoSync,
-                    onValueChange = { newSync -> editablePad = editablePad.copy(tempoSync = SyncSwitch.fromBoolean(newSync)) }
+                    label = "Tempo Sync",
+                    syncSwitch = pad.tempoSync,
+                    onValueChange = { isOn ->
+                        viewModel.updateTempoSync(SyncSwitch.fromBoolean(isOn))
+                    }
                 )
             }
+
             Column(
                 modifier = Modifier
                     .weight(1f)
@@ -63,8 +90,8 @@ fun PadDetailsScreen(pad: Pad?) {
             ) {
                 DropdownSelector(
                     label = "Output",
-                    selectedItem = editablePad.output,
-                    onItemSelected = { newOutput -> editablePad = editablePad.copy(output = newOutput) },
+                    selectedItem = pad.output,
+                    onItemSelected = viewModel::updateOutput,
                     items = PadOutput.entries
                 )
             }
@@ -83,8 +110,14 @@ fun PadDetailsScreen(pad: Pad?) {
         }
 
         when (selectedTab) {
-            0 -> PadModeView(editablePad.padMode)
-            1 -> MidiParamsView(editablePad.midiParams)
+            0 -> PadModeView(
+                padMode = pad.padMode,
+                onPadModeChange = viewModel::updatePadMode
+            )
+            1 -> MidiParamsView(
+                midiParams = pad.midiParams,
+                onMidiParamsChange = viewModel::updateMidiParams
+            )
         }
     }
 }

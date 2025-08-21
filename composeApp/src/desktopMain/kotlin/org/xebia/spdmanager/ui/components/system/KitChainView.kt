@@ -16,7 +16,7 @@ import org.xebia.spdmanager.ui.components.lists.GenericListView
 fun KitChainView(
     kitChains: Map<Char, KitChain>,
     kits: List<Kit>,
-    onItemClicked: (Kit) -> Unit
+    onUpdate: (Map<Char, KitChain>) -> Unit
 ) {
     var selectedTab by remember { mutableStateOf(kitChains.keys.firstOrNull() ?: 'A') }
 
@@ -45,8 +45,20 @@ fun KitChainView(
             }
 
             Box(Modifier.fillMaxSize()) {
-                GenericListView(mappedKits, {mappedKit -> onItemClicked(mappedKit.third)} ,
-                    {mappedKit -> Text("${"%02d".format(mappedKit.first)}    ${formatKitNumber(mappedKit.second)}  ${mappedKit.third.name} ${mappedKit.third.subName}", fontFamily = FontFamily.Monospace)})
+                GenericListView(
+                    items = mappedKits,
+                    onItemSelected = { mappedKit ->
+                        // If you need to handle kit selection, you could update the kit chain here
+                        // For now, this might just be for viewing/selection UI feedback
+                        // You could add logic here if needed to modify kit chains
+                    },
+                    content = { mappedKit ->
+                        Text(
+                            "${"%02d".format(mappedKit.first)}    ${formatKitNumber(mappedKit.second)}  ${mappedKit.third.name} ${mappedKit.third.subName}",
+                            fontFamily = FontFamily.Monospace
+                        )
+                    }
+                )
             }
         }
     }

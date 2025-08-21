@@ -7,59 +7,61 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.xebia.spdmanager.model.system.fx.common.*
+import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
 import org.xebia.spdmanager.model.system.fx.subtypes.TouchWah
 import org.xebia.spdmanager.ui.components.common.ButtonRow
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 
 @Composable
-fun TouchWahView(touchWah: TouchWah) {
-    var selectedMode by remember { mutableStateOf(touchWah.mode) }
-    var selectedPolarity by remember { mutableStateOf(touchWah.polarity) }
-    var peak by remember { mutableStateOf(touchWah.peak.toFloat()) }
-    var effectLevel by remember { mutableStateOf(touchWah.effectLevel.toFloat()) }
-    var directLevel by remember { mutableStateOf(touchWah.directLevel.toFloat()) }
-
+fun TouchWahView(
+    touchWah: TouchWah,
+    onFxChange: (FxEffect) -> Unit
+) {
     Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
         Text("Touch Wah", fontSize = 18.sp)
 
-
-        // Mode Button Row
         ButtonRow(
             label = "Mode",
-            selectedItem = selectedMode,
+            selectedItem = touchWah.mode,
             items = WahMode.entries.toTypedArray(),
-            onItemSelected = { selectedMode = it }
+            onItemSelected = { newMode ->
+                onFxChange(touchWah.copy(mode = newMode))
+            }
         )
 
-        // Polarity Button Row
         ButtonRow(
             label = "Polarity",
-            selectedItem = selectedPolarity,
+            selectedItem = touchWah.polarity,
             items = Polarity.entries.toTypedArray(),
-            onItemSelected = { selectedPolarity = it }
+            onItemSelected = { newPolarity ->
+                onFxChange(touchWah.copy(polarity = newPolarity))
+            }
         )
 
-        // Peak Slider
         SliderWithLabel(
             label = "Peak",
-            value = peak,
-            onValueChange = { peak = it },
+            value = touchWah.peak.toFloat(),
+            onValueChange = { newPeak ->
+                onFxChange(touchWah.copy(peak = newPeak.toInt()))
+            },
             valueRange = 0f..100f
         )
 
-        // Effect Level Slider
         SliderWithLabel(
             label = "Effect Level",
-            value = effectLevel,
-            onValueChange = { effectLevel = it },
+            value = touchWah.effectLevel.toFloat(),
+            onValueChange = { newEffectLevel ->
+                onFxChange(touchWah.copy(effectLevel = newEffectLevel.toInt()))
+            },
             valueRange = 0f..100f
         )
 
-        // Direct Level Slider
         SliderWithLabel(
             label = "Direct Level",
-            value = directLevel,
-            onValueChange = { directLevel = it },
+            value = touchWah.directLevel.toFloat(),
+            onValueChange = { newDirectLevel ->
+                onFxChange(touchWah.copy(directLevel = newDirectLevel.toInt()))
+            },
             valueRange = 0f..100f
         )
     }

@@ -9,48 +9,53 @@ import org.xebia.spdmanager.model.system.fx.common.*
 import org.xebia.spdmanager.ui.components.common.ButtonRow
 
 @Composable
-fun PadModeView(padMode: PadMode) {
-    var mode by remember { mutableStateOf(padMode) }
-
+fun PadModeView(
+    padMode: PadMode,
+    onPadModeChange: (PadMode) -> Unit
+) {
     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
         ButtonRow(
             label = "Template",
             items = PadTemplate.entries.toTypedArray(),
-            selectedItem = mode.template,
+            selectedItem = padMode.template,
             onItemSelected = { newTemplate ->
+                onPadModeChange(padMode.copy(template = newTemplate))
             }
         )
 
         ButtonRow(
             label = "Loop",
             items = PadLoop.entries.toTypedArray(),
-            selectedItem = mode.loop,
+            selectedItem = padMode.loop,
             onItemSelected = { newLoop ->
-                // Handle loop selection
+                onPadModeChange(padMode.copy(loop = newLoop))
             }
         )
 
         ButtonRow(
             label = "Trigger Type",
             items = TrigType.entries.toTypedArray(),
-            selectedItem = mode.trigType,
+            selectedItem = padMode.trigType,
             onItemSelected = { newTrigType ->
+                onPadModeChange(padMode.copy(trigType = newTrigType))
             }
         )
 
         ButtonRow(
             label = "Dynamics",
             items = SyncSwitch.entries.toTypedArray(),
-            selectedItem = mode.dynamics,
+            selectedItem = padMode.dynamics,
             onItemSelected = { newDynamics ->
+                onPadModeChange(padMode.copy(dynamics = newDynamics))
             }
         )
 
         ButtonRow(
             label = "PolyMono",
             items = PolyMono.entries.toTypedArray(),
-            selectedItem = mode.polyMono,
+            selectedItem = padMode.polyMono,
             onItemSelected = { newPolyMono ->
+                onPadModeChange(padMode.copy(polyMono = newPolyMono))
             }
         )
     }

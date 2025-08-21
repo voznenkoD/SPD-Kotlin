@@ -24,11 +24,10 @@ fun PadPanSlider(label: String, pan: PadPan, onPanChange: (PadPan) -> Unit) {
                 onPanChange(PadPan((it - 15).toInt()))
             },
             valueRange = 0f..30f,
-            steps = 29,  // Allows precise adjustments
+            steps = 29,
             modifier = Modifier.fillMaxWidth()
         )
 
-        // Display L (Left), C (Center), and R (Right) indicators
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text("L", fontSize = 14.sp)
             Text("C", fontSize = 14.sp)

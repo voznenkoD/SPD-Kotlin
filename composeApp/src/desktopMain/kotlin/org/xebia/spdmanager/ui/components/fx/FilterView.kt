@@ -8,81 +8,83 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.xebia.spdmanager.model.system.fx.common.*
 import org.xebia.spdmanager.model.system.fx.subtypes.Filter
+import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
 import org.xebia.spdmanager.ui.components.common.ButtonRow
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 
 @Composable
-fun FilterView(fx: Filter) {
-    var selectedFilterType by remember { mutableStateOf(fx.type) }
-    var resonance by remember { mutableStateOf(fx.resonance) }
-    var selectedSlope by remember { mutableStateOf(fx.slope) }
-    var selectedRateSyncSW by remember { mutableStateOf(fx.rateSyncSW) }
-    var selectedModRate by remember { mutableStateOf(fx.modRate) }
-    var selectedLfoWave by remember { mutableStateOf(fx.lfoWave) }
-
+fun FilterView(
+    fx: Filter,
+    onFxChange: (FxEffect) -> Unit
+) {
     Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
         Text("Filter Settings", fontSize = 18.sp)
 
-        // Filter Type (Button Row)
         ButtonRow(
             label = "Filter Type",
-            selectedItem = selectedFilterType,
+            selectedItem = fx.type,
             items = FilterType.entries.toTypedArray(),
-            onItemSelected = { selectedFilterType = it }
+            onItemSelected = { newType ->
+                onFxChange(fx.copy(type = newType))
+            }
         )
 
-        // Resonance (Slider)
         SliderWithLabel(
             label = "Resonance",
-            value = resonance.toFloat(),
-            onValueChange = { resonance = it.toInt() },
+            value = fx.resonance.toFloat(),
+            onValueChange = { newResonance ->
+                onFxChange(fx.copy(resonance = newResonance.toInt()))
+            },
             valueRange = 0f..100f
         )
 
-        // Filter Slope (Button Row)
         ButtonRow(
             label = "Slope",
-            selectedItem = selectedSlope,
+            selectedItem = fx.slope,
             items = FilterSlope.entries.toTypedArray(),
-            onItemSelected = { selectedSlope = it }
+            onItemSelected = { newSlope ->
+                onFxChange(fx.copy(slope = newSlope))
+            }
         )
 
-        // Rate Sync Switch (Button Row)
         ButtonRow(
             label = "Rate Sync",
-            selectedItem = selectedRateSyncSW,
+            selectedItem = fx.rateSyncSW,
             items = SyncSwitch.entries.toTypedArray(),
-            onItemSelected = { selectedRateSyncSW = it }
+            onItemSelected = { newRateSyncSW ->
+                onFxChange(fx.copy(rateSyncSW = newRateSyncSW))
+            }
         )
 
-        // Modulation Rate (Dynamic Content Based on SyncSwitch)
-        if (selectedRateSyncSW == SyncSwitch.ON) {
-            // Display Enum Rate Buttons when SyncSwitch is ON
-            val modRateEnum = (selectedModRate as? ModRate.EnumRate)!!.modRateEnum
+        if (fx.rateSyncSW == SyncSwitch.ON) {
+            val modRateEnum = (fx.modRate as? ModRate.EnumRate)?.modRateEnum ?: ModRateEnum.QUARTER
             ButtonRow(
                 label = "Modulation Rate",
                 selectedItem = modRateEnum,
                 items = ModRateEnum.entries.toTypedArray(),
-                onItemSelected = { selectedModRate = ModRate.EnumRate(it) }
+                onItemSelected = { newModRateEnum ->
+                    onFxChange(fx.copy(modRate = ModRate.EnumRate(newModRateEnum)))
+                }
             )
         } else {
-            // Display Slider when SyncSwitch is OFF
-            val modRateInt = (selectedModRate as? ModRate.IntRate)?.intRate?.toFloat() ?: 0f
+            val modRateInt = (fx.modRate as? ModRate.IntRate)?.intRate?.toFloat() ?: 0f
             SliderWithLabel(
                 label = "Modulation Rate",
                 value = modRateInt,
-                onValueChange = { selectedModRate = ModRate.IntRate(it.toInt()) },
+                onValueChange = { newModRate ->
+                    onFxChange(fx.copy(modRate = ModRate.IntRate(newModRate.toInt())))
+                },
                 valueRange = 0f..100f
             )
         }
 
-        // LFO Wave (Button Row)
         ButtonRow(
             label = "LFO Wave",
-            selectedItem = selectedLfoWave,
+            selectedItem = fx.lfoWave,
             items = LfoWave.entries.toTypedArray(),
-            onItemSelected = { selectedLfoWave = it }
+            onItemSelected = { newLfoWave ->
+                onFxChange(fx.copy(lfoWave = newLfoWave))
+            }
         )
     }
 }
-

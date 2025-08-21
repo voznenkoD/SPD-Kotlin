@@ -1,5 +1,6 @@
 package org.xebia.spdmanager.ui.components.setup
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -20,65 +21,84 @@ import androidx.compose.ui.unit.sp
 import org.xebia.spdmanager.model.kit.pad.PadNumber
 
 @Composable
-fun PadsSetupScreen(onSelect: (PadNumber) -> Unit) {
+fun PadsSetupScreen(
+    selectedPadNumber: PadNumber,
+    onSelect: (PadNumber) -> Unit
+) {
     val pads = PadNumber.entries
 
     Surface(
-            color = Color.Gray,
-            modifier = Modifier
-                .height(500.dp)
+        color = Color.Gray,
+        modifier = Modifier.height(500.dp)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(2.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(2.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                modifier = Modifier.weight(0.75f)
             ) {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(3),
-                    modifier = Modifier.weight(0.75f)
+                items(
+                    pads.filter { it in PadNumber.PAD_1..PadNumber.PAD_9 }
+                        .sortedBy { it.value }
                 ) {
-                    items(
-                        pads
-                            .filter { it in PadNumber.PAD_1..PadNumber.PAD_9 }
-                            .sortedBy { it.value }
-                    ) {
-                        PadItem(it, onSelect)
-                    }
+                    PadItem(
+                        padNumber = it,
+                        isSelected = it == selectedPadNumber,
+                        onSelect = onSelect
+                    )
                 }
+            }
 
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(4),
-                    modifier = Modifier.weight(0.25f)
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(4),
+                modifier = Modifier.weight(0.25f)
+            ) {
+                items(
+                    pads.filter { it in PadNumber.TRIG_1..PadNumber.TRIG_4 }
+                        .sortedBy { it.value }
                 ) {
-                    items(
-                        pads
-                            .filter { it in PadNumber.TRIG_1..PadNumber.TRIG_4 }
-                            .sortedBy { it.value }
-                    ) {
-                        PadItem(it, onSelect)
-                    }
+                    PadItem(
+                        padNumber = it,
+                        isSelected = it == selectedPadNumber,
+                        onSelect = onSelect
+                    )
                 }
+            }
 
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    modifier = Modifier.weight(0.15f)
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = Modifier.weight(0.15f)
+            ) {
+                items(
+                    pads.filter { it in PadNumber.FS_1..PadNumber.FS_2 }
+                        .sortedBy { it.value }
                 ) {
-                    items(
-                        pads
-                            .filter {it in PadNumber.FS_1..PadNumber.FS_2 }
-                            .sortedBy { it.value }
-                    ) { PadItem(it, onSelect, isFS = true)
-                    }
+                    PadItem(
+                        padNumber = it,
+                        isSelected = it == selectedPadNumber,
+                        onSelect = onSelect,
+                        isFS = true
+                    )
                 }
             }
         }
+    }
 }
 
 @Composable
-fun PadItem(padNumber: PadNumber, onSelect: (PadNumber) -> Unit, isFS: Boolean = false) {
+fun PadItem(
+    padNumber: PadNumber,
+    isSelected: Boolean,
+    onSelect: (PadNumber) -> Unit,
+    isFS: Boolean = false
+) {
     Surface(
-        color = Color.DarkGray,
+        color = if (isSelected) Color.Yellow else Color.DarkGray,
         shape = RoundedCornerShape(8.dp),
+        border = if (isSelected) BorderStroke(2.dp, Color.White) else null,
         modifier = Modifier
             .height(if (isFS) 50.dp else 100.dp)
             .then(if (isFS) Modifier.width(30.dp) else Modifier.width(20.dp))
@@ -92,11 +112,10 @@ fun PadItem(padNumber: PadNumber, onSelect: (PadNumber) -> Unit, isFS: Boolean =
         ) {
             Text(
                 text = padNumber.name.replace("_", " "),
-                color = Color.Yellow,
+                color = if (isSelected) Color.Black else Color.Yellow,
                 fontSize = 20.sp,
                 textAlign = TextAlign.End,
-                modifier = Modifier
-                    .padding(4.dp)
+                modifier = Modifier.padding(4.dp)
             )
         }
     }

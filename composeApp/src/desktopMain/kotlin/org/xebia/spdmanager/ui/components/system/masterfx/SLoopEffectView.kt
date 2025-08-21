@@ -15,51 +15,78 @@ import org.xebia.spdmanager.ui.components.common.ButtonRow
 import org.xebia.spdmanager.ui.components.common.IntStepSliderWithLabel
 
 @Composable
-fun SLoopEffectView(initialConfig: SLoopEffect, onUpdate: (SLoopEffect) -> Unit) {
-    var preset by remember { mutableStateOf(initialConfig.preset) }
-    var mode by remember { mutableStateOf(initialConfig.mode) }
-    var rateSync by remember { mutableStateOf(initialConfig.rateSync) }
-    var rate by remember { mutableStateOf(initialConfig.rate) }
-    var timing by remember { mutableStateOf(initialConfig.timing) }
-
-    LaunchedEffect(preset, mode, rateSync, rate, timing) {
-        onUpdate(SLoopEffect(preset, mode, rateSync, rate, timing))
-    }
-
+fun SLoopEffectView(
+    sLoopEffect: SLoopEffect,
+    onSLoopChange: (SLoopEffect) -> Unit
+) {
     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
         Text("S.Loop Effect", style = MaterialTheme.typography.titleMedium)
 
-        ButtonRow("Preset", preset, SLoopPreset.entries.toTypedArray()) {
-            preset = it
-        }
-        ButtonRow("Mode", mode, SLoopMode.entries.toTypedArray()) {
-            mode = it
-        }
-
-        Switch(
-            checked = rateSync == SyncSwitch.ON,
-            onCheckedChange = {
-                rateSync = if (it) SyncSwitch.ON else SyncSwitch.OFF
-                rate = if (rateSync == SyncSwitch.ON) {
-                    SLoopRate.EnumRate(SLoopRateEnum.fromIndex(0)) // Default EnumRate
-                } else {
-                    SLoopRate.IntRate(0) // Default IntRate
-                }
+        ButtonRow(
+            label = "Preset",
+            selectedItem = sLoopEffect.preset,
+            items = SLoopPreset.entries.toTypedArray(),
+            onItemSelected = { newPreset ->
+                onSLoopChange(sLoopEffect.copy(preset = newPreset))
             }
         )
 
-        if (rateSync == SyncSwitch.ON) {
-            ButtonRow("Rate", (rate as SLoopRate.EnumRate).rateEnum, SLoopRateEnum.entries.toTypedArray()) {
-                rate = SLoopRate.EnumRate(it)
+        ButtonRow(
+            label = "Mode",
+            selectedItem = sLoopEffect.mode,
+            items = SLoopMode.entries.toTypedArray(),
+            onItemSelected = { newMode ->
+                onSLoopChange(sLoopEffect.copy(mode = newMode))
             }
+        )
+
+        Switch(
+            checked = sLoopEffect.rateSync == SyncSwitch.ON,
+            onCheckedChange = { isOn ->
+                val newRateSync = if (isOn) SyncSwitch.ON else SyncSwitch.OFF
+                val newRate = if (isOn) {
+                    SLoopRate.EnumRate(SLoopRateEnum.fromIndex(0))
+                } else {
+                    SLoopRate.IntRate(
+                        (sLoopEffect.rate as? SLoopRate.EnumRate)?.rateEnum?.ordinal ?: 0
+                    )
+                }
+                onSLoopChange(
+                    sLoopEffect.copy(
+                        rateSync = newRateSync,
+                        rate = newRate
+                    )
+                )
+            }
+        )
+
+        if (sLoopEffect.rateSync == SyncSwitch.ON) {
+            ButtonRow(
+                label = "Rate",
+                selectedItem = (sLoopEffect.rate as? SLoopRate.EnumRate)?.rateEnum ?: SLoopRateEnum.fromIndex(0),
+                items = SLoopRateEnum.entries.toTypedArray(),
+                onItemSelected = { newRateEnum ->
+                    onSLoopChange(sLoopEffect.copy(rate = SLoopRate.EnumRate(newRateEnum)))
+                }
+            )
         } else {
-            IntStepSliderWithLabel("Rate ", (rate as SLoopRate.IntRate).intRate, 0..127) {
-                rate = SLoopRate.IntRate(it)
-            }
+            IntStepSliderWithLabel(
+                label = "Rate",
+                value = (sLoopEffect.rate as? SLoopRate.IntRate)?.intRate ?: 0,
+                range = 0..127,
+                onValueChange = { newIntRate ->
+                    onSLoopChange(sLoopEffect.copy(rate = SLoopRate.IntRate(newIntRate)))
+                }
+            )
         }
 
-        ButtonRow("Timing", timing, SLoopTiming.entries.toTypedArray()) {
-            timing = it
-        }
+        ButtonRow(
+            label = "Timing",
+            selectedItem = sLoopEffect.timing,
+            items = SLoopTiming.entries.toTypedArray(),
+            onItemSelected = { newTiming ->
+                onSLoopChange(sLoopEffect.copy(timing = newTiming))
+            }
+        )
     }
 }
