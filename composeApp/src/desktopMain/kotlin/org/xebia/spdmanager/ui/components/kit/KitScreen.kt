@@ -122,6 +122,7 @@ fun DetailsTabs(
     kitIndex: Int?,
     kit: Kit?,
     pad: Pad?,
+    padNumber: PadNumber?,  // Add this parameter
     deviceManager: DeviceManager
 ) {
     var selectedTab by remember { mutableStateOf(0) }
@@ -144,21 +145,17 @@ fun DetailsTabs(
                 )
             } ?: Text("No kit selected", modifier = Modifier.padding(16.dp))
 
-            1 -> pad?.let { p ->
-                kitIndex?.let { kIndex ->
-                    val padNumber = kit?.pads?.entries?.find { it.value == p }?.key
-
-                    if (padNumber != null) {
-                        PadDetailsScreen(
-                            padNumber = padNumber,
-                            kitIndex = kIndex,
-                            deviceManager = deviceManager
-                        )
-                    } else {
-                        Text("Pad not found in kit", modifier = Modifier.padding(16.dp))
-                    }
+            1 -> {
+                if (kitIndex != null && padNumber != null && pad != null) {
+                    PadDetailsScreen(
+                        padNumber = padNumber,
+                        kitIndex = kitIndex,
+                        deviceManager = deviceManager
+                    )
+                } else {
+                    Text("No pad selected", modifier = Modifier.padding(16.dp))
                 }
-            } ?: Text("No pad selected", modifier = Modifier.padding(16.dp))
+            }
         }
     }
 }

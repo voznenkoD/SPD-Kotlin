@@ -2,7 +2,6 @@ package org.xebia.spdmanager.viewmodel
 
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.lifecycle.ViewModel
 import org.xebia.spdmanager.model.kit.pad.*
 import org.xebia.spdmanager.model.kit.pad.mode.PadMode
 import org.xebia.spdmanager.model.system.fx.common.SyncSwitch
@@ -12,51 +11,50 @@ class PadViewModel(
     private val kitIndex: Int,
     private val padNumber: PadNumber,
     private val deviceManager: DeviceManager
-) : ViewModel() {
-
+) {
     val pad by derivedStateOf {
         deviceManager.device?.kits?.getOrNull(kitIndex)?.pads?.get(padNumber)
     }
 
-    fun updateMainSound(sound: Sound) {
-        deviceManager.updatePad(kitIndex, padNumber) {
-            it.copy(main = sound)
+    fun updateMainSound(newSound: Sound) {
+        pad?.let { currentPad ->
+            deviceManager.updatePad(kitIndex, padNumber, currentPad.copy(main = newSound))
         }
     }
 
-    fun updateSubSound(sound: Sound) {
-        deviceManager.updatePad(kitIndex, padNumber) {
-            it.copy(sub = sound)
+    fun updateSubSound(newSound: Sound) {
+        pad?.let { currentPad ->
+            deviceManager.updatePad(kitIndex, padNumber, currentPad.copy(sub = newSound))
         }
     }
 
     fun updateMuteGroup(muteGroup: MuteGroup) {
-        deviceManager.updatePad(kitIndex, padNumber) {
-            it.copy(muteGroup = muteGroup)
+        pad?.let { currentPad ->
+            deviceManager.updatePad(kitIndex, padNumber, currentPad.copy(muteGroup = muteGroup))
         }
     }
 
     fun updateTempoSync(tempoSync: SyncSwitch) {
-        deviceManager.updatePad(kitIndex, padNumber) {
-            it.copy(tempoSync = tempoSync)
+        pad?.let { currentPad ->
+            deviceManager.updatePad(kitIndex, padNumber, currentPad.copy(tempoSync = tempoSync))
         }
     }
 
     fun updateOutput(output: PadOutput) {
-        deviceManager.updatePad(kitIndex, padNumber) {
-            it.copy(output = output)
+        pad?.let { currentPad ->
+            deviceManager.updatePad(kitIndex, padNumber, currentPad.copy(output = output))
         }
     }
 
     fun updatePadMode(padMode: PadMode) {
-        deviceManager.updatePad(kitIndex, padNumber) {
-            it.copy(padMode = padMode)
+        pad?.let { currentPad ->
+            deviceManager.updatePad(kitIndex, padNumber, currentPad.copy(padMode = padMode))
         }
     }
 
     fun updateMidiParams(midiParams: MidiParams) {
-        deviceManager.updatePad(kitIndex, padNumber) {
-            it.copy(midiParams = midiParams)
+        pad?.let { currentPad ->
+            deviceManager.updatePad(kitIndex, padNumber, currentPad.copy(midiParams = midiParams))
         }
     }
 }

@@ -52,6 +52,7 @@ fun MainScreen() {
                 kitIndex = selectedKitIndex,
                 kit = selectedKit,
                 pad = selectedPad,
+                padNumber = selectedPadNumber,
                 deviceManager = deviceManager
             )
         }
