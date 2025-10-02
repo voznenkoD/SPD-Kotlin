@@ -53,7 +53,8 @@ fun MainScreen() {
                 kit = selectedKit,
                 pad = selectedPad,
                 padNumber = selectedPadNumber,
-                deviceManager = deviceManager
+                deviceManager = deviceManager,
+                onWaveSelected = mainViewModel::selectWaveByNumber
             )
         }
 

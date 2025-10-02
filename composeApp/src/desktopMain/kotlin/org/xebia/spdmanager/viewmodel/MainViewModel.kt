@@ -90,4 +90,10 @@ class MainViewModel(
             }
         }
     }
+    fun selectWaveByNumber(waveNumber: Int?) {
+        if (waveNumber != null) {
+            val waves = deviceManager.device?.waves ?: emptyList()
+            _selectedWave.value = waves.find { it.number == waveNumber }
+        }
+    }
 }

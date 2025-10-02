@@ -20,7 +20,8 @@ import org.xebia.spdmanager.viewmodel.PadViewModel
 fun PadDetailsScreen(
     padNumber: PadNumber,
     kitIndex: Int,
-    deviceManager: DeviceManager
+    deviceManager: DeviceManager,
+    onWaveSelected: (Int?) -> Unit  // Add this callback
 ) {
     val viewModel = remember(kitIndex, padNumber) {
         PadViewModel(kitIndex, padNumber, deviceManager)
@@ -43,6 +44,7 @@ fun PadDetailsScreen(
             sound = pad.main,
             onSoundChange = { newSound ->
                 viewModel.updateMainSound(newSound)
+                onWaveSelected(newSound.wave)  // Notify wave selection
             }
         )
 
@@ -51,6 +53,7 @@ fun PadDetailsScreen(
             sound = pad.sub,
             onSoundChange = { newSound ->
                 viewModel.updateSubSound(newSound)
+                onWaveSelected(newSound.wave)  // Notify wave selection
             }
         )
 

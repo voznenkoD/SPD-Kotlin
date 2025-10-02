@@ -122,8 +122,9 @@ fun DetailsTabs(
     kitIndex: Int?,
     kit: Kit?,
     pad: Pad?,
-    padNumber: PadNumber?,  // Add this parameter
-    deviceManager: DeviceManager
+    padNumber: PadNumber?,
+    deviceManager: DeviceManager,
+    onWaveSelected: (Int?) -> Unit  // Add this parameter
 ) {
     var selectedTab by remember { mutableStateOf(0) }
 
@@ -150,7 +151,8 @@ fun DetailsTabs(
                     PadDetailsScreen(
                         padNumber = padNumber,
                         kitIndex = kitIndex,
-                        deviceManager = deviceManager
+                        deviceManager = deviceManager,
+                        onWaveSelected = onWaveSelected  // Pass the callback
                     )
                 } else {
                     Text("No pad selected", modifier = Modifier.padding(16.dp))
