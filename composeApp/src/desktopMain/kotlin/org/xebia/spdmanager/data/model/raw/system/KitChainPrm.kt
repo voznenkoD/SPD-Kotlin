@@ -5,7 +5,6 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
 
 data class KitChainPrm(
     @JacksonXmlElementWrapper(useWrapping = false)
-    @JacksonXmlProperty(localName = "KitChain")
+    @field:JacksonXmlProperty(localName = "KitChain")
     val kitChains: Array<KitChain>
 )
-

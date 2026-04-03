@@ -5,6 +5,8 @@ data class Isolator(
     val mid: Float,
     val level: Int
 ): FxEffect(){
+    override fun toParams(): List<Int> = padTo20(listOf((mid + 60).toInt(), level))
+
     companion object {
         fun fromValues(params: List<Int>): Isolator {
             return Isolator(

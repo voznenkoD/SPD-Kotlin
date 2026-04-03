@@ -13,6 +13,10 @@ data class Reverb(
     val directLevel: Int,
     val glblRevLvl: Int
 ): FxEffect() {
+    override fun toParams(): List<Int> = padTo20(listOf(
+        type.value, reverbTime, preDelay, lowCut.value, highCut.value, density, directLevel, glblRevLvl
+    ))
+
     companion object {
         fun fromValues(params: List<Int>): Reverb {
             return Reverb(

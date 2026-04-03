@@ -11,6 +11,14 @@ data class Filter(
     val modRate: ModRate,
     val lfoWave: LfoWave
 ): FxEffect(){
+    override fun toParams(): List<Int> {
+        val modRateValue = when (modRate) {
+            is ModRate.EnumRate -> modRate.modRateEnum.index
+            is ModRate.IntRate -> modRate.intRate
+        }
+        return padTo20(listOf(type.value, resonance, slope.value, rateSyncSW.value, modRateValue, lfoWave.value))
+    }
+
     companion object {
         fun fromValues(params: List<Int>): Filter {
             val rateSyncSwEnum = SyncSwitch.fromValue(params[3])

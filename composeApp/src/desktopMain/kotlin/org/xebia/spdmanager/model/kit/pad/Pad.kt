@@ -12,7 +12,29 @@ data class Pad(
     val padMode: PadMode,
     val midiParams: MidiParams,
     val output: PadOutput
-){
+) {
+    fun toRaw(): PadPrm = PadPrm(
+        Wv = main.toRawWave(),
+        WvLevel = main.volume,
+        WvPan = main.toRawPan(),
+        PlayMode = padMode.template.value,
+        OutAsgn = output.value,
+        MuteGrp = muteGroup.toValue(),
+        TempoSync = tempoSync.value,
+        PadMidiCh = midiParams.padCH.toValue(),
+        NoteNum = midiParams.midiNote.toValue(),
+        MidiCtrl = midiParams.externalControl.value,
+        Loop = padMode.loop.value,
+        TrigType = padMode.trigType.value,
+        GateTime = midiParams.gate.toValue(),
+        Dynamics = padMode.dynamics.value,
+        VoiceAsgn = padMode.polyMono.value,
+        Reverse = 0,
+        SubWv = sub.toRawWave(),
+        SubWvLevel = sub.volume,
+        SubWvPan = sub.toRawPan()
+    )
+
     companion object {
         fun fromValues(padPrm: PadPrm): Pad {
             val main = Sound.fromValues(padPrm.Wv, padPrm.WvLevel, padPrm.WvPan)

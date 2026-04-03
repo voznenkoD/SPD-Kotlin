@@ -9,6 +9,20 @@ data class SLoopEffect(
     val rate: SLoopRate,
     val timing: SLoopTiming
 ) {
+    fun toRawPreset(): Int = preset.value
+    fun toRawType(): Int = mode.value
+    fun toRawParams(): List<Int> {
+        val rateMS = when (rate) {
+            is SLoopRate.IntRate -> rate.intRate
+            is SLoopRate.EnumRate -> 0
+        }
+        val rateNote = when (rate) {
+            is SLoopRate.EnumRate -> rate.rateEnum.index
+            is SLoopRate.IntRate -> 0
+        }
+        return listOf(rateSync.value, rateMS, rateNote, timing.value)
+    }
+
     companion object {
         fun fromValues(
             preset: Int, mode: Int, rateSync: Int,

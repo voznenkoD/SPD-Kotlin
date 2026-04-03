@@ -15,6 +15,12 @@ data class TapeEcho(
     val directLevel: Int, // 0..100
     val level: Int        // 0..100
 ): FxEffect() {
+    override fun toParams(): List<Int> = padTo20(listOf(
+        mode.value, (bass + 15).toInt(), (treble + 15).toInt(),
+        headSPan + 64, headMPan + 64, headLPan + 64,
+        tapeDist, wfRate, wfDepth, echoLevel, directLevel, level
+    ))
+
     companion object {
         fun fromValues(params: List<Int>): TapeEcho {
             return TapeEcho(

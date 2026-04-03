@@ -12,9 +12,12 @@ import java.nio.file.Files
 import kotlin.io.path.Path
 
 class XmlParser {
-    val xmlMapper = XmlMapper().apply {
-        registerKotlinModule()
-    }
+    val xmlMapper = XmlMapper.builder()
+        .defaultUseWrapper(false)
+        .build()
+        .apply {
+            registerKotlinModule()
+        }
 
     fun readFilesInFolder(folderPath: String): List<File> {
         val folder = File(folderPath)
@@ -67,5 +70,26 @@ class XmlParser {
                 { it.first.fileNumber.toIntOrNull() ?: Int.MAX_VALUE }
             ))
             .toMap()
+    }
+
+    fun writeKitFile(kitPrm: KitPrm, file: File) {
+        xmlMapper.writeValue(file, kitPrm)
+    }
+
+    fun writeSystemConfig(config: Config, systemDir: File) {
+        val xml = xmlMapper.writeValueAsString(config)
+        // Strip the <Root> wrapper — sysparam.spd stores raw elements without a root tag
+        val inner = xml
+            .replaceFirst(Regex("^<Root[^>]*>"), "")
+            .replaceFirst(Regex("</Root>$"), "")
+        File(systemDir, "sysparam.spd").writeText(inner)
+    }
+
+    fun <T> writeSystemFile(data: T, filename: String, systemDir: File) {
+        xmlMapper.writeValue(File(systemDir, filename), data)
+    }
+
+    fun writeWaveFile(wvPrm: WvPrm, file: File) {
+        xmlMapper.writeValue(file, wvPrm)
     }
 }

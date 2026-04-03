@@ -1,6 +1,8 @@
 package org.xebia.spdmanager.model.kit.pad
 
 data class PadPan (val value: Int) {
+    fun toRaw(): Int = value + 15
+
     override fun toString(): String {
         return when {
             value < 0 -> "L${-value}"

@@ -70,6 +70,8 @@ enum class Interval(val value: Int) {
 }
 
 data class ClickPan(val value: Int) {
+    fun toRaw(): Int = value + 15
+
     override fun toString(): String {
         return when {
             value < 0 -> "L${-value}"

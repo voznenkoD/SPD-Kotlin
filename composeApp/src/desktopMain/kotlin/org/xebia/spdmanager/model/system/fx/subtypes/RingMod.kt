@@ -11,6 +11,10 @@ data class RingMod(
     val balance: DryWetMix,
     val level: Int
 ): FxEffect() {
+    override fun toParams(): List<Int> = padTo20(listOf(
+        polarity.value, (lowGain + 15).toInt(), (hiGain + 15).toInt(), balance.wet * 2, level
+    ))
+
     companion object {
         fun fromValues(params: List<Int>): RingMod {
             return RingMod(

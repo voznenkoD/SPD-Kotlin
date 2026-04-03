@@ -6,8 +6,8 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement
 
 @JacksonXmlRootElement(localName = "WvListSortbyNum_Tag")
 data class WvListSortbyNumTag(
-    @JacksonXmlProperty(localName = "WvList")
     @JacksonXmlElementWrapper(useWrapping = false)
+    @param:JacksonXmlProperty(localName = "WvList") @get:JacksonXmlProperty(localName = "WvList")
     val wvList: List<WvList>
 )
 

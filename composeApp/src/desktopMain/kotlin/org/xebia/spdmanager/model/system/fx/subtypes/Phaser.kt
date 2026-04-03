@@ -12,6 +12,10 @@ data class Phaser(
     val effectLevel: Int,
     val directLevel: Int
 ): FxEffect(){
+    override fun toParams(): List<Int> = padTo20(listOf(
+        type.value, rateSyncSW.value, manual, resonance, separation, effectLevel, directLevel
+    ))
+
     companion object {
         fun fromValues(params: List<Int>): Phaser {
             return Phaser(

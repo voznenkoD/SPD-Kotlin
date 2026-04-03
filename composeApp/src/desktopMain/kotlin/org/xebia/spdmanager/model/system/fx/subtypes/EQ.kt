@@ -16,6 +16,11 @@ data class EQ(
     val hiCut: HighCut,
     val level: Float
 ): FxEffect() {
+    override fun toParams(): List<Int> = padTo20(listOf(
+        lowCut.value, (lowGain + 20).toInt(), pkg1Freq.index, pkg1Q.index, (pkg1Gain + 20).toInt(),
+        pkg2Freq.index, pkg2Q.index, (pkg2Gain + 20).toInt(), (hiGain + 20).toInt(), hiCut.value, (level + 20).toInt()
+    ))
+
     companion object {
         fun fromValues(params: List<Int>):  EQ {
             return EQ(

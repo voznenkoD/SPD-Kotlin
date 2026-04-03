@@ -11,6 +11,10 @@ data class Compressor(
     val knee: Knee,
     val makeup: Int
 ): FxEffect(){
+    override fun toParams(): List<Int> = padTo20(listOf(
+        (threshold + 48).toInt(), attack, release, ratio.value, knee.value, makeup
+    ))
+
     companion object {
         fun fromValues(params: List<Int>): Compressor {
             return Compressor(

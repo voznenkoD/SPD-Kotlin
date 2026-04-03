@@ -23,3 +23,8 @@ fun decodeTempo(tempo: Int): Double{
 fun encodeTempo(tempo: Double): Int {
     return (tempo * 10).toInt()
 }
+
+fun encodeNamePadded(string: String, length: Int): IntArray {
+    val encoded = encodeName(string)
+    return encoded.copyOf(length)
+}

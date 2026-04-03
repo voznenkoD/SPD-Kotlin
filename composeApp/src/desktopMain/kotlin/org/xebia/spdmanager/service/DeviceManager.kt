@@ -15,7 +15,9 @@ import org.xebia.spdmanager.model.kit.pad.PadNumber
 import org.xebia.spdmanager.model.list.WaveListsHolder
 import org.xebia.spdmanager.model.setup.SetupConfig
 import org.xebia.spdmanager.model.setup.fromRaw
+import org.xebia.spdmanager.model.setup.toRaw
 import org.xebia.spdmanager.model.system.SystemConfig
+import java.io.File
 
 class DeviceManager {
     val xmlParser = XmlParser()
@@ -77,7 +79,6 @@ class DeviceManager {
             if (kitIndex in updatedKits.indices) {
                 updatedKits[kitIndex] = transform(updatedKits[kitIndex])
                 device = currentDevice.copy(kits = updatedKits)
-                saveDevice()
             }
         }
     }
@@ -93,7 +94,6 @@ class DeviceManager {
                 }
                 updatedKits[kitIndex] = kit.copy(pads = updatedPads)
                 device = currentDevice.copy(kits = updatedKits)
-                saveDevice()
             }
         }
     }
@@ -104,7 +104,6 @@ class DeviceManager {
                 if (wave.number == waveNumber) transform(wave) else wave
             }
             device = currentDevice.copy(waves = updatedWaves)
-            saveDevice()
         }
     }
 
@@ -114,7 +113,6 @@ class DeviceManager {
     fun updateSystemConfig(newSystemConfig: SystemConfig) {
         device?.let { currentDevice ->
             device = currentDevice.copy(systemConfig = newSystemConfig)
-            saveDevice()
         }
     }
 
@@ -127,7 +125,6 @@ class DeviceManager {
             if (kitIndex in updatedKits.indices) {
                 updatedKits[kitIndex] = updatedKit
                 device = currentDevice.copy(kits = updatedKits)
-                saveDevice()
             }
         }
     }
@@ -154,7 +151,6 @@ class DeviceManager {
     fun updateWaves(waves: List<Wave>) {
         device?.let { currentDevice ->
             device = currentDevice.copy(waves = waves)
-            saveDevice()
         }
     }
 
@@ -167,7 +163,6 @@ class DeviceManager {
             if (waveIndex in updatedWaves.indices) {
                 updatedWaves[waveIndex] = updatedWave
                 device = currentDevice.copy(waves = updatedWaves)
-                saveDevice()
             }
         }
     }
@@ -178,12 +173,44 @@ class DeviceManager {
     fun updateWaveLists(waveListsHolder: WaveListsHolder) {
         device?.let { currentDevice ->
             device = currentDevice.copy(waveLists = waveListsHolder)
-            saveDevice()
         }
     }
 
-    private fun saveDevice() {
-        // TODO: Implement saving logic if needed
-        // This would write the changes back to the XML files
+    fun saveDevice() {
+        val dev = device ?: return
+        val rootPath = dev.rootPath
+        if (rootPath.isBlank()) return
+
+        // Convert domain → raw
+        val setupPrm = dev.setupConfig.toRaw()
+        val sysPrm = dev.systemConfig.toRawSysPrm()
+        val kitChainPrm = dev.systemConfig.toRawKitChainPrm()
+        val mEfctPrm = dev.systemConfig.toRawMEfctPrm()
+        val config = Config(setupPrm, sysPrm, kitChainPrm, mEfctPrm)
+
+        // Write system config (sysparam.spd with Root wrapper stripped)
+        val systemDir = File("$rootPath/SYSTEM")
+        xmlParser.writeSystemConfig(config, systemDir)
+
+        // Write wave list files
+        val rawWaveLists = dev.waveLists.toRaw()
+        xmlParser.writeSystemFile(rawWaveLists.tagList, "tag_list.spd", systemDir)
+        xmlParser.writeSystemFile(rawWaveLists.wvListSortbyName, "wavelist_name.spd", systemDir)
+        xmlParser.writeSystemFile(rawWaveLists.wvListSortbyNameTag, "wavelist_tagname.spd", systemDir)
+        xmlParser.writeSystemFile(rawWaveLists.wvListSortbyNumTag, "wavelist_tagnum.spd", systemDir)
+
+        // Write kit files
+        dev.kits.forEachIndexed { index, kit ->
+            val kitFile = File("$rootPath/KIT/KIT_${"%03d".format(index)}.spd")
+            xmlParser.writeKitFile(kit.toRaw(), kitFile)
+        }
+
+        // Write wave files
+        dev.waves.forEach { wave ->
+            val folder = (wave.number - 1) / 100
+            val file = (wave.number - 1) % 100
+            val waveFile = File("$rootPath/WAVE/PRM/%02d/%02d.spd".format(folder, file))
+            xmlParser.writeWaveFile(wave.toRaw(), waveFile)
+        }
     }
 }

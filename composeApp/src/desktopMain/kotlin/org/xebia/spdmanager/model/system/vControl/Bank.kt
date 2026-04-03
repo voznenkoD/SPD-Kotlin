@@ -2,8 +2,13 @@ package org.xebia.spdmanager.model.system.vControl
 
 
 sealed class Bank {
-    data object Off : Bank()
+    abstract fun toValue(): Int
+
+    data object Off : Bank() {
+        override fun toValue(): Int = -1
+    }
     data class BankNumber(val number: Int) : Bank() {
+        override fun toValue(): Int = number
         init {
             require(number in 0..127) { "Note number must be between 0 and 127" }
         }

@@ -14,6 +14,10 @@ data class StepPHASR(
     val effectLevel: Int,
     val directLevel: Int
 ): FxEffect() {
+    override fun toParams(): List<Int> = padTo20(listOf(
+        type.value, rateSyncSW.value, stepSyncSW.value, depth, manual, resonance, separation, effectLevel, directLevel
+    ))
+
     companion object {
         fun fromValues(params: List<Int>): StepPHASR {
             return StepPHASR(

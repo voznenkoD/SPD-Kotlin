@@ -6,6 +6,8 @@ data class Pitchshift(
     val effectLevel: Int,
     val directLevel: Int
 ): FxEffect(){
+    override fun toParams(): List<Int> = padTo20(listOf((fine + 50).toInt(), effectLevel, directLevel))
+
     companion object {
         fun fromValues(params: List<Int>):  Pitchshift {
             return Pitchshift(

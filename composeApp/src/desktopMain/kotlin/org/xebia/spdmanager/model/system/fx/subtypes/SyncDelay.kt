@@ -11,6 +11,11 @@ data class SyncDelay(
     val highCut: HighCut,
     val directLevel: Int
 ): FxEffect(){
+    override fun toParams(): List<Int> = padTo20(listOf(
+        type.value, (delayTime as? DelayTime.EnumTime)?.delayTimeEnum?.index ?: 0,
+        tapTime, lowCut.value, highCut.value, directLevel
+    ))
+
     companion object {
         fun fromValues(params: List<Int>): SyncDelay {
             val delayTime = DelayTime.EnumTime(DelayTimeEnum.fromIndex(params[1]))

@@ -12,6 +12,20 @@ data class DelayEffect(
     val highCut: HighCut,
     val directLevel: Int
 ) {
+    fun toRawPreset(): Int = preset.value
+    fun toRawType(): Int = type.value
+    fun toRawParams(): List<Int> {
+        val delayTimeMS = when (delayTime) {
+            is DelayTime.IntTime -> delayTime.intTime
+            is DelayTime.EnumTime -> 0
+        }
+        val delayTimeNote = when (delayTime) {
+            is DelayTime.EnumTime -> delayTime.delayTimeEnum.index
+            is DelayTime.IntTime -> 0
+        }
+        return listOf(syncSW.value, delayTimeMS, delayTimeNote, tapTime, lowCut.value, highCut.value, directLevel)
+    }
+
     companion object {
         fun fromValues(
             preset:Int, type: Int, syncSW: Int, delayTimeMS: Int, delayTimeNote: Int,

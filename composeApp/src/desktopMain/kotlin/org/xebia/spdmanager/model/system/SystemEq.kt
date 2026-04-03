@@ -8,6 +8,11 @@ data class SystemEq(
     val midGain: Float,
     val highGain: Float,
 ) {
+    fun toRawLowGain(): Int = (lowGain + 12).toInt()
+    fun toRawMidFreq(): Int = midFreq.ordinal
+    fun toRawMidGain(): Int = (midGain + 12).toInt()
+    fun toRawHighGain(): Int = (highGain + 12).toInt()
+
     companion object {
         fun fromValues(lowGain: Int, midFreq: Int, midGain: Int, highGain: Int): SystemEq {
             return SystemEq(

@@ -8,6 +8,8 @@ data class Slicer(
     val rateSync: SyncSwitch,
     val attack: Int
 ): FxEffect() {
+    override fun toParams(): List<Int> = padTo20(listOf(pattern, rateSync.value, attack))
+
     companion object {
         fun fromValues(params: List<Int>): Slicer {
             return Slicer(

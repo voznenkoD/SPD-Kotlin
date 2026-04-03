@@ -14,6 +14,10 @@ data class StepFLNGR(
     val effectLevel: Int,
     val directLevel: Int
 ): FxEffect() {
+    override fun toParams(): List<Int> = padTo20(listOf(
+        rateSync.value, stepSync.value, depth, manual, resonance, separation, lowCut.value, effectLevel, directLevel
+    ))
+
     companion object {
         fun fromValues(params: List<Int>): StepFLNGR {
             return StepFLNGR(

@@ -2,8 +2,13 @@ package org.xebia.spdmanager.model.kit.pad.midi
 
 
 sealed class PadCH {
-    data object Global : PadCH()
+    abstract fun toValue(): Int
+
+    data object Global : PadCH() {
+        override fun toValue(): Int = -1
+    }
     data class Channel(val number: Int) : PadCH() {
+        override fun toValue(): Int = number
         init {
             require(number in 1..16) { "Channel number must be between 1 and 16" }
         }

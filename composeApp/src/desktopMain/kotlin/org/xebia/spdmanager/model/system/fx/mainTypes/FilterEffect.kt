@@ -10,7 +10,21 @@ data class FilterEffect(
     val modRate: ModRate,
     val modDepth: Int,
     val lfoWave: LfoWave
-){
+) {
+    fun toRawPreset(): Int = preset.value
+    fun toRawType(): Int = type.value
+    fun toRawParams(): List<Int> {
+        val modRateMS = when (modRate) {
+            is ModRate.IntRate -> modRate.intRate
+            is ModRate.EnumRate -> 0
+        }
+        val modRateNote = when (modRate) {
+            is ModRate.EnumRate -> modRate.modRateEnum.index
+            is ModRate.IntRate -> 0
+        }
+        return listOf(slope.value, rateSync.value, modRateMS, modRateNote, lfoWave.value, modDepth)
+    }
+
     companion object {
         fun fromValues(
             preset: Int, type: Int, slope: Int, rateSync: Int,

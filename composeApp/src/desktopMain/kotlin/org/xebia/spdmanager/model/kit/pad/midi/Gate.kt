@@ -2,10 +2,17 @@ package org.xebia.spdmanager.model.kit.pad.midi
 
 
 sealed class Gate {
-    data object Off : Gate()
-    data object Alt : Gate()
+    abstract fun toValue(): Int
+
+    data object Off : Gate() {
+        override fun toValue(): Int = -1
+    }
+    data object Alt : Gate() {
+        override fun toValue(): Int = 0
+    }
 
     data class GateVal(val number: Int) : Gate() {
+        override fun toValue(): Int = number
         init {
             require(number in 1..16) { "Channel number must be between 1 and 16" }
         }

@@ -11,6 +11,8 @@ data class TouchWah(
     val effectLevel: Int,
     val directLevel: Int,
 ): FxEffect(){
+    override fun toParams(): List<Int> = padTo20(listOf(mode.value, polarity.value, peak, effectLevel, directLevel))
+
     companion object {
         fun fromValues(params: List<Int>): TouchWah {
             return TouchWah(

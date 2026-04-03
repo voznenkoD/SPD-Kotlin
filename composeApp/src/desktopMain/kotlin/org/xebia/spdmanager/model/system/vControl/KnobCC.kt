@@ -1,8 +1,13 @@
 package org.xebia.spdmanager.model.system.vControl
 
 sealed class KnobCC {
-    data object Off : KnobCC()
+    abstract fun toValue(): Int
+
+    data object Off : KnobCC() {
+        override fun toValue(): Int = 0
+    }
     data class KnobCcNumber(val number: Int) : KnobCC() {
+        override fun toValue(): Int = number
         init {
             require(number in 0..127) { "CC must be between 0 and 127" }
         }

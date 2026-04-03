@@ -11,7 +11,9 @@ data class MasterEffectConfig(
     val delayEffect: DelayEffect,
     val sLoopEffect: SLoopEffect,
     val fxEffect: FxEffect
-){
+) {
+    fun toRawFxParams(): List<Int> = fxEffect.toParams()
+
     companion object {
         fun fromValues(
            mEfctPrm: MEfctPrm

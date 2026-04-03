@@ -11,6 +11,10 @@ data class Chorus(
     val highCut: HighCut,
     val directLevel: Int
 ): FxEffect() {
+    override fun toParams(): List<Int> = padTo20(listOf(
+        mode.value, rate, preDelay, lowCut.value, highCut.value, directLevel
+    ))
+
     companion object {
         fun fromValues(params: List<Int>): Chorus {
             return Chorus(

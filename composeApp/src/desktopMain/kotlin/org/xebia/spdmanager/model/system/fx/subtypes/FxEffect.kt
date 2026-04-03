@@ -6,6 +6,11 @@ import org.xebia.spdmanager.ui.components.fx.*
 
 sealed class FxEffect {
     abstract val fxType: FXType
+    abstract fun toParams(): List<Int>
+
+    protected fun padTo20(params: List<Int>): List<Int> {
+        return params + List(20 - params.size) { 0 }
+    }
 
     companion object {
         fun fromValues(fxTypeInt: Int, params: List<Int>): FxEffect {

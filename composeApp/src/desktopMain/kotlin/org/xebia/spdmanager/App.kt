@@ -22,6 +22,9 @@ fun main() = application {
                             deviceManager.readDevice(folderPath)
                         }
                     })
+                    Item("Save", onClick = {
+                        deviceManager.saveDevice()
+                    })
                 }
                 Menu("View", mnemonic = 'V') {
                     Item("Main", onClick = { AppState.currentScreen = Screen.Main })

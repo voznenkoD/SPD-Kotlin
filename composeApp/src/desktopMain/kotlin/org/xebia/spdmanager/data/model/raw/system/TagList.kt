@@ -6,8 +6,8 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement
 
 @JacksonXmlRootElement(localName = "TagList")
 data class TagList(
-    @JacksonXmlProperty(localName = "TagPrm")
     @JacksonXmlElementWrapper(useWrapping = false)
+    @param:JacksonXmlProperty(localName = "TagPrm") @get:JacksonXmlProperty(localName = "TagPrm")
     val tagList: List<TagPrm>
 )
 

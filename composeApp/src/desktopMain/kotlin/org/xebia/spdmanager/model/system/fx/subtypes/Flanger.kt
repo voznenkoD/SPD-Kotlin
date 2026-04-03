@@ -12,6 +12,10 @@ data class Flanger(
     val effectLevel: Int,
     val directLevel: Int
 ): FxEffect() {
+    override fun toParams(): List<Int> = padTo20(listOf(
+        rateSync.value, manual, resonance, separation, lowCut.value, effectLevel, directLevel
+    ))
+
     companion object {
         fun fromValues(params: List<Int>):  Flanger {
             return Flanger(

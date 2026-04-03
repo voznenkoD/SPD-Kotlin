@@ -10,6 +10,10 @@ data class Distortion(
     val tone: Float,
     val effectLevel: Int
 ): FxEffect(){
+    override fun toParams(): List<Int> = padTo20(listOf(
+        type.value, drive, (bottom + 50).toInt(), (tone + 50).toInt(), effectLevel
+    ))
+
     companion object {
         fun fromValues(params: List<Int>): Distortion {
             return Distortion(

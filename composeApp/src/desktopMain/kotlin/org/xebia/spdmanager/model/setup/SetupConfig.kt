@@ -182,6 +182,43 @@ enum class DispMode(val value: Int) {
     }
 }
 
+fun SetupConfig.toRaw(): SetupPrm {
+    return SetupPrm(
+        lcdContrast = lcdContrast,
+        lcdBright = lcdBrightness,
+        padIllumi = padIndication.value,
+        tempoIndi = tempoIndication.value,
+        fs1Porality = fs1Polarity.value,
+        fs2Porality = fs2Polarity.value,
+        midiCh = midiCh,
+        midiSync = midiSync.value,
+        localCtrl = localCtrl.value,
+        softThru = softThru.value,
+        midiPCCtrl = midiPCCtrl.value,
+        midiCCCtrl = midiCCCtrl.value,
+        mefctCCSel = midiFxSelCc,
+        mefctCCKnob1 = mstrFxCtrl1Cc,
+        mefctCCKnob2 = mstrFxCtrl2Cc,
+        usbMIDIThru = usbMIDIThru.value,
+        padLock = padLock.value,
+        autoPowerOff = autoPowerOff.value,
+        dispMode = dispMode.value,
+        multiView = multiView,
+        usbDevMode = usbDevMode.value,
+        startupKit = startupKit,
+        intPads = intPads.map { pad ->
+            org.xebia.spdmanager.data.model.raw.system.IntPad(pad.sens, pad.threshold, pad.curve.value)
+        }.toTypedArray(),
+        extPads = extPads.map { pad ->
+            org.xebia.spdmanager.data.model.raw.system.ExtPad(
+                pad.inputMode.value, pad.padType.value, pad.sens, pad.threshold, pad.curve.value,
+                pad.scanTime, pad.retrigCxl, pad.maskTime, pad.xtalkCxl,
+                pad.rimAdjust, pad.rimGain, pad.noiseCxl
+            )
+        }.toTypedArray()
+    )
+}
+
 fun SetupConfig.Companion.fromRaw(raw: SetupPrm): SetupConfig {
     return SetupConfig(
         lcdContrast = raw.lcdContrast,

@@ -5,8 +5,8 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement
 
 @JacksonXmlRootElement(localName = "Root")
 data class Config(
-    @JacksonXmlProperty(localName = "SetupPrm") val setupPrm: SetupPrm,
-    @JacksonXmlProperty(localName = "SysPrm") val sysPrm: SysPrm,
-    @JacksonXmlProperty(localName = "KitChainPrm") val kitChainPrm: KitChainPrm,
-    @JacksonXmlProperty(localName = "MEfctPrm") val mEfctPrm: MEfctPrm
+    @param:JacksonXmlProperty(localName = "SetupPrm") @get:JacksonXmlProperty(localName = "SetupPrm") val setupPrm: SetupPrm,
+    @param:JacksonXmlProperty(localName = "SysPrm") @get:JacksonXmlProperty(localName = "SysPrm") val sysPrm: SysPrm,
+    @param:JacksonXmlProperty(localName = "KitChainPrm") @get:JacksonXmlProperty(localName = "KitChainPrm") val kitChainPrm: KitChainPrm,
+    @param:JacksonXmlProperty(localName = "MEfctPrm") @get:JacksonXmlProperty(localName = "MEfctPrm") val mEfctPrm: MEfctPrm
 )
