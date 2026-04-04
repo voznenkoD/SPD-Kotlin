@@ -9,6 +9,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.xebia.spdmanager.model.kit.fx.KitFX
 import org.xebia.spdmanager.model.system.fx.common.SyncSwitch
+import org.xebia.spdmanager.model.system.fx.subtypes.FXType
+import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
+import org.xebia.spdmanager.ui.components.common.DropdownSelector
 
 @Composable
 fun KitFXView(
@@ -43,7 +46,16 @@ fun KitFXView(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         } else {
-            Text("FX Type: ${kitFX.fx.fxType}", fontSize = 16.sp)
+            DropdownSelector(
+                label = "FX Type",
+                selectedItem = kitFX.fx.fxType,
+                onItemSelected = { newType ->
+                    val newFx = FxEffect.fromValues(newType.value, List(20) { 0 })
+                    onFxChange(kitFX.copy(fx = newFx))
+                },
+                items = FXType.entries.toList(),
+                width = 200.dp
+            )
 
             Spacer(modifier = Modifier.height(8.dp))
 
