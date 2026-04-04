@@ -20,7 +20,10 @@ fun ListsScreen(
     kits: List<Kit>,
     waveListsHolder: WaveListsHolder,
     onKitSelected: (Kit) -> Unit,
-    onWaveSelected: (ListedWave) -> Unit
+    onWaveSelected: (ListedWave) -> Unit,
+    onCopyKit: (Kit) -> Unit = {},
+    onPasteKit: (Kit) -> Unit = {},
+    hasCopiedKit: Boolean = false
 ) {
     var sortingMode by remember { mutableStateOf(SortingMode.BY_CATEGORY_NAME) }
 
@@ -35,23 +38,13 @@ fun ListsScreen(
             Text(text = "Kits", style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(8.dp))
             Box(modifier = Modifier.weight(1f)) {
-                GenericListView(kits, onKitSelected) { kit ->
-                    Text(text = kit.name, fontSize = 18.sp)
-                }
-            }
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.SpaceEvenly
-            ) {
-                Button(onClick = { }) {
-                    Text(text = "Copy")
-                }
-                Button(onClick = { }) {
-                    Text(text = "Paste")
-                }
-                Button(onClick = { }) {
-                    Text(text = "Init")
-                }
+                KitListView(
+                    kits = kits,
+                    onKitSelected = onKitSelected,
+                    onCopyKit = onCopyKit,
+                    onPasteKit = onPasteKit,
+                    hasCopiedKit = hasCopiedKit
+                )
             }
         }
 

@@ -28,6 +28,9 @@ class MainViewModel(
     private val _isMainSelected = MutableStateFlow(true)
     val isMainSelected: StateFlow<Boolean> = _isMainSelected.asStateFlow()
 
+    private val _clipboardKit = MutableStateFlow<Kit?>(null)
+    val clipboardKit: StateFlow<Kit?> = _clipboardKit.asStateFlow()
+
     fun selectKit(kit: Kit) {
         val index = deviceManager.device?.kits?.indexOf(kit)
         if (index != null && index >= 0) {
@@ -67,6 +70,18 @@ class MainViewModel(
         waveNumber?.let { number ->
             val waves = deviceManager.device?.waves ?: emptyList()
             _selectedWave.value = waves.find { it.number == number }
+        }
+    }
+
+    fun copyKit(kit: Kit) {
+        _clipboardKit.value = kit
+    }
+
+    fun pasteKit(targetKit: Kit) {
+        val copied = _clipboardKit.value ?: return
+        val index = deviceManager.device?.kits?.indexOf(targetKit) ?: return
+        if (index >= 0) {
+            deviceManager.updateKit(index, copied.copy(name = copied.name))
         }
     }
 

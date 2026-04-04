@@ -79,13 +79,17 @@ fun MainScreen() {
         }
 
         Column(Modifier.weight(0.3f).fillMaxHeight()) {
+            val clipboardKit by mainViewModel.clipboardKit.collectAsState()
             ListsScreen(
                 kits = kits,
                 waveListsHolder = waveListsHolder,
                 onKitSelected = mainViewModel::selectKit,
                 onWaveSelected = { listedWave ->
                     mainViewModel.selectWave(waves, listedWave)
-                }
+                },
+                onCopyKit = mainViewModel::copyKit,
+                onPasteKit = mainViewModel::pasteKit,
+                hasCopiedKit = clipboardKit != null
             )
         }
     }
