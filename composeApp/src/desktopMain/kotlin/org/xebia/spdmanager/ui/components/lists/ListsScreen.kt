@@ -1,5 +1,7 @@
 package org.xebia.spdmanager.ui.components.lists
 
+import androidx.compose.foundation.ContextMenuArea
+import androidx.compose.foundation.ContextMenuItem
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -54,33 +56,30 @@ fun ListsScreen(
                 .fillMaxHeight()
                 .border(width = 1.dp, color = Color.Black)
         ) {
-            Text(text = "Waves", style = MaterialTheme.typography.titleMedium)
+            Text(text = "Waves (${sortingMode.displayName})", style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(5.dp))
-            Box(modifier = Modifier.weight(1f)) {
-                when (sortingMode) {
-                    SortingMode.BY_NAME -> GenericListView(waveListsHolder.wavesByName, onWaveSelected) { wave ->
-                        Text(text = "${wave.number}. ${wave.name}", fontSize = 18.sp)
+            ContextMenuArea(
+                items = {
+                    SortingMode.entries.map { mode ->
+                        ContextMenuItem("View: ${mode.displayName}") { sortingMode = mode }
                     }
-
-                    SortingMode.BY_CATEGORY_NAME -> WaveListByCategory(
-                        waveListsHolder.wavesByNamePerCategory,
-                        onWaveSelected
-                    )
-
-                    SortingMode.BY_CATEGORY_NUM -> WaveListByCategory(
-                        waveListsHolder.wavesByNumPerCategory,
-                        onWaveSelected
-                    )
                 }
-            }
-
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.SpaceEvenly
             ) {
-                SortingMode.entries.forEach { mode ->
-                    Button(onClick = { sortingMode = mode }) {
-                        Text(text = mode.displayName)
+                Box(modifier = Modifier.weight(1f)) {
+                    when (sortingMode) {
+                        SortingMode.BY_NAME -> GenericListView(waveListsHolder.wavesByName, onWaveSelected) { wave ->
+                            Text(text = "${wave.number}. ${wave.name}", fontSize = 18.sp)
+                        }
+
+                        SortingMode.BY_CATEGORY_NAME -> WaveListByCategory(
+                            waveListsHolder.wavesByNamePerCategory,
+                            onWaveSelected
+                        )
+
+                        SortingMode.BY_CATEGORY_NUM -> WaveListByCategory(
+                            waveListsHolder.wavesByNumPerCategory,
+                            onWaveSelected
+                        )
                     }
                 }
             }
