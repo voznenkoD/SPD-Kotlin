@@ -63,13 +63,19 @@ fun MainScreen() {
                 .fillMaxHeight()
                 .border(width = 2.dp, color = Color.DarkGray)
         ) {
+            val clipboardPad by mainViewModel.clipboardPad.collectAsState()
             PadScreen(
                 onSelect = { padNumber, isMain ->
                     mainViewModel.selectPad(padNumber, selectedKit, isMain)
                 },
                 kit = selectedKit,
                 selectedPadNumber = selectedPadNumber,
-                isMainSelected = isMainSelected
+                isMainSelected = isMainSelected,
+                onCopyPad = mainViewModel::copyPad,
+                onPastePad = mainViewModel::pastePad,
+                onRemoveWave = mainViewModel::removeWave,
+                onRemoveSubWave = mainViewModel::removeSubWave,
+                hasCopiedPad = clipboardPad != null
             )
 
             WaveDetailsScreen(

@@ -1,5 +1,7 @@
 package org.xebia.spdmanager.ui.components.pad
 
+import androidx.compose.foundation.ContextMenuArea
+import androidx.compose.foundation.ContextMenuItem
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -28,7 +30,12 @@ fun PadScreen(
     onSelect: (PadNumber, Boolean) -> Unit,
     kit: Kit?,
     selectedPadNumber: PadNumber? = null,
-    isMainSelected: Boolean = true
+    isMainSelected: Boolean = true,
+    onCopyPad: (PadNumber) -> Unit = {},
+    onPastePad: (PadNumber) -> Unit = {},
+    onRemoveWave: (PadNumber) -> Unit = {},
+    onRemoveSubWave: (PadNumber) -> Unit = {},
+    hasCopiedPad: Boolean = false
 ) {
     if (kit != null) {
         Surface(
@@ -56,7 +63,12 @@ fun PadScreen(
                             padNumber = padNumber,
                             onSelect = onSelect,
                             isSelected = padNumber == selectedPadNumber,
-                            isMainSelected = isMainSelected
+                            isMainSelected = isMainSelected,
+                            onCopyPad = onCopyPad,
+                            onPastePad = onPastePad,
+                            onRemoveWave = onRemoveWave,
+                            onRemoveSubWave = onRemoveSubWave,
+                            hasCopiedPad = hasCopiedPad
                         )
                     }
                 }
@@ -75,7 +87,12 @@ fun PadScreen(
                             padNumber = padNumber,
                             onSelect = onSelect,
                             isSelected = padNumber == selectedPadNumber,
-                            isMainSelected = isMainSelected
+                            isMainSelected = isMainSelected,
+                            onCopyPad = onCopyPad,
+                            onPastePad = onPastePad,
+                            onRemoveWave = onRemoveWave,
+                            onRemoveSubWave = onRemoveSubWave,
+                            hasCopiedPad = hasCopiedPad
                         )
                     }
                 }
@@ -95,7 +112,12 @@ fun PadScreen(
                             onSelect = onSelect,
                             isFS = true,
                             isSelected = padNumber == selectedPadNumber,
-                            isMainSelected = isMainSelected
+                            isMainSelected = isMainSelected,
+                            onCopyPad = onCopyPad,
+                            onPastePad = onPastePad,
+                            onRemoveWave = onRemoveWave,
+                            onRemoveSubWave = onRemoveSubWave,
+                            hasCopiedPad = hasCopiedPad
                         )
                     }
                 }
@@ -111,7 +133,12 @@ fun PadItem(
     onSelect: (PadNumber, Boolean) -> Unit,
     isFS: Boolean = false,
     isSelected: Boolean = false,
-    isMainSelected: Boolean = true
+    isMainSelected: Boolean = true,
+    onCopyPad: (PadNumber) -> Unit = {},
+    onPastePad: (PadNumber) -> Unit = {},
+    onRemoveWave: (PadNumber) -> Unit = {},
+    onRemoveSubWave: (PadNumber) -> Unit = {},
+    hasCopiedPad: Boolean = false
 ) {
     val backgroundColor = if (isSelected) {
         Color(0x88B71C1C)
@@ -119,6 +146,22 @@ fun PadItem(
         Color.DarkGray
     }
 
+    ContextMenuArea(
+        items = {
+            buildList {
+                add(ContextMenuItem("Copy Pad") { onCopyPad(padNumber) })
+                if (hasCopiedPad) {
+                    add(ContextMenuItem("Paste Pad") { onPastePad(padNumber) })
+                }
+                if (pad.main.wave != 0) {
+                    add(ContextMenuItem("Remove Wave") { onRemoveWave(padNumber) })
+                }
+                if (pad.sub.wave != 0) {
+                    add(ContextMenuItem("Remove SubWave") { onRemoveSubWave(padNumber) })
+                }
+            }
+        }
+    ) {
     Surface(
         color = backgroundColor,
         shape = RoundedCornerShape(8.dp),
@@ -197,5 +240,6 @@ fun PadItem(
                 )
             }
         }
+    }
     }
 }

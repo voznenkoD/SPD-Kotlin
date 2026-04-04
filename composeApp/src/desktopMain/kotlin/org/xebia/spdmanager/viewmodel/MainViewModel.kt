@@ -7,6 +7,8 @@ import org.xebia.spdmanager.model.Wave
 import org.xebia.spdmanager.model.kit.Kit
 import org.xebia.spdmanager.model.kit.pad.Pad
 import org.xebia.spdmanager.model.kit.pad.PadNumber
+import org.xebia.spdmanager.model.kit.pad.PadPan
+import org.xebia.spdmanager.model.kit.pad.Sound
 import org.xebia.spdmanager.model.list.ListedWave
 import org.xebia.spdmanager.service.DeviceManager
 
@@ -30,6 +32,9 @@ class MainViewModel(
 
     private val _clipboardKit = MutableStateFlow<Kit?>(null)
     val clipboardKit: StateFlow<Kit?> = _clipboardKit.asStateFlow()
+
+    private val _clipboardPad = MutableStateFlow<Pad?>(null)
+    val clipboardPad: StateFlow<Pad?> = _clipboardPad.asStateFlow()
 
     fun selectKit(kit: Kit) {
         val index = deviceManager.device?.kits?.indexOf(kit)
@@ -82,6 +87,34 @@ class MainViewModel(
         val index = deviceManager.device?.kits?.indexOf(targetKit) ?: return
         if (index >= 0) {
             deviceManager.updateKit(index, copied.copy(name = copied.name))
+        }
+    }
+
+    fun copyPad(padNumber: PadNumber) {
+        val kitIndex = _selectedKitIndex.value ?: return
+        val pad = deviceManager.device?.kits?.getOrNull(kitIndex)?.pads?.get(padNumber) ?: return
+        _clipboardPad.value = pad
+    }
+
+    fun pastePad(padNumber: PadNumber) {
+        val copied = _clipboardPad.value ?: return
+        val kitIndex = _selectedKitIndex.value ?: return
+        deviceManager.updatePad(kitIndex, padNumber, copied)
+    }
+
+    fun removeWave(padNumber: PadNumber) {
+        val kitIndex = _selectedKitIndex.value ?: return
+        val emptySound = Sound(wave = 0, volume = 100, pan = PadPan(0))
+        deviceManager.updatePad(kitIndex, padNumber) { pad ->
+            pad.copy(main = emptySound)
+        }
+    }
+
+    fun removeSubWave(padNumber: PadNumber) {
+        val kitIndex = _selectedKitIndex.value ?: return
+        val emptySound = Sound(wave = 0, volume = 100, pan = PadPan(0))
+        deviceManager.updatePad(kitIndex, padNumber) { pad ->
+            pad.copy(sub = emptySound)
         }
     }
 
