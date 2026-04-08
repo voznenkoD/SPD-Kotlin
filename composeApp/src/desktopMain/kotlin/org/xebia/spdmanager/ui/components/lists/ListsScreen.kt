@@ -31,66 +31,74 @@ fun ListsScreen(
     waveUsageMap: Map<Int, List<String>> = emptyMap(),
     onSelectKitByName: (String) -> Unit = {}
 ) {
+    var selectedTab by remember { mutableStateOf(0) }
     var sortingMode by remember { mutableStateOf(SortingMode.BY_CATEGORY_NAME) }
 
-    Row(modifier = Modifier.fillMaxSize().padding(3.dp)) {
-        Column(
-            modifier = Modifier
-                .weight(0.45f)
-                .fillMaxHeight()
-                .padding(end = 8.dp)
-                .border(width = 1.dp, color = Color.Black)
-        ) {
-            Text(text = "Kits", style = MaterialTheme.typography.titleMedium)
-            Spacer(Modifier.height(8.dp))
-            Box(modifier = Modifier.weight(1f)) {
-                KitListView(
-                    kits = kits,
-                    onKitSelected = onKitSelected,
-                    onCopyKit = onCopyKit,
-                    onPasteKit = onPasteKit,
-                    hasCopiedKit = hasCopiedKit,
-                    onMoveKit = onMoveKit
+    val sortingMenuItems: () -> List<ContextMenuItem> = {
+        SortingMode.entries.map { mode ->
+            ContextMenuItem("View: ${mode.displayName}") { sortingMode = mode }
+        }
+    }
+
+    Column(modifier = Modifier.fillMaxSize().padding(3.dp).border(width = 1.dp, color = Color.Black)) {
+        TabRow(selectedTabIndex = selectedTab) {
+            Tab(
+                selected = selectedTab == 0,
+                onClick = { selectedTab = 0 },
+                text = { Text(text = "Kits", style = MaterialTheme.typography.titleSmall) }
+            )
+            ContextMenuArea(items = sortingMenuItems) {
+                Tab(
+                    selected = selectedTab == 1,
+                    onClick = { selectedTab = 1 },
+                    text = {
+                        Text(
+                            text = "Waves (${sortingMode.displayName})",
+                            style = MaterialTheme.typography.titleSmall
+                        )
+                    }
                 )
             }
         }
 
-        Column(
-            modifier = Modifier
-                .weight(0.55f)
-                .fillMaxHeight()
-                .border(width = 1.dp, color = Color.Black)
-        ) {
-            Text(text = "Waves (${sortingMode.displayName})", style = MaterialTheme.typography.titleMedium)
-            Spacer(Modifier.height(5.dp))
-            ContextMenuArea(
-                items = {
-                    SortingMode.entries.map { mode ->
-                        ContextMenuItem("View: ${mode.displayName}") { sortingMode = mode }
-                    }
+        when (selectedTab) {
+            0 -> {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    KitListView(
+                        kits = kits,
+                        onKitSelected = onKitSelected,
+                        onCopyKit = onCopyKit,
+                        onPasteKit = onPasteKit,
+                        hasCopiedKit = hasCopiedKit,
+                        onMoveKit = onMoveKit
+                    )
                 }
-            ) {
-                Box(modifier = Modifier.weight(1f)) {
+            }
+            1 -> {
+                Box(modifier = Modifier.fillMaxSize()) {
                     when (sortingMode) {
                         SortingMode.BY_NAME -> WaveListByName(
                             waveListsHolder.wavesByName,
                             onWaveSelected,
                             waveUsageMap,
-                            onSelectKitByName
+                            onSelectKitByName,
+                            sortingMenuItems
                         )
 
                         SortingMode.BY_CATEGORY_NAME -> WaveListByCategory(
                             waveListsHolder.wavesByNamePerCategory,
                             onWaveSelected,
                             waveUsageMap,
-                            onSelectKitByName
+                            onSelectKitByName,
+                            sortingMenuItems
                         )
 
                         SortingMode.BY_CATEGORY_NUM -> WaveListByCategory(
                             waveListsHolder.wavesByNumPerCategory,
                             onWaveSelected,
                             waveUsageMap,
-                            onSelectKitByName
+                            onSelectKitByName,
+                            sortingMenuItems
                         )
                     }
                 }
@@ -110,12 +118,13 @@ fun WaveListByName(
     waves: List<ListedWave>,
     onItemSelected: (ListedWave) -> Unit,
     waveUsageMap: Map<Int, List<String>>,
-    onSelectKitByName: (String) -> Unit
+    onSelectKitByName: (String) -> Unit,
+    sortingMenuItems: () -> List<ContextMenuItem>
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         items(waves.size) { index ->
             val wave = waves[index]
-            WaveListItem(wave, onItemSelected, waveUsageMap, onSelectKitByName)
+            WaveListItem(wave, onItemSelected, waveUsageMap, onSelectKitByName, sortingMenuItems)
         }
     }
 }
@@ -125,7 +134,8 @@ fun WaveListByCategory(
     wavesByCategory: Map<Category, List<ListedWave>>,
     onItemSelected: (ListedWave) -> Unit,
     waveUsageMap: Map<Int, List<String>>,
-    onSelectKitByName: (String) -> Unit
+    onSelectKitByName: (String) -> Unit,
+    sortingMenuItems: () -> List<ContextMenuItem>
 ) {
     val expandedCategories = remember { mutableStateMapOf<String, Boolean>().apply { put("Default", true) } }
 
@@ -154,7 +164,7 @@ fun WaveListByCategory(
             if (!isCollapsed) {
                 items(waves.size) { index ->
                     val wave = waves[index]
-                    WaveListItem(wave, onItemSelected, waveUsageMap, onSelectKitByName)
+                    WaveListItem(wave, onItemSelected, waveUsageMap, onSelectKitByName, sortingMenuItems)
                 }
             }
         }
@@ -166,19 +176,22 @@ private fun WaveListItem(
     wave: ListedWave,
     onItemSelected: (ListedWave) -> Unit,
     waveUsageMap: Map<Int, List<String>>,
-    onSelectKitByName: (String) -> Unit
+    onSelectKitByName: (String) -> Unit,
+    sortingMenuItems: () -> List<ContextMenuItem>
 ) {
     val usedInKits = waveUsageMap[wave.number].orEmpty()
     val isUsed = usedInKits.isNotEmpty()
 
     ContextMenuArea(
         items = {
-            if (usedInKits.isEmpty()) {
-                emptyList()
-            } else {
-                usedInKits.map { kitName ->
-                    ContextMenuItem("Used in: $kitName") { onSelectKitByName(kitName) }
+            buildList {
+                if (usedInKits.isNotEmpty()) {
+                    usedInKits.forEach { kitName ->
+                        add(ContextMenuItem("Used in: $kitName") { onSelectKitByName(kitName) })
+                    }
+                    add(ContextMenuItem("─────────") {})
                 }
+                addAll(sortingMenuItems())
             }
         }
     ) {

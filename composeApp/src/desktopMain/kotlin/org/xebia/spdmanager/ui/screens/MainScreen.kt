@@ -61,7 +61,7 @@ fun MainScreen() {
 
         Column(
             Modifier
-                .weight(0.4f)
+                .weight(0.5f)
                 .fillMaxHeight()
                 .border(width = 2.dp, color = Color.DarkGray)
         ) {
@@ -86,7 +86,7 @@ fun MainScreen() {
             )
         }
 
-        Column(Modifier.weight(0.3f).fillMaxHeight()) {
+        Column(Modifier.weight(0.2f).fillMaxHeight()) {
             val clipboardKit by mainViewModel.clipboardKit.collectAsState()
             ListsScreen(
                 kits = kits,
