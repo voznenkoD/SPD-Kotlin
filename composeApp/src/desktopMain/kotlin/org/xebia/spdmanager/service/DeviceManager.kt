@@ -187,6 +187,27 @@ class DeviceManager {
         }
     }
 
+    companion object {
+        fun buildWaveUsageMap(kits: List<Kit>): Map<Int, List<String>> {
+            val usage = mutableMapOf<Int, MutableList<String>>()
+            for (kit in kits) {
+                for (pad in kit.pads.values) {
+                    if (pad.main.wave > 0) {
+                        usage.getOrPut(pad.main.wave) { mutableListOf() }.let { list ->
+                            if (kit.name !in list) list.add(kit.name)
+                        }
+                    }
+                    if (pad.sub.wave > 0) {
+                        usage.getOrPut(pad.sub.wave) { mutableListOf() }.let { list ->
+                            if (kit.name !in list) list.add(kit.name)
+                        }
+                    }
+                }
+            }
+            return usage
+        }
+    }
+
     fun saveDevice() {
         val dev = device ?: return
         val rootPath = dev.rootPath

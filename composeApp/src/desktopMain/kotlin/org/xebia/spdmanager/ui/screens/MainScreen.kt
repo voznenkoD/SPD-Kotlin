@@ -9,6 +9,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import org.xebia.spdmanager.LocalDeviceManager
 import org.xebia.spdmanager.model.list.WaveListsHolder
+import org.xebia.spdmanager.service.DeviceManager
 import org.xebia.spdmanager.ui.components.common.SelectFolderButton
 import org.xebia.spdmanager.ui.components.kit.DetailsTabs
 import org.xebia.spdmanager.ui.components.lists.ListsScreen
@@ -35,6 +36,7 @@ fun MainScreen() {
     val kits = device?.kits.orEmpty()
     val waves = device?.waves.orEmpty()
     val waveListsHolder = device?.waveLists ?: WaveListsHolder(emptyList(), emptyMap(), emptyMap())
+    val waveUsageMap = remember(kits) { DeviceManager.buildWaveUsageMap(kits) }
 
     if (device == null) {
         Box(
@@ -96,7 +98,9 @@ fun MainScreen() {
                 onCopyKit = mainViewModel::copyKit,
                 onPasteKit = mainViewModel::pasteKit,
                 hasCopiedKit = clipboardKit != null,
-                onMoveKit = mainViewModel::moveKit
+                onMoveKit = mainViewModel::moveKit,
+                waveUsageMap = waveUsageMap,
+                onSelectKitByName = mainViewModel::selectKitByName
             )
         }
     }

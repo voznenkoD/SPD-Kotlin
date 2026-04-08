@@ -46,6 +46,14 @@ class MainViewModel(
         }
     }
 
+    fun selectKitByName(kitName: String) {
+        val kits = deviceManager.device?.kits ?: return
+        val index = kits.indexOfFirst { it.name == kitName }
+        if (index >= 0) {
+            selectKitByIndex(index)
+        }
+    }
+
     fun selectKitByIndex(index: Int) {
         _selectedKitIndex.value = index
         _selectedPad.value = null

@@ -27,7 +27,9 @@ fun ListsScreen(
     onCopyKit: (Kit) -> Unit = {},
     onPasteKit: (Kit) -> Unit = {},
     hasCopiedKit: Boolean = false,
-    onMoveKit: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> }
+    onMoveKit: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> },
+    waveUsageMap: Map<Int, List<String>> = emptyMap(),
+    onSelectKitByName: (String) -> Unit = {}
 ) {
     var sortingMode by remember { mutableStateOf(SortingMode.BY_CATEGORY_NAME) }
 
@@ -70,18 +72,25 @@ fun ListsScreen(
             ) {
                 Box(modifier = Modifier.weight(1f)) {
                     when (sortingMode) {
-                        SortingMode.BY_NAME -> GenericListView(waveListsHolder.wavesByName, onWaveSelected) { wave ->
-                            Text(text = "${wave.number}. ${wave.name}", fontSize = 18.sp)
-                        }
+                        SortingMode.BY_NAME -> WaveListByName(
+                            waveListsHolder.wavesByName,
+                            onWaveSelected,
+                            waveUsageMap,
+                            onSelectKitByName
+                        )
 
                         SortingMode.BY_CATEGORY_NAME -> WaveListByCategory(
                             waveListsHolder.wavesByNamePerCategory,
-                            onWaveSelected
+                            onWaveSelected,
+                            waveUsageMap,
+                            onSelectKitByName
                         )
 
                         SortingMode.BY_CATEGORY_NUM -> WaveListByCategory(
                             waveListsHolder.wavesByNumPerCategory,
-                            onWaveSelected
+                            onWaveSelected,
+                            waveUsageMap,
+                            onSelectKitByName
                         )
                     }
                 }
@@ -97,9 +106,26 @@ enum class SortingMode(val displayName: String) {
 }
 
 @Composable
+fun WaveListByName(
+    waves: List<ListedWave>,
+    onItemSelected: (ListedWave) -> Unit,
+    waveUsageMap: Map<Int, List<String>>,
+    onSelectKitByName: (String) -> Unit
+) {
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        items(waves.size) { index ->
+            val wave = waves[index]
+            WaveListItem(wave, onItemSelected, waveUsageMap, onSelectKitByName)
+        }
+    }
+}
+
+@Composable
 fun WaveListByCategory(
     wavesByCategory: Map<Category, List<ListedWave>>,
-    onItemSelected: (ListedWave) -> Unit
+    onItemSelected: (ListedWave) -> Unit,
+    waveUsageMap: Map<Int, List<String>>,
+    onSelectKitByName: (String) -> Unit
 ) {
     val expandedCategories = remember { mutableStateMapOf<String, Boolean>().apply { put("Default", true) } }
 
@@ -128,11 +154,44 @@ fun WaveListByCategory(
             if (!isCollapsed) {
                 items(waves.size) { index ->
                     val wave = waves[index]
-                    GenericListItemView(item = wave, onItemClicked = onItemSelected) {
-                        Text(text = "${wave.number}. ${wave.name}", fontSize = 18.sp)
-                    }
+                    WaveListItem(wave, onItemSelected, waveUsageMap, onSelectKitByName)
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun WaveListItem(
+    wave: ListedWave,
+    onItemSelected: (ListedWave) -> Unit,
+    waveUsageMap: Map<Int, List<String>>,
+    onSelectKitByName: (String) -> Unit
+) {
+    val usedInKits = waveUsageMap[wave.number].orEmpty()
+    val isUsed = usedInKits.isNotEmpty()
+
+    ContextMenuArea(
+        items = {
+            if (usedInKits.isEmpty()) {
+                emptyList()
+            } else {
+                usedInKits.map { kitName ->
+                    ContextMenuItem("Used in: $kitName") { onSelectKitByName(kitName) }
+                }
+            }
+        }
+    ) {
+        GenericListItemView(item = wave, onItemClicked = onItemSelected) {
+            if (isUsed) {
+                Text(
+                    text = "● ",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF1976D2)
+                )
+            }
+            Text(text = "${wave.number}. ${wave.name}", fontSize = 18.sp)
         }
     }
 }
