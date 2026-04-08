@@ -3,6 +3,7 @@ package org.xebia.spdmanager.ui.components.lists
 import androidx.compose.foundation.ContextMenuArea
 import androidx.compose.foundation.ContextMenuItem
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
@@ -25,7 +26,8 @@ fun ListsScreen(
     onWaveSelected: (ListedWave) -> Unit,
     onCopyKit: (Kit) -> Unit = {},
     onPasteKit: (Kit) -> Unit = {},
-    hasCopiedKit: Boolean = false
+    hasCopiedKit: Boolean = false,
+    onMoveKit: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> }
 ) {
     var sortingMode by remember { mutableStateOf(SortingMode.BY_CATEGORY_NAME) }
 
@@ -45,7 +47,8 @@ fun ListsScreen(
                     onKitSelected = onKitSelected,
                     onCopyKit = onCopyKit,
                     onPasteKit = onPasteKit,
-                    hasCopiedKit = hasCopiedKit
+                    hasCopiedKit = hasCopiedKit,
+                    onMoveKit = onMoveKit
                 )
             }
         }
@@ -98,20 +101,36 @@ fun WaveListByCategory(
     wavesByCategory: Map<Category, List<ListedWave>>,
     onItemSelected: (ListedWave) -> Unit
 ) {
+    val expandedCategories = remember { mutableStateMapOf<String, Boolean>().apply { put("Default", true) } }
+
     LazyColumn(Modifier.fillMaxSize()) {
         wavesByCategory.forEach { (category, waves) ->
+            val isCollapsed = expandedCategories[category.name] != true
             item {
-                Text(
-                    text = category.name,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(8.dp)
-                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { expandedCategories[category.name] = isCollapsed }
+                        .padding(8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = category.name,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = if (isCollapsed) "▶" else "▼",
+                        fontSize = 16.sp
+                    )
+                }
             }
-            items(waves.size) { index ->
-                val wave = waves[index]
-                GenericListItemView(item = wave, onItemClicked = onItemSelected) {
-                    Text(text = "${wave.number}. ${wave.name}", fontSize = 18.sp)
+            if (!isCollapsed) {
+                items(waves.size) { index ->
+                    val wave = waves[index]
+                    GenericListItemView(item = wave, onItemClicked = onItemSelected) {
+                        Text(text = "${wave.number}. ${wave.name}", fontSize = 18.sp)
+                    }
                 }
             }
         }

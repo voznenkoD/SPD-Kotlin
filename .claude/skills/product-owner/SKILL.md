@@ -16,7 +16,7 @@ the build-feature skill to deliver it.
     - Open questions (anything ambiguous that needs clarification)
 4. Present the requirements to the user and ask:
    "Does this capture what you want? Any corrections before I hand off to build-feature?"
-5. Once confirmed save requirements into features folder in md file with corresponding up to 4 words 
+5. Once confirmed save requirements into features folder (in the root of the project) in md file with corresponding up to 4 words 
    hyphen separated as a filename describing the feature.
 
 ### Cycle 2 — Handoff to build-feature

@@ -78,6 +78,23 @@ class MainViewModel(
         }
     }
 
+    fun moveKit(fromIndex: Int, toIndex: Int) {
+        val currentSelected = _selectedKitIndex.value
+        deviceManager.moveKit(fromIndex, toIndex)
+        if (currentSelected != null) {
+            when (currentSelected) {
+                fromIndex -> _selectedKitIndex.value = toIndex
+                in minOf(fromIndex, toIndex)..maxOf(fromIndex, toIndex) -> {
+                    if (fromIndex < toIndex) {
+                        _selectedKitIndex.value = currentSelected - 1
+                    } else {
+                        _selectedKitIndex.value = currentSelected + 1
+                    }
+                }
+            }
+        }
+    }
+
     fun copyKit(kit: Kit) {
         _clipboardKit.value = kit
     }

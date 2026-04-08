@@ -95,7 +95,8 @@ fun MainScreen() {
                 },
                 onCopyKit = mainViewModel::copyKit,
                 onPasteKit = mainViewModel::pasteKit,
-                hasCopiedKit = clipboardKit != null
+                hasCopiedKit = clipboardKit != null,
+                onMoveKit = mainViewModel::moveKit
             )
         }
     }

@@ -176,6 +176,17 @@ class DeviceManager {
         }
     }
 
+    fun moveKit(fromIndex: Int, toIndex: Int) {
+        device?.let { currentDevice ->
+            val kits = currentDevice.kits.toMutableList()
+            if (fromIndex in kits.indices && toIndex in kits.indices && fromIndex != toIndex) {
+                val kit = kits.removeAt(fromIndex)
+                kits.add(toIndex, kit)
+                device = currentDevice.copy(kits = kits)
+            }
+        }
+    }
+
     fun saveDevice() {
         val dev = device ?: return
         val rootPath = dev.rootPath
