@@ -176,6 +176,13 @@ class DeviceManager {
         }
     }
 
+    fun renameCategory(oldName: String, newName: String) {
+        device?.let { currentDevice ->
+            val updatedWaveLists = currentDevice.waveLists.renameCategory(oldName, newName)
+            device = currentDevice.copy(waveLists = updatedWaveLists)
+        }
+    }
+
     fun moveKit(fromIndex: Int, toIndex: Int) {
         device?.let { currentDevice ->
             val kits = currentDevice.kits.toMutableList()

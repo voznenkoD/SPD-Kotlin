@@ -29,6 +29,28 @@ data class WaveListsHolder(val wavesByName: List<ListedWave>, val wavesByNamePer
         return RawWaveLists(tagList, wvListSortbyName, wvListSortbyNameTag, wvListSortbyNumTag)
     }
 
+    fun renameCategory(oldName: String, newName: String): WaveListsHolder {
+        if (oldName == newName) return this
+        if (wavesByNamePerCategory.keys.any { it.name == newName }) return this
+
+        val updatedByName = LinkedHashMap<Category, List<ListedWave>>()
+        for ((category, waves) in wavesByNamePerCategory) {
+            val key = if (category.name == oldName) Category(newName, category.order) else category
+            updatedByName[key] = waves
+        }
+
+        val updatedByNum = LinkedHashMap<Category, List<ListedWave>>()
+        for ((category, waves) in wavesByNumPerCategory) {
+            val key = if (category.name == oldName) Category(newName, category.order) else category
+            updatedByNum[key] = waves
+        }
+
+        return copy(
+            wavesByNamePerCategory = updatedByName,
+            wavesByNumPerCategory = updatedByNum
+        )
+    }
+
  companion object {
      fun fromValues(rawTagList: TagList, rawWavesByName: WvListSortbyName, rawByNameTag: WvListSortbyNameTag, rawByNumTag: WvListSortbyNumTag, waves: List<Wave>): WaveListsHolder {
          val categories = rawTagList.tagList.map { tag ->

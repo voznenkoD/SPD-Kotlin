@@ -29,7 +29,8 @@ fun ListsScreen(
     hasCopiedKit: Boolean = false,
     onMoveKit: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> },
     waveUsageMap: Map<Int, List<String>> = emptyMap(),
-    onSelectKitByName: (String) -> Unit = {}
+    onSelectKitByName: (String) -> Unit = {},
+    onRenameCategory: (String, String) -> Unit = { _, _ -> }
 ) {
     var selectedTab by remember { mutableStateOf(0) }
     var sortingMode by remember { mutableStateOf(SortingMode.BY_CATEGORY_NAME) }
@@ -86,11 +87,12 @@ fun ListsScreen(
                         )
 
                         SortingMode.BY_CATEGORY_NAME -> WaveListByCategory(
-                            waveListsHolder.wavesByNamePerCategory,
+                            waveListsHolder.wavesByNamePerCategory.sortedForNameView(),
                             onWaveSelected,
                             waveUsageMap,
                             onSelectKitByName,
-                            sortingMenuItems
+                            sortingMenuItems,
+                            onRenameCategory
                         )
 
                         SortingMode.BY_CATEGORY_NUM -> WaveListByCategory(
@@ -98,7 +100,8 @@ fun ListsScreen(
                             onWaveSelected,
                             waveUsageMap,
                             onSelectKitByName,
-                            sortingMenuItems
+                            sortingMenuItems,
+                            onRenameCategory
                         )
                     }
                 }
@@ -112,6 +115,11 @@ enum class SortingMode(val displayName: String) {
     BY_CATEGORY_NUM("By Category (Number)"),
     BY_NAME("By Name");
 }
+
+private fun Map<Category, List<ListedWave>>.sortedForNameView(): Map<Category, List<ListedWave>> =
+    entries
+        .sortedWith(compareBy({ it.key.name != "Default" }, { it.key.name.lowercase() }))
+        .associateTo(LinkedHashMap()) { it.key to it.value }
 
 @Composable
 fun WaveListByName(
@@ -135,30 +143,42 @@ fun WaveListByCategory(
     onItemSelected: (ListedWave) -> Unit,
     waveUsageMap: Map<Int, List<String>>,
     onSelectKitByName: (String) -> Unit,
-    sortingMenuItems: () -> List<ContextMenuItem>
+    sortingMenuItems: () -> List<ContextMenuItem>,
+    onRenameCategory: (String, String) -> Unit
 ) {
     val expandedCategories = remember { mutableStateMapOf<String, Boolean>().apply { put("Default", true) } }
+    var renameDialogFor by remember { mutableStateOf<String?>(null) }
+
+    val existingNames = wavesByCategory.keys.map { it.name }
 
     LazyColumn(Modifier.fillMaxSize()) {
         wavesByCategory.forEach { (category, waves) ->
             val isCollapsed = expandedCategories[category.name] != true
             item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { expandedCategories[category.name] = isCollapsed }
-                        .padding(8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                ContextMenuArea(
+                    items = {
+                        listOf(
+                            ContextMenuItem("Rename Category…") { renameDialogFor = category.name }
+                        )
+                    }
                 ) {
-                    Text(
-                        text = category.name,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = if (isCollapsed) "▶" else "▼",
-                        fontSize = 16.sp
-                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { expandedCategories[category.name] = isCollapsed }
+                            .padding(8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = category.name,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = if (isCollapsed) "▶" else "▼",
+                            fontSize = 16.sp
+                        )
+                    }
                 }
             }
             if (!isCollapsed) {
@@ -169,6 +189,76 @@ fun WaveListByCategory(
             }
         }
     }
+
+    renameDialogFor?.let { oldName ->
+        RenameCategoryDialog(
+            oldName = oldName,
+            existingNames = existingNames,
+            onDismiss = { renameDialogFor = null },
+            onConfirm = { newName ->
+                val wasExpanded = expandedCategories[oldName] == true
+                expandedCategories.remove(oldName)
+                if (wasExpanded) expandedCategories[newName] = true
+                onRenameCategory(oldName, newName)
+                renameDialogFor = null
+            }
+        )
+    }
+}
+
+@Composable
+private fun RenameCategoryDialog(
+    oldName: String,
+    existingNames: List<String>,
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit
+) {
+    var input by remember { mutableStateOf(oldName) }
+    val trimmed = input.trim()
+    val isEmpty = trimmed.isEmpty()
+    val isDuplicate = trimmed != oldName && existingNames.any { it == trimmed }
+    val isTooLong = trimmed.length > 12
+    val isValid = !isEmpty && !isDuplicate && !isTooLong && trimmed != oldName
+
+    val errorMessage = when {
+        isEmpty -> "Name cannot be empty"
+        isTooLong -> "Name must be 12 characters or fewer"
+        isDuplicate -> "A category with this name already exists"
+        else -> null
+    }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Rename Category") },
+        text = {
+            Column {
+                TextField(
+                    value = input,
+                    onValueChange = { if (it.length <= 12) input = it },
+                    singleLine = true,
+                    isError = errorMessage != null,
+                    label = { Text("Category name") }
+                )
+                if (errorMessage != null) {
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text = errorMessage,
+                        color = MaterialTheme.colorScheme.error,
+                        fontSize = 12.sp
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = { onConfirm(trimmed) },
+                enabled = isValid
+            ) { Text("OK") }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Cancel") }
+        }
+    )
 }
 
 @Composable

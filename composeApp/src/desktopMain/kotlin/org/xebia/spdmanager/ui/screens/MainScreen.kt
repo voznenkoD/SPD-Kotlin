@@ -100,7 +100,8 @@ fun MainScreen() {
                 hasCopiedKit = clipboardKit != null,
                 onMoveKit = mainViewModel::moveKit,
                 waveUsageMap = waveUsageMap,
-                onSelectKitByName = mainViewModel::selectKitByName
+                onSelectKitByName = mainViewModel::selectKitByName,
+                onRenameCategory = mainViewModel::renameCategory
             )
         }
     }

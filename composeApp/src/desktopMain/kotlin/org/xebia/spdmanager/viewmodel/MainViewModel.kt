@@ -86,6 +86,10 @@ class MainViewModel(
         }
     }
 
+    fun renameCategory(oldName: String, newName: String) {
+        deviceManager.renameCategory(oldName, newName)
+    }
+
     fun moveKit(fromIndex: Int, toIndex: Int) {
         val currentSelected = _selectedKitIndex.value
         deviceManager.moveKit(fromIndex, toIndex)
