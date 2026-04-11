@@ -17,6 +17,10 @@ import androidx.compose.ui.unit.sp
 import org.xebia.spdmanager.model.list.Category
 import org.xebia.spdmanager.model.list.ListedWave
 import org.xebia.spdmanager.model.list.WaveListsHolder
+import org.xebia.spdmanager.viewmodel.MainViewModel
+import java.awt.FileDialog
+import java.awt.Frame
+import java.io.File
 
 @Composable
 fun ListsScreen(
@@ -30,10 +34,25 @@ fun ListsScreen(
     onMoveKit: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> },
     waveUsageMap: Map<Int, List<String>> = emptyMap(),
     onSelectKitByName: (String) -> Unit = {},
-    onRenameCategory: (String, String) -> Unit = { _, _ -> }
+    onRenameCategory: (String, String) -> Unit = { _, _ -> },
+    onImportWave: (sourceFile: File, categoryName: String) -> Unit = { _, _ -> },
+    importError: String? = null,
+    onClearImportError: () -> Unit = {},
+    onRequestDeleteWave: (Int) -> Unit = {},
+    onConfirmDeleteWave: () -> Unit = {},
+    deleteConfirm: MainViewModel.DeleteConfirmInfo? = null,
+    deleteBlocked: MainViewModel.DeleteBlockedInfo? = null,
+    deleteError: String? = null,
+    onClearDeleteConfirm: () -> Unit = {},
+    onClearDeleteBlocked: () -> Unit = {},
+    onClearDeleteError: () -> Unit = {}
 ) {
     var selectedTab by remember { mutableStateOf(0) }
     var sortingMode by remember { mutableStateOf(SortingMode.BY_CATEGORY_NAME) }
+    var showImportCategoryDialog by remember { mutableStateOf(false) }
+
+    val categoryNames = waveListsHolder.wavesByNamePerCategory.keys.map { it.name }
+    val onRequestImport: () -> Unit = { showImportCategoryDialog = true }
 
     val sortingMenuItems: () -> List<ContextMenuItem> = {
         SortingMode.entries.map { mode ->
@@ -83,7 +102,9 @@ fun ListsScreen(
                             onWaveSelected,
                             waveUsageMap,
                             onSelectKitByName,
-                            sortingMenuItems
+                            sortingMenuItems,
+                            onRequestImport,
+                            onRequestDeleteWave
                         )
 
                         SortingMode.BY_CATEGORY_NAME -> WaveListByCategory(
@@ -92,7 +113,9 @@ fun ListsScreen(
                             waveUsageMap,
                             onSelectKitByName,
                             sortingMenuItems,
-                            onRenameCategory
+                            onRenameCategory,
+                            onRequestImport,
+                            onRequestDeleteWave
                         )
 
                         SortingMode.BY_CATEGORY_NUM -> WaveListByCategory(
@@ -101,13 +124,77 @@ fun ListsScreen(
                             waveUsageMap,
                             onSelectKitByName,
                             sortingMenuItems,
-                            onRenameCategory
+                            onRenameCategory,
+                            onRequestImport,
+                            onRequestDeleteWave
                         )
                     }
                 }
             }
         }
     }
+
+    if (showImportCategoryDialog) {
+        ImportCategoryDialog(
+            categoryNames = categoryNames,
+            onDismiss = { showImportCategoryDialog = false },
+            onConfirm = { chosenCategory ->
+                showImportCategoryDialog = false
+                val picked = pickWavFile()
+                if (picked != null) {
+                    onImportWave(picked, chosenCategory)
+                }
+            }
+        )
+    }
+
+    if (importError != null) {
+        AlertDialog(
+            onDismissRequest = onClearImportError,
+            title = { Text("Import failed") },
+            text = { Text(importError) },
+            confirmButton = {
+                TextButton(onClick = onClearImportError) { Text("OK") }
+            }
+        )
+    }
+
+    deleteConfirm?.let { info ->
+        DeleteWaveConfirmDialog(
+            info = info,
+            onDismiss = onClearDeleteConfirm,
+            onConfirm = onConfirmDeleteWave
+        )
+    }
+
+    deleteBlocked?.let { info ->
+        WaveInUseDialog(
+            info = info,
+            onDismiss = onClearDeleteBlocked
+        )
+    }
+
+    if (deleteError != null) {
+        AlertDialog(
+            onDismissRequest = onClearDeleteError,
+            title = { Text("Delete failed") },
+            text = { Text(deleteError) },
+            confirmButton = {
+                TextButton(onClick = onClearDeleteError) { Text("OK") }
+            }
+        )
+    }
+}
+
+private fun pickWavFile(): File? {
+    val dialog = FileDialog(null as Frame?, "Select .wav file", FileDialog.LOAD).apply {
+        setFilenameFilter { _, name -> name.lowercase().endsWith(".wav") }
+        file = "*.wav"
+        isVisible = true
+    }
+    val dir = dialog.directory ?: return null
+    val name = dialog.file ?: return null
+    return File(dir, name)
 }
 
 enum class SortingMode(val displayName: String) {
@@ -127,12 +214,14 @@ fun WaveListByName(
     onItemSelected: (ListedWave) -> Unit,
     waveUsageMap: Map<Int, List<String>>,
     onSelectKitByName: (String) -> Unit,
-    sortingMenuItems: () -> List<ContextMenuItem>
+    sortingMenuItems: () -> List<ContextMenuItem>,
+    onRequestImport: () -> Unit,
+    onRequestDeleteWave: (Int) -> Unit
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         items(waves.size) { index ->
             val wave = waves[index]
-            WaveListItem(wave, onItemSelected, waveUsageMap, onSelectKitByName, sortingMenuItems)
+            WaveListItem(wave, onItemSelected, waveUsageMap, onSelectKitByName, sortingMenuItems, onRequestImport, onRequestDeleteWave)
         }
     }
 }
@@ -144,7 +233,9 @@ fun WaveListByCategory(
     waveUsageMap: Map<Int, List<String>>,
     onSelectKitByName: (String) -> Unit,
     sortingMenuItems: () -> List<ContextMenuItem>,
-    onRenameCategory: (String, String) -> Unit
+    onRenameCategory: (String, String) -> Unit,
+    onRequestImport: () -> Unit,
+    onRequestDeleteWave: (Int) -> Unit
 ) {
     val expandedCategories = remember { mutableStateMapOf<String, Boolean>().apply { put("Default", true) } }
     var renameDialogFor by remember { mutableStateOf<String?>(null) }
@@ -158,7 +249,8 @@ fun WaveListByCategory(
                 ContextMenuArea(
                     items = {
                         listOf(
-                            ContextMenuItem("Rename Category…") { renameDialogFor = category.name }
+                            ContextMenuItem("Rename Category…") { renameDialogFor = category.name },
+                            ContextMenuItem("Import Wave…") { onRequestImport() }
                         )
                     }
                 ) {
@@ -184,7 +276,7 @@ fun WaveListByCategory(
             if (!isCollapsed) {
                 items(waves.size) { index ->
                     val wave = waves[index]
-                    WaveListItem(wave, onItemSelected, waveUsageMap, onSelectKitByName, sortingMenuItems)
+                    WaveListItem(wave, onItemSelected, waveUsageMap, onSelectKitByName, sortingMenuItems, onRequestImport, onRequestDeleteWave)
                 }
             }
         }
@@ -204,6 +296,56 @@ fun WaveListByCategory(
             }
         )
     }
+}
+
+@Composable
+private fun ImportCategoryDialog(
+    categoryNames: List<String>,
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit
+) {
+    val initial = categoryNames.firstOrNull { it == "Default" } ?: categoryNames.firstOrNull().orEmpty()
+    var selected by remember { mutableStateOf(initial) }
+    var expanded by remember { mutableStateOf(false) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Import Wave") },
+        text = {
+            Column {
+                Text("Select target category:", fontSize = 14.sp)
+                Spacer(Modifier.height(8.dp))
+                Box {
+                    TextButton(onClick = { expanded = true }) {
+                        Text(if (selected.isNotBlank()) selected else "(choose category)")
+                    }
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        categoryNames.forEach { name ->
+                            DropdownMenuItem(
+                                text = { Text(name) },
+                                onClick = {
+                                    selected = name
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = { onConfirm(selected) },
+                enabled = selected.isNotBlank()
+            ) { Text("Continue") }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Cancel") }
+        }
+    )
 }
 
 @Composable
@@ -267,7 +409,9 @@ private fun WaveListItem(
     onItemSelected: (ListedWave) -> Unit,
     waveUsageMap: Map<Int, List<String>>,
     onSelectKitByName: (String) -> Unit,
-    sortingMenuItems: () -> List<ContextMenuItem>
+    sortingMenuItems: () -> List<ContextMenuItem>,
+    onRequestImport: () -> Unit,
+    onRequestDeleteWave: (Int) -> Unit
 ) {
     val usedInKits = waveUsageMap[wave.number].orEmpty()
     val isUsed = usedInKits.isNotEmpty()
@@ -282,6 +426,8 @@ private fun WaveListItem(
                     add(ContextMenuItem("─────────") {})
                 }
                 addAll(sortingMenuItems())
+                add(ContextMenuItem("Import Wave…") { onRequestImport() })
+                add(ContextMenuItem("Delete Wave…") { onRequestDeleteWave(wave.number) })
             }
         }
     ) {
@@ -297,4 +443,66 @@ private fun WaveListItem(
             Text(text = "${wave.number}. ${wave.name}", fontSize = 18.sp)
         }
     }
+}
+
+@Composable
+private fun DeleteWaveConfirmDialog(
+    info: MainViewModel.DeleteConfirmInfo,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Delete wave?") },
+        text = {
+            Column {
+                Text(
+                    text = "Wave #${info.waveNumber} \"${info.waveName}\" will be permanently deleted.",
+                    fontSize = 14.sp
+                )
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    text = "Both the .spd parameter file and the .wav audio payload will be removed from disk. This action cannot be undone.",
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text("Delete", color = MaterialTheme.colorScheme.error)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Cancel") }
+        }
+    )
+}
+
+@Composable
+private fun WaveInUseDialog(
+    info: MainViewModel.DeleteBlockedInfo,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Cannot delete wave") },
+        text = {
+            Column {
+                Text(
+                    text = "Wave \"${info.waveName}\" is in use and cannot be deleted.",
+                    fontSize = 14.sp
+                )
+                Spacer(Modifier.height(8.dp))
+                Text(text = "Used in:", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                Spacer(Modifier.height(4.dp))
+                info.kitNames.forEach { kitName ->
+                    Text(text = "• $kitName", fontSize = 12.sp)
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) { Text("OK") }
+        }
+    )
 }

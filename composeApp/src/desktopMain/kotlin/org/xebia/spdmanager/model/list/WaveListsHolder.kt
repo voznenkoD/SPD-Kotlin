@@ -29,6 +29,54 @@ data class WaveListsHolder(val wavesByName: List<ListedWave>, val wavesByNamePer
         return RawWaveLists(tagList, wvListSortbyName, wvListSortbyNameTag, wvListSortbyNumTag)
     }
 
+    fun withAddedWave(wave: Wave, categoryName: String): WaveListsHolder {
+        val listed = ListedWave(wave.number, wave.name)
+
+        val newByName = (wavesByName + listed).sortedBy { it.name.lowercase() }
+
+        val targetByNameKey = wavesByNamePerCategory.keys.firstOrNull { it.name == categoryName }
+            ?: wavesByNamePerCategory.keys.firstOrNull()
+        val updatedByName = LinkedHashMap<Category, List<ListedWave>>()
+        for ((category, waves) in wavesByNamePerCategory) {
+            updatedByName[category] = if (category == targetByNameKey) {
+                (waves + listed).sortedBy { it.name.lowercase() }
+            } else waves
+        }
+
+        val targetByNumKey = wavesByNumPerCategory.keys.firstOrNull { it.name == categoryName }
+            ?: wavesByNumPerCategory.keys.firstOrNull()
+        val updatedByNum = LinkedHashMap<Category, List<ListedWave>>()
+        for ((category, waves) in wavesByNumPerCategory) {
+            updatedByNum[category] = if (category == targetByNumKey) waves + listed else waves
+        }
+
+        return copy(
+            wavesByName = newByName,
+            wavesByNamePerCategory = updatedByName,
+            wavesByNumPerCategory = updatedByNum
+        )
+    }
+
+    fun withRemovedWave(waveNumber: Int): WaveListsHolder {
+        val newByName = wavesByName.filterNot { it.number == waveNumber }
+
+        val updatedByName = LinkedHashMap<Category, List<ListedWave>>()
+        for ((category, waves) in wavesByNamePerCategory) {
+            updatedByName[category] = waves.filterNot { it.number == waveNumber }
+        }
+
+        val updatedByNum = LinkedHashMap<Category, List<ListedWave>>()
+        for ((category, waves) in wavesByNumPerCategory) {
+            updatedByNum[category] = waves.filterNot { it.number == waveNumber }
+        }
+
+        return copy(
+            wavesByName = newByName,
+            wavesByNamePerCategory = updatedByName,
+            wavesByNumPerCategory = updatedByNum
+        )
+    }
+
     fun renameCategory(oldName: String, newName: String): WaveListsHolder {
         if (oldName == newName) return this
         if (wavesByNamePerCategory.keys.any { it.name == newName }) return this

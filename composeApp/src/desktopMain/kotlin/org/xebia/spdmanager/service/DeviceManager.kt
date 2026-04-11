@@ -183,6 +183,128 @@ class DeviceManager {
         }
     }
 
+    sealed class ImportResult {
+        data class Success(val wave: Wave) : ImportResult()
+        data class Error(val message: String) : ImportResult()
+    }
+
+    fun importWave(sourceFile: File, categoryName: String): ImportResult {
+        val currentDevice = device ?: return ImportResult.Error("No device loaded")
+        if (currentDevice.rootPath.isBlank()) return ImportResult.Error("No device loaded")
+
+        when (val v = WavValidator.validate(sourceFile)) {
+            is WavValidationResult.Invalid -> return ImportResult.Error(v.message)
+            WavValidationResult.Valid -> Unit
+        }
+
+        val sanitizedName = sanitizeWaveName(sourceFile.nameWithoutExtension).take(12)
+        if (sanitizedName.isBlank()) {
+            return ImportResult.Error("Unable to derive a valid wave name from filename")
+        }
+        if (currentDevice.waves.any { it.name == sanitizedName }) {
+            return ImportResult.Error(
+                "A wave named '$sanitizedName' already exists. Please rename the source file and try again."
+            )
+        }
+
+        val nextNumber = (currentDevice.waves.maxOfOrNull { it.number } ?: 0) + 1
+        if (nextNumber > 1000) {
+            return ImportResult.Error("Wave library is full (max 1000 waves).")
+        }
+        val folderStr = "%02d".format((nextNumber - 1) / 100)
+        val fileStr = "%02d".format((nextNumber - 1) % 100)
+
+        val tag = currentDevice.waveLists.wavesByNamePerCategory.keys
+            .firstOrNull { it.name == categoryName }?.order ?: 0
+
+        val sanitizedFilename = sanitizeWaveName(sourceFile.nameWithoutExtension).ifBlank { "wave" } + ".wav"
+        val relativePath = "$folderStr/$sanitizedFilename"
+
+        return try {
+            val dataFolder = File("${currentDevice.rootPath}/WAVE/DATA/$folderStr")
+            dataFolder.mkdirs()
+            val dataFile = File(dataFolder, sanitizedFilename)
+            if (dataFile.exists()) {
+                return ImportResult.Error("A file named '$sanitizedFilename' already exists in WAVE/DATA/$folderStr.")
+            }
+            sourceFile.copyTo(dataFile, overwrite = false)
+
+            val prmFolder = File("${currentDevice.rootPath}/WAVE/PRM/$folderStr")
+            prmFolder.mkdirs()
+            val prmFile = File(prmFolder, "$fileStr.spd")
+
+            val newWave = Wave(
+                number = nextNumber,
+                name = sanitizedName,
+                path = relativePath,
+                tagRef = tag,
+                tempo = 0, beat = 0, measure = 0, start = 0, end = 0
+            )
+            xmlParser.writeWaveFile(newWave.toRaw(), prmFile)
+
+            val updatedWaves = currentDevice.waves + newWave
+            val updatedWaveLists = currentDevice.waveLists.withAddedWave(newWave, categoryName)
+            device = currentDevice.copy(waves = updatedWaves, waveLists = updatedWaveLists)
+
+            val systemDir = File("${currentDevice.rootPath}/SYSTEM")
+            val rawWaveLists = updatedWaveLists.toRaw()
+            xmlParser.writeSystemFile(rawWaveLists.tagList, "tag_list.spd", systemDir)
+            xmlParser.writeSystemFile(rawWaveLists.wvListSortbyName, "wavelist_name.spd", systemDir)
+            xmlParser.writeSystemFile(rawWaveLists.wvListSortbyNameTag, "wavelist_tagname.spd", systemDir)
+            xmlParser.writeSystemFile(rawWaveLists.wvListSortbyNumTag, "wavelist_tagnum.spd", systemDir)
+
+            ImportResult.Success(newWave)
+        } catch (e: Exception) {
+            ImportResult.Error("Failed to write wave files: ${e.message}")
+        }
+    }
+
+    private fun sanitizeWaveName(input: String): String =
+        input.replace(Regex("[^A-Za-z0-9 _-]"), "_").trim()
+
+    sealed class DeleteResult {
+        data object Success : DeleteResult()
+        data class Error(val message: String) : DeleteResult()
+        data class InUse(val kitNames: List<String>) : DeleteResult()
+    }
+
+    fun deleteWave(waveNumber: Int): DeleteResult {
+        val currentDevice = device ?: return DeleteResult.Error("No device loaded")
+        if (currentDevice.rootPath.isBlank()) return DeleteResult.Error("No device loaded")
+
+        val wave = currentDevice.waves.find { it.number == waveNumber }
+            ?: return DeleteResult.Error("Wave #$waveNumber not found")
+
+        val usage = buildWaveUsageMap(currentDevice.kits)[waveNumber].orEmpty()
+        if (usage.isNotEmpty()) {
+            return DeleteResult.InUse(usage)
+        }
+
+        val folderStr = "%02d".format((wave.number - 1) / 100)
+        val fileStr = "%02d".format((wave.number - 1) % 100)
+        val prmFile = File("${currentDevice.rootPath}/WAVE/PRM/$folderStr/$fileStr.spd")
+        val dataFile = File("${currentDevice.rootPath}/WAVE/DATA/${wave.path}")
+
+        runCatching { if (prmFile.exists()) prmFile.delete() }
+        runCatching { if (dataFile.exists()) dataFile.delete() }
+
+        val updatedWaves = currentDevice.waves.filterNot { it.number == waveNumber }
+        val updatedWaveLists = currentDevice.waveLists.withRemovedWave(waveNumber)
+        device = currentDevice.copy(waves = updatedWaves, waveLists = updatedWaveLists)
+
+        return try {
+            val systemDir = File("${currentDevice.rootPath}/SYSTEM")
+            val rawWaveLists = updatedWaveLists.toRaw()
+            xmlParser.writeSystemFile(rawWaveLists.tagList, "tag_list.spd", systemDir)
+            xmlParser.writeSystemFile(rawWaveLists.wvListSortbyName, "wavelist_name.spd", systemDir)
+            xmlParser.writeSystemFile(rawWaveLists.wvListSortbyNameTag, "wavelist_tagname.spd", systemDir)
+            xmlParser.writeSystemFile(rawWaveLists.wvListSortbyNumTag, "wavelist_tagnum.spd", systemDir)
+            DeleteResult.Success
+        } catch (e: Exception) {
+            DeleteResult.Error("Failed to update wave list index files: ${e.message}")
+        }
+    }
+
     fun moveKit(fromIndex: Int, toIndex: Int) {
         device?.let { currentDevice ->
             val kits = currentDevice.kits.toMutableList()

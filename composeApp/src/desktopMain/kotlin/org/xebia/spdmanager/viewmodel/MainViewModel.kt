@@ -11,6 +11,7 @@ import org.xebia.spdmanager.model.kit.pad.PadPan
 import org.xebia.spdmanager.model.kit.pad.Sound
 import org.xebia.spdmanager.model.list.ListedWave
 import org.xebia.spdmanager.service.DeviceManager
+import java.io.File
 
 class MainViewModel(
     val deviceManager: DeviceManager
@@ -35,6 +36,21 @@ class MainViewModel(
 
     private val _clipboardPad = MutableStateFlow<Pad?>(null)
     val clipboardPad: StateFlow<Pad?> = _clipboardPad.asStateFlow()
+
+    private val _importError = MutableStateFlow<String?>(null)
+    val importError: StateFlow<String?> = _importError.asStateFlow()
+
+    data class DeleteConfirmInfo(val waveNumber: Int, val waveName: String)
+    data class DeleteBlockedInfo(val waveName: String, val kitNames: List<String>)
+
+    private val _deleteConfirm = MutableStateFlow<DeleteConfirmInfo?>(null)
+    val deleteConfirm: StateFlow<DeleteConfirmInfo?> = _deleteConfirm.asStateFlow()
+
+    private val _deleteBlocked = MutableStateFlow<DeleteBlockedInfo?>(null)
+    val deleteBlocked: StateFlow<DeleteBlockedInfo?> = _deleteBlocked.asStateFlow()
+
+    private val _deleteError = MutableStateFlow<String?>(null)
+    val deleteError: StateFlow<String?> = _deleteError.asStateFlow()
 
     fun selectKit(kit: Kit) {
         val index = deviceManager.device?.kits?.indexOf(kit)
@@ -88,6 +104,58 @@ class MainViewModel(
 
     fun renameCategory(oldName: String, newName: String) {
         deviceManager.renameCategory(oldName, newName)
+    }
+
+    fun importWave(sourceFile: File, categoryName: String) {
+        when (val result = deviceManager.importWave(sourceFile, categoryName)) {
+            is DeviceManager.ImportResult.Success -> Unit
+            is DeviceManager.ImportResult.Error -> _importError.value = result.message
+        }
+    }
+
+    fun clearImportError() {
+        _importError.value = null
+    }
+
+    fun requestDeleteWave(waveNumber: Int) {
+        val dev = deviceManager.device ?: return
+        val wave = dev.waves.find { it.number == waveNumber } ?: return
+        val usage = DeviceManager.buildWaveUsageMap(dev.kits)[waveNumber].orEmpty()
+        if (usage.isNotEmpty()) {
+            _deleteBlocked.value = DeleteBlockedInfo(wave.name, usage)
+        } else {
+            _deleteConfirm.value = DeleteConfirmInfo(wave.number, wave.name)
+        }
+    }
+
+    fun confirmDeleteWave() {
+        val confirming = _deleteConfirm.value ?: return
+        _deleteConfirm.value = null
+        when (val result = deviceManager.deleteWave(confirming.waveNumber)) {
+            is DeviceManager.DeleteResult.Success -> {
+                if (_selectedWave.value?.number == confirming.waveNumber) {
+                    _selectedWave.value = null
+                }
+            }
+            is DeviceManager.DeleteResult.Error -> {
+                _deleteError.value = result.message
+            }
+            is DeviceManager.DeleteResult.InUse -> {
+                _deleteBlocked.value = DeleteBlockedInfo(confirming.waveName, result.kitNames)
+            }
+        }
+    }
+
+    fun clearDeleteConfirm() {
+        _deleteConfirm.value = null
+    }
+
+    fun clearDeleteBlocked() {
+        _deleteBlocked.value = null
+    }
+
+    fun clearDeleteError() {
+        _deleteError.value = null
     }
 
     fun moveKit(fromIndex: Int, toIndex: Int) {
