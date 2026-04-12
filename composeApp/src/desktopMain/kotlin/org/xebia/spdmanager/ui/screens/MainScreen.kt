@@ -36,11 +36,17 @@ fun MainScreen() {
     val deleteConfirm by mainViewModel.deleteConfirm.collectAsState()
     val deleteBlocked by mainViewModel.deleteBlocked.collectAsState()
     val deleteError by mainViewModel.deleteError.collectAsState()
+    val listsSelectedTab by mainViewModel.listsSelectedTab.collectAsState()
 
     val kits = device?.kits.orEmpty()
     val waves = device?.waves.orEmpty()
     val waveListsHolder = device?.waveLists ?: WaveListsHolder(emptyList(), emptyMap(), emptyMap())
     val waveUsageMap = remember(kits) { DeviceManager.buildWaveUsageMap(kits) }
+    val waveNameLookup: (Int) -> String? = remember(waves) {
+        val byNumber = waves.associateBy { it.number }
+        val lookup: (Int) -> String? = { n -> byNumber[n]?.name }
+        lookup
+    }
 
     if (device == null) {
         Box(
@@ -81,7 +87,8 @@ fun MainScreen() {
                 onPastePad = mainViewModel::pastePad,
                 onRemoveWave = mainViewModel::removeWave,
                 onRemoveSubWave = mainViewModel::removeSubWave,
-                hasCopiedPad = clipboardPad != null
+                hasCopiedPad = clipboardPad != null,
+                waveNameLookup = waveNameLookup
             )
 
             WaveDetailsScreen(
@@ -116,7 +123,10 @@ fun MainScreen() {
                 deleteError = deleteError,
                 onClearDeleteConfirm = mainViewModel::clearDeleteConfirm,
                 onClearDeleteBlocked = mainViewModel::clearDeleteBlocked,
-                onClearDeleteError = mainViewModel::clearDeleteError
+                onClearDeleteError = mainViewModel::clearDeleteError,
+                selectedTab = listsSelectedTab,
+                onSelectedTabChange = mainViewModel::selectListsTab,
+                selectedWaveNumber = selectedWave?.number
             )
         }
     }

@@ -14,7 +14,7 @@ fun <T> GenericListView(
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         items(items) { item ->
-            GenericListItemView(item, onItemSelected, content)
+            GenericListItemView(item = item, onItemClicked = onItemSelected, content = content)
         }
     }
 }

@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -45,9 +46,11 @@ fun ListsScreen(
     deleteError: String? = null,
     onClearDeleteConfirm: () -> Unit = {},
     onClearDeleteBlocked: () -> Unit = {},
-    onClearDeleteError: () -> Unit = {}
+    onClearDeleteError: () -> Unit = {},
+    selectedTab: Int = 0,
+    onSelectedTabChange: (Int) -> Unit = {},
+    selectedWaveNumber: Int? = null
 ) {
-    var selectedTab by remember { mutableStateOf(0) }
     var sortingMode by remember { mutableStateOf(SortingMode.BY_CATEGORY_NAME) }
     var showImportCategoryDialog by remember { mutableStateOf(false) }
 
@@ -64,13 +67,13 @@ fun ListsScreen(
         TabRow(selectedTabIndex = selectedTab) {
             Tab(
                 selected = selectedTab == 0,
-                onClick = { selectedTab = 0 },
+                onClick = { onSelectedTabChange(0) },
                 text = { Text(text = "Kits", style = MaterialTheme.typography.titleSmall) }
             )
             ContextMenuArea(items = sortingMenuItems) {
                 Tab(
                     selected = selectedTab == 1,
-                    onClick = { selectedTab = 1 },
+                    onClick = { onSelectedTabChange(1) },
                     text = {
                         Text(
                             text = "Waves (${sortingMode.displayName})",
@@ -104,7 +107,8 @@ fun ListsScreen(
                             onSelectKitByName,
                             sortingMenuItems,
                             onRequestImport,
-                            onRequestDeleteWave
+                            onRequestDeleteWave,
+                            selectedWaveNumber
                         )
 
                         SortingMode.BY_CATEGORY_NAME -> WaveListByCategory(
@@ -115,7 +119,8 @@ fun ListsScreen(
                             sortingMenuItems,
                             onRenameCategory,
                             onRequestImport,
-                            onRequestDeleteWave
+                            onRequestDeleteWave,
+                            selectedWaveNumber
                         )
 
                         SortingMode.BY_CATEGORY_NUM -> WaveListByCategory(
@@ -126,7 +131,8 @@ fun ListsScreen(
                             sortingMenuItems,
                             onRenameCategory,
                             onRequestImport,
-                            onRequestDeleteWave
+                            onRequestDeleteWave,
+                            selectedWaveNumber
                         )
                     }
                 }
@@ -216,12 +222,32 @@ fun WaveListByName(
     onSelectKitByName: (String) -> Unit,
     sortingMenuItems: () -> List<ContextMenuItem>,
     onRequestImport: () -> Unit,
-    onRequestDeleteWave: (Int) -> Unit
+    onRequestDeleteWave: (Int) -> Unit,
+    selectedWaveNumber: Int?
 ) {
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(selectedWaveNumber, waves) {
+        val target = selectedWaveNumber ?: return@LaunchedEffect
+        val index = waves.indexOfFirst { it.number == target }
+        if (index >= 0 && listState.layoutInfo.visibleItemsInfo.none { it.index == index }) {
+            listState.animateScrollToItem(index)
+        }
+    }
+
+    LazyColumn(modifier = Modifier.fillMaxSize(), state = listState) {
         items(waves.size) { index ->
             val wave = waves[index]
-            WaveListItem(wave, onItemSelected, waveUsageMap, onSelectKitByName, sortingMenuItems, onRequestImport, onRequestDeleteWave)
+            WaveListItem(
+                wave,
+                onItemSelected,
+                waveUsageMap,
+                onSelectKitByName,
+                sortingMenuItems,
+                onRequestImport,
+                onRequestDeleteWave,
+                isHighlighted = wave.number == selectedWaveNumber
+            )
         }
     }
 }
@@ -235,14 +261,43 @@ fun WaveListByCategory(
     sortingMenuItems: () -> List<ContextMenuItem>,
     onRenameCategory: (String, String) -> Unit,
     onRequestImport: () -> Unit,
-    onRequestDeleteWave: (Int) -> Unit
+    onRequestDeleteWave: (Int) -> Unit,
+    selectedWaveNumber: Int?
 ) {
     val expandedCategories = remember { mutableStateMapOf<String, Boolean>().apply { put("Default", true) } }
     var renameDialogFor by remember { mutableStateOf<String?>(null) }
+    val listState = rememberLazyListState()
 
     val existingNames = wavesByCategory.keys.map { it.name }
 
-    LazyColumn(Modifier.fillMaxSize()) {
+    LaunchedEffect(selectedWaveNumber, wavesByCategory) {
+        val target = selectedWaveNumber ?: return@LaunchedEffect
+        val containing = wavesByCategory.entries.firstOrNull { (_, waves) ->
+            waves.any { it.number == target }
+        } ?: return@LaunchedEffect
+        if (expandedCategories[containing.key.name] != true) {
+            expandedCategories[containing.key.name] = true
+        }
+        var idx = 0
+        var found = -1
+        for ((cat, waves) in wavesByCategory) {
+            idx++
+            val expanded = expandedCategories[cat.name] == true
+            if (expanded) {
+                val waveIdx = waves.indexOfFirst { it.number == target }
+                if (waveIdx >= 0) {
+                    found = idx + waveIdx
+                    break
+                }
+                idx += waves.size
+            }
+        }
+        if (found >= 0 && listState.layoutInfo.visibleItemsInfo.none { it.index == found }) {
+            listState.animateScrollToItem(found)
+        }
+    }
+
+    LazyColumn(modifier = Modifier.fillMaxSize(), state = listState) {
         wavesByCategory.forEach { (category, waves) ->
             val isCollapsed = expandedCategories[category.name] != true
             item {
@@ -276,7 +331,16 @@ fun WaveListByCategory(
             if (!isCollapsed) {
                 items(waves.size) { index ->
                     val wave = waves[index]
-                    WaveListItem(wave, onItemSelected, waveUsageMap, onSelectKitByName, sortingMenuItems, onRequestImport, onRequestDeleteWave)
+                    WaveListItem(
+                        wave,
+                        onItemSelected,
+                        waveUsageMap,
+                        onSelectKitByName,
+                        sortingMenuItems,
+                        onRequestImport,
+                        onRequestDeleteWave,
+                        isHighlighted = wave.number == selectedWaveNumber
+                    )
                 }
             }
         }
@@ -411,7 +475,8 @@ private fun WaveListItem(
     onSelectKitByName: (String) -> Unit,
     sortingMenuItems: () -> List<ContextMenuItem>,
     onRequestImport: () -> Unit,
-    onRequestDeleteWave: (Int) -> Unit
+    onRequestDeleteWave: (Int) -> Unit,
+    isHighlighted: Boolean = false
 ) {
     val usedInKits = waveUsageMap[wave.number].orEmpty()
     val isUsed = usedInKits.isNotEmpty()
@@ -431,7 +496,16 @@ private fun WaveListItem(
             }
         }
     ) {
-        GenericListItemView(item = wave, onItemClicked = onItemSelected) {
+        val backgroundColor = if (isHighlighted) {
+            MaterialTheme.colorScheme.secondaryContainer
+        } else {
+            Color.White
+        }
+        GenericListItemView(
+            item = wave,
+            onItemClicked = onItemSelected,
+            backgroundColor = backgroundColor
+        ) {
             if (isUsed) {
                 Text(
                     text = "● ",

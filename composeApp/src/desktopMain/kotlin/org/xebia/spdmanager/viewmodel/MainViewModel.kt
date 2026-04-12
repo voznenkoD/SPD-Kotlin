@@ -40,6 +40,9 @@ class MainViewModel(
     private val _importError = MutableStateFlow<String?>(null)
     val importError: StateFlow<String?> = _importError.asStateFlow()
 
+    private val _listsSelectedTab = MutableStateFlow(0)
+    val listsSelectedTab: StateFlow<Int> = _listsSelectedTab.asStateFlow()
+
     data class DeleteConfirmInfo(val waveNumber: Int, val waveName: String)
     data class DeleteBlockedInfo(val waveName: String, val kitNames: List<String>)
 
@@ -86,20 +89,21 @@ class MainViewModel(
     fun selectPad(padNumber: PadNumber, kit: Kit?, isMain: Boolean) {
         _selectedPadNumber.value = padNumber
         _isMainSelected.value = isMain
+        _listsSelectedTab.value = 1
 
         val pad = kit?.pads?.get(padNumber)
         _selectedPad.value = pad
 
-        val waveNumber = if (isMain) {
-            pad?.main?.wave
+        val waveNumber = if (isMain) pad?.main?.wave else pad?.sub?.wave
+        _selectedWave.value = if (waveNumber != null && waveNumber > 0) {
+            deviceManager.device?.waves?.find { it.number == waveNumber }
         } else {
-            pad?.sub?.wave
+            null
         }
+    }
 
-        waveNumber?.let { number ->
-            val waves = deviceManager.device?.waves ?: emptyList()
-            _selectedWave.value = waves.find { it.number == number }
-        }
+    fun selectListsTab(index: Int) {
+        _listsSelectedTab.value = index
     }
 
     fun renameCategory(oldName: String, newName: String) {

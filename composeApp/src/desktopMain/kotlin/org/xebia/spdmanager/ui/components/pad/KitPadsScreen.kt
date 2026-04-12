@@ -35,7 +35,8 @@ fun PadScreen(
     onPastePad: (PadNumber) -> Unit = {},
     onRemoveWave: (PadNumber) -> Unit = {},
     onRemoveSubWave: (PadNumber) -> Unit = {},
-    hasCopiedPad: Boolean = false
+    hasCopiedPad: Boolean = false,
+    waveNameLookup: (Int) -> String? = { null }
 ) {
     if (kit != null) {
         Surface(
@@ -68,7 +69,8 @@ fun PadScreen(
                             onPastePad = onPastePad,
                             onRemoveWave = onRemoveWave,
                             onRemoveSubWave = onRemoveSubWave,
-                            hasCopiedPad = hasCopiedPad
+                            hasCopiedPad = hasCopiedPad,
+                            waveNameLookup = waveNameLookup
                         )
                     }
                 }
@@ -92,7 +94,8 @@ fun PadScreen(
                             onPastePad = onPastePad,
                             onRemoveWave = onRemoveWave,
                             onRemoveSubWave = onRemoveSubWave,
-                            hasCopiedPad = hasCopiedPad
+                            hasCopiedPad = hasCopiedPad,
+                            waveNameLookup = waveNameLookup
                         )
                     }
                 }
@@ -117,7 +120,8 @@ fun PadScreen(
                             onPastePad = onPastePad,
                             onRemoveWave = onRemoveWave,
                             onRemoveSubWave = onRemoveSubWave,
-                            hasCopiedPad = hasCopiedPad
+                            hasCopiedPad = hasCopiedPad,
+                            waveNameLookup = waveNameLookup
                         )
                     }
                 }
@@ -138,7 +142,8 @@ fun PadItem(
     onPastePad: (PadNumber) -> Unit = {},
     onRemoveWave: (PadNumber) -> Unit = {},
     onRemoveSubWave: (PadNumber) -> Unit = {},
-    hasCopiedPad: Boolean = false
+    hasCopiedPad: Boolean = false,
+    waveNameLookup: (Int) -> String? = { null }
 ) {
     val backgroundColor = if (isSelected) {
         Color(0x88B71C1C)
@@ -190,7 +195,7 @@ fun PadItem(
                 ) {
                     Text(
                         color = if (isSelected && isMainSelected) Color.White else Color.LightGray,
-                        text = "Main: ${pad.main.wave ?: "---"}",
+                        text = waveNameLookup(pad.main.wave) ?: "----",
                         fontSize = 14.sp,
                         fontWeight = if (isSelected && isMainSelected) FontWeight.Bold else FontWeight.Normal
                     )
@@ -220,7 +225,7 @@ fun PadItem(
                 ) {
                     Text(
                         color = if (isSelected && !isMainSelected) Color.White else Color.LightGray,
-                        text = "Sub: ${pad.sub.wave ?: "---"}",
+                        text = waveNameLookup(pad.sub.wave) ?: "----",
                         fontSize = 14.sp,
                         fontWeight = if (isSelected && !isMainSelected) FontWeight.Bold else FontWeight.Normal
                     )

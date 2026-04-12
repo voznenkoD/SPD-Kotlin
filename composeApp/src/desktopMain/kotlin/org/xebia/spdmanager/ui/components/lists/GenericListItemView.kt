@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 fun <T> GenericListItemView(
     item: T,
     onItemClicked: (T) -> Unit,
+    backgroundColor: Color = Color.White,
     content: @Composable (T) -> Unit
 ) {
     Box(
@@ -28,7 +29,7 @@ fun <T> GenericListItemView(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.White)
+                .background(backgroundColor)
                 .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
