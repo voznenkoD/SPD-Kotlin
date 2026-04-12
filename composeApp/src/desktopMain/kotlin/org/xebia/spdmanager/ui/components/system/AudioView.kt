@@ -14,6 +14,7 @@ import org.xebia.spdmanager.ui.components.common.DropdownSelector
 import org.xebia.spdmanager.ui.components.common.IntStepSliderWithLabel
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun AudioView(
     audioConfig: SystemAudioConfig,
@@ -23,32 +24,34 @@ fun AudioView(
         Column(modifier = Modifier.weight(1f).padding(8.dp)) {
             Text("Audio Settings")
 
-            IntStepSliderWithLabel(
-                label = "Audio In Volume",
-                value = audioConfig.audioInVolume,
-                range = 0..100,
-                onValueChange = { volume ->
-                    onUpdate(audioConfig.copy(audioInVolume = volume))
-                }
-            )
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                IntStepSliderWithLabel(
+                    label = "Audio In Volume",
+                    value = audioConfig.audioInVolume,
+                    range = 0..100,
+                    onValueChange = { volume ->
+                        onUpdate(audioConfig.copy(audioInVolume = volume))
+                    }
+                )
 
-            IntStepSliderWithLabel(
-                label = "USB In Volume",
-                value = audioConfig.usbInVolume,
-                range = 0..100,
-                onValueChange = { volume ->
-                    onUpdate(audioConfig.copy(usbInVolume = volume))
-                }
-            )
+                IntStepSliderWithLabel(
+                    label = "USB In Volume",
+                    value = audioConfig.usbInVolume,
+                    range = 0..100,
+                    onValueChange = { volume ->
+                        onUpdate(audioConfig.copy(usbInVolume = volume))
+                    }
+                )
 
-            IntStepSliderWithLabel(
-                label = "Sub Out Volume",
-                value = audioConfig.subOutVolume,
-                range = 0..100,
-                onValueChange = { volume ->
-                    onUpdate(audioConfig.copy(subOutVolume = volume))
-                }
-            )
+                IntStepSliderWithLabel(
+                    label = "Sub Out Volume",
+                    value = audioConfig.subOutVolume,
+                    range = 0..100,
+                    onValueChange = { volume ->
+                        onUpdate(audioConfig.copy(subOutVolume = volume))
+                    }
+                )
+            }
 
             Row(modifier = Modifier.fillMaxSize()) {
                 DropdownSelector(
@@ -83,18 +86,20 @@ fun AudioView(
         Column(modifier = Modifier.weight(1f).padding(8.dp)) {
             Text("System EQ")
 
-            SliderWithLabel(
-                label = "Low Gain (dB)",
-                value = audioConfig.systemEq.lowGain,
-                valueRange = -12f..12f,
-                onValueChange = { gain ->
-                    onUpdate(
-                        audioConfig.copy(
-                            systemEq = audioConfig.systemEq.copy(lowGain = gain)
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                SliderWithLabel(
+                    label = "Low Gain (dB)",
+                    value = audioConfig.systemEq.lowGain,
+                    valueRange = -12f..12f, bipolar = true,
+                    onValueChange = { gain ->
+                        onUpdate(
+                            audioConfig.copy(
+                                systemEq = audioConfig.systemEq.copy(lowGain = gain)
+                            )
                         )
-                    )
-                }
-            )
+                    }
+                )
+            }
 
             DropdownSelector(
                 label = "Mid Frequency",
@@ -109,31 +114,33 @@ fun AudioView(
                 items = EqFreq.entries.toList()
             )
 
-            SliderWithLabel(
-                label = "Mid Gain (dB)",
-                value = audioConfig.systemEq.midGain,
-                valueRange = -12f..12f,
-                onValueChange = { gain ->
-                    onUpdate(
-                        audioConfig.copy(
-                            systemEq = audioConfig.systemEq.copy(midGain = gain)
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                SliderWithLabel(
+                    label = "Mid Gain (dB)",
+                    value = audioConfig.systemEq.midGain,
+                    valueRange = -12f..12f, bipolar = true,
+                    onValueChange = { gain ->
+                        onUpdate(
+                            audioConfig.copy(
+                                systemEq = audioConfig.systemEq.copy(midGain = gain)
+                            )
                         )
-                    )
-                }
-            )
+                    }
+                )
 
-            SliderWithLabel(
-                label = "High Gain (dB)",
-                value = audioConfig.systemEq.highGain,
-                valueRange = -12f..12f,
-                onValueChange = { gain ->
-                    onUpdate(
-                        audioConfig.copy(
-                            systemEq = audioConfig.systemEq.copy(highGain = gain)
+                SliderWithLabel(
+                    label = "High Gain (dB)",
+                    value = audioConfig.systemEq.highGain,
+                    valueRange = -12f..12f, bipolar = true,
+                    onValueChange = { gain ->
+                        onUpdate(
+                            audioConfig.copy(
+                                systemEq = audioConfig.systemEq.copy(highGain = gain)
+                            )
                         )
-                    )
-                }
-            )
+                    }
+                )
+            }
         }
     }
 }

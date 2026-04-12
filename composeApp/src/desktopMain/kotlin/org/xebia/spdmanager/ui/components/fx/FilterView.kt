@@ -12,6 +12,7 @@ import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
 import org.xebia.spdmanager.ui.components.common.ButtonRow
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun FilterView(
     fx: Filter,
@@ -29,14 +30,16 @@ fun FilterView(
             }
         )
 
-        SliderWithLabel(
-            label = "Resonance",
-            value = fx.resonance.toFloat(),
-            onValueChange = { newResonance ->
-                onFxChange(fx.copy(resonance = newResonance.toInt()))
-            },
-            valueRange = 0f..100f
-        )
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            SliderWithLabel(
+                label = "Resonance",
+                value = fx.resonance.toFloat(),
+                onValueChange = { newResonance ->
+                    onFxChange(fx.copy(resonance = newResonance.toInt()))
+                },
+                valueRange = 0f..100f
+            )
+        }
 
         ButtonRow(
             label = "Slope",
@@ -68,14 +71,16 @@ fun FilterView(
             )
         } else {
             val modRateInt = (fx.modRate as? ModRate.IntRate)?.intRate?.toFloat() ?: 0f
-            SliderWithLabel(
-                label = "Modulation Rate",
-                value = modRateInt,
-                onValueChange = { newModRate ->
-                    onFxChange(fx.copy(modRate = ModRate.IntRate(newModRate.toInt())))
-                },
-                valueRange = 0f..100f
-            )
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                SliderWithLabel(
+                    label = "Modulation Rate",
+                    value = modRateInt,
+                    onValueChange = { newModRate ->
+                        onFxChange(fx.copy(modRate = ModRate.IntRate(newModRate.toInt())))
+                    },
+                    valueRange = 0f..100f
+                )
+            }
         }
 
         ButtonRow(

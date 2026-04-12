@@ -381,7 +381,7 @@ private fun ImportCategoryDialog(
                 Spacer(Modifier.height(8.dp))
                 Box {
                     TextButton(onClick = { expanded = true }) {
-                        Text(if (selected.isNotBlank()) selected else "(choose category)")
+                        Text(selected.ifBlank { "(choose category)" })
                     }
                     DropdownMenu(
                         expanded = expanded,

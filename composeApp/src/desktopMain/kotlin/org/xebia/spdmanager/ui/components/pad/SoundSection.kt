@@ -1,7 +1,6 @@
 package org.xebia.spdmanager.ui.components.pad
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -12,6 +11,7 @@ import org.xebia.spdmanager.model.kit.pad.Sound
 import org.xebia.spdmanager.ui.components.common.DropdownSelector
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SoundSection(
     title: String,
@@ -40,21 +40,23 @@ fun SoundSection(
             Text("$title: No waves available")
         }
 
-        SliderWithLabel(
-            label = "Volume",
-            value = sound.volume.toFloat(),
-            onValueChange = { newVolume ->
-                onSoundChange(sound.copy(volume = newVolume.toInt()))
-            },
-            valueRange = 0f..100f
-        )
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            SliderWithLabel(
+                label = "Volume",
+                value = sound.volume.toFloat(),
+                onValueChange = { newVolume ->
+                    onSoundChange(sound.copy(volume = newVolume.toInt()))
+                },
+                valueRange = 0f..100f
+            )
 
-        PadPanSlider(
-            label = "Pan",
-            pan = sound.pan,
-            onPanChange = { newPan ->
-                onSoundChange(sound.copy(pan = newPan))
-            }
-        )
+            PadPanSlider(
+                label = "Pan",
+                pan = sound.pan,
+                onPanChange = { newPan ->
+                    onSoundChange(sound.copy(pan = newPan))
+                }
+            )
+        }
     }
 }

@@ -1,38 +1,19 @@
 package org.xebia.spdmanager.ui.components.system
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Slider
-import androidx.compose.material3.Text
-import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.Composable
 import org.xebia.spdmanager.model.system.ClickPan
+import org.xebia.spdmanager.ui.components.common.KnobControl
+import org.xebia.spdmanager.ui.components.common.KnobMode
 
 @Composable
 fun ClickPanSlider(label: String, pan: ClickPan, onPanChange: (ClickPan) -> Unit) {
-    var sliderValue by remember { mutableStateOf((pan.value + 15).toFloat()) }
-
-    Column(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
-        Text("$label: ${pan.toString()}", fontSize = 16.sp, fontWeight = FontWeight.Medium)
-
-        Slider(
-            value = sliderValue,
-            onValueChange = {
-                sliderValue = it
-                onPanChange(ClickPan((it - 15).toInt()))
-            },
-            valueRange = 0f..30f,
-            steps = 29,  // Allows precise adjustments
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        // Display L (Left), C (Center), and R (Right) indicators
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text("L", fontSize = 14.sp)
-            Text("C", fontSize = 14.sp)
-            Text("R", fontSize = 14.sp)
-        }
-    }
+    KnobControl(
+        label = label,
+        value = pan.value.toFloat(),
+        onValueChange = { onPanChange(ClickPan(it.toInt())) },
+        valueRange = -15f..15f,
+        mode = KnobMode.Bipolar,
+        steps = 30,
+        valueDisplay = pan.toString()
+    )
 }

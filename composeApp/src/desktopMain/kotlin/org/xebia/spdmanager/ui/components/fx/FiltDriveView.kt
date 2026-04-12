@@ -10,6 +10,7 @@ import org.xebia.spdmanager.model.system.fx.subtypes.FiltDrive
 import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun FiltDriveView(
     fx: FiltDrive,
@@ -18,22 +19,24 @@ fun FiltDriveView(
     Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
         Text("Filt Drive Settings", fontSize = 18.sp)
 
-        SliderWithLabel(
-            label = "Resonance",
-            value = fx.resonance.toFloat(),
-            onValueChange = { newResonance ->
-                onFxChange(fx.copy(resonance = newResonance.toInt()))
-            },
-            valueRange = 0f..100f
-        )
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            SliderWithLabel(
+                label = "Resonance",
+                value = fx.resonance.toFloat(),
+                onValueChange = { newResonance ->
+                    onFxChange(fx.copy(resonance = newResonance.toInt()))
+                },
+                valueRange = 0f..100f
+            )
 
-        SliderWithLabel(
-            label = "Level",
-            value = fx.level.toFloat(),
-            onValueChange = { newLevel ->
-                onFxChange(fx.copy(level = newLevel.toInt()))
-            },
-            valueRange = 0f..100f
-        )
+            SliderWithLabel(
+                label = "Level",
+                value = fx.level.toFloat(),
+                onValueChange = { newLevel ->
+                    onFxChange(fx.copy(level = newLevel.toInt()))
+                },
+                valueRange = 0f..100f
+            )
+        }
     }
 }

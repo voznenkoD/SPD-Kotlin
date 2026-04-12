@@ -14,6 +14,7 @@ import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
 import org.xebia.spdmanager.ui.components.common.ButtonRow
 import org.xebia.spdmanager.ui.components.common.IntStepSliderWithLabel
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ChorusView(
     chorus: Chorus,
@@ -31,23 +32,25 @@ fun ChorusView(
             }
         )
 
-        IntStepSliderWithLabel(
-            label = "Rate",
-            value = chorus.rate,
-            onValueChange = { newRate ->
-                onFxChange(chorus.copy(rate = newRate))
-            },
-            range = 0..100
-        )
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            IntStepSliderWithLabel(
+                label = "Rate",
+                value = chorus.rate,
+                onValueChange = { newRate ->
+                    onFxChange(chorus.copy(rate = newRate))
+                },
+                range = 0..100
+            )
 
-        IntStepSliderWithLabel(
-            label = "Pre-Delay",
-            value = chorus.preDelay,
-            onValueChange = { newPreDelay ->
-                onFxChange(chorus.copy(preDelay = newPreDelay))
-            },
-            range = 0..100
-        )
+            IntStepSliderWithLabel(
+                label = "Pre-Delay",
+                value = chorus.preDelay,
+                onValueChange = { newPreDelay ->
+                    onFxChange(chorus.copy(preDelay = newPreDelay))
+                },
+                range = 0..100
+            )
+        }
 
         ButtonRow(
             label = "Low Cut",
@@ -67,13 +70,15 @@ fun ChorusView(
             }
         )
 
-        IntStepSliderWithLabel(
-            label = "Direct Level",
-            value = chorus.directLevel,
-            onValueChange = { newDirectLevel ->
-                onFxChange(chorus.copy(directLevel = newDirectLevel))
-            },
-            range = 0..100
-        )
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            IntStepSliderWithLabel(
+                label = "Direct Level",
+                value = chorus.directLevel,
+                onValueChange = { newDirectLevel ->
+                    onFxChange(chorus.copy(directLevel = newDirectLevel))
+                },
+                range = 0..100
+            )
+        }
     }
 }

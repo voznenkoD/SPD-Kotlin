@@ -12,6 +12,7 @@ import org.xebia.spdmanager.ui.components.common.DropdownSelector
 import org.xebia.spdmanager.ui.components.common.IntStepSliderWithLabel
 import org.xebia.spdmanager.ui.components.common.SwitchWithLabel
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SetupMidiView(setupConfig: SetupConfig, onUpdate: (SetupConfig) -> Unit) {
     var midiCh by remember { mutableStateOf(setupConfig.midiCh) } // MIDI Setup dropdown (0..16)
@@ -77,25 +78,27 @@ fun SetupMidiView(setupConfig: SetupConfig, onUpdate: (SetupConfig) -> Unit) {
         }
 
 
-        IntStepSliderWithLabel(
-            label = "MIDI FX Select CC",
-            value = midiFxSelCc,
-            range = 0..95,
-            onValueChange = { midiFxSelCc = it.toInt(); onUpdate(setupConfig.copy(midiFxSelCc = it)) }
-        )
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            IntStepSliderWithLabel(
+                label = "MIDI FX Select CC",
+                value = midiFxSelCc,
+                range = 0..95,
+                onValueChange = { midiFxSelCc = it.toInt(); onUpdate(setupConfig.copy(midiFxSelCc = it)) }
+            )
 
-        IntStepSliderWithLabel(
-            label = "Master FX Control 1 CC",
-            value = mstrFxCtrl1Cc,
-            range = 0..95,
-            onValueChange = { mstrFxCtrl1Cc = it; onUpdate(setupConfig.copy(mstrFxCtrl1Cc = it)) }
-        )
+            IntStepSliderWithLabel(
+                label = "Master FX Control 1 CC",
+                value = mstrFxCtrl1Cc,
+                range = 0..95,
+                onValueChange = { mstrFxCtrl1Cc = it; onUpdate(setupConfig.copy(mstrFxCtrl1Cc = it)) }
+            )
 
-        IntStepSliderWithLabel(
-            label = "Master FX Control 2 CC",
-            value = mstrFxCtrl2Cc,
-            range = 0..95,
-            onValueChange = { mstrFxCtrl2Cc = it; onUpdate(setupConfig.copy(mstrFxCtrl2Cc = it)) }
-        )
+            IntStepSliderWithLabel(
+                label = "Master FX Control 2 CC",
+                value = mstrFxCtrl2Cc,
+                range = 0..95,
+                onValueChange = { mstrFxCtrl2Cc = it; onUpdate(setupConfig.copy(mstrFxCtrl2Cc = it)) }
+            )
+        }
     }
 }

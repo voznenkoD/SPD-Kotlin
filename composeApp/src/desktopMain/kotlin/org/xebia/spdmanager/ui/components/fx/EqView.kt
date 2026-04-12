@@ -12,6 +12,7 @@ import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
 import org.xebia.spdmanager.ui.components.common.DropdownSelector
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun EqView(
     fx: EQ,
@@ -29,14 +30,16 @@ fun EqView(
             }
         )
 
-        SliderWithLabel(
-            label = "Low Gain",
-            value = fx.lowGain,
-            onValueChange = { newLowGain ->
-                onFxChange(fx.copy(lowGain = newLowGain))
-            },
-            valueRange = -15f..15f
-        )
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            SliderWithLabel(
+                label = "Low Gain",
+                value = fx.lowGain,
+                onValueChange = { newLowGain ->
+                    onFxChange(fx.copy(lowGain = newLowGain))
+                },
+                valueRange = -15f..15f, bipolar = true
+            )
+        }
 
         DropdownSelector(
             label = "Pkg1 Frequency",
@@ -56,14 +59,16 @@ fun EqView(
             }
         )
 
-        SliderWithLabel(
-            label = "Pkg1 Gain",
-            value = fx.pkg1Gain,
-            onValueChange = { newPkg1Gain ->
-                onFxChange(fx.copy(pkg1Gain = newPkg1Gain))
-            },
-            valueRange = -15f..15f
-        )
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            SliderWithLabel(
+                label = "Pkg1 Gain",
+                value = fx.pkg1Gain,
+                onValueChange = { newPkg1Gain ->
+                    onFxChange(fx.copy(pkg1Gain = newPkg1Gain))
+                },
+                valueRange = -15f..15f, bipolar = true
+            )
+        }
 
         DropdownSelector(
             label = "Pkg2 Frequency",
@@ -83,23 +88,25 @@ fun EqView(
             }
         )
 
-        SliderWithLabel(
-            label = "Pkg2 Gain",
-            value = fx.pkg2Gain,
-            onValueChange = { newPkg2Gain ->
-                onFxChange(fx.copy(pkg2Gain = newPkg2Gain))
-            },
-            valueRange = -15f..15f
-        )
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            SliderWithLabel(
+                label = "Pkg2 Gain",
+                value = fx.pkg2Gain,
+                onValueChange = { newPkg2Gain ->
+                    onFxChange(fx.copy(pkg2Gain = newPkg2Gain))
+                },
+                valueRange = -15f..15f, bipolar = true
+            )
 
-        SliderWithLabel(
-            label = "High Gain",
-            value = fx.hiGain,
-            onValueChange = { newHiGain ->
-                onFxChange(fx.copy(hiGain = newHiGain))
-            },
-            valueRange = -15f..15f
-        )
+            SliderWithLabel(
+                label = "High Gain",
+                value = fx.hiGain,
+                onValueChange = { newHiGain ->
+                    onFxChange(fx.copy(hiGain = newHiGain))
+                },
+                valueRange = -15f..15f, bipolar = true
+            )
+        }
 
         DropdownSelector(
             label = "High Cut",
@@ -110,13 +117,15 @@ fun EqView(
             }
         )
 
-        SliderWithLabel(
-            label = "Level",
-            value = fx.level,
-            onValueChange = { newLevel ->
-                onFxChange(fx.copy(level = newLevel))
-            },
-            valueRange = 0f..100f
-        )
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            SliderWithLabel(
+                label = "Level",
+                value = fx.level,
+                onValueChange = { newLevel ->
+                    onFxChange(fx.copy(level = newLevel))
+                },
+                valueRange = 0f..100f
+            )
+        }
     }
 }

@@ -13,6 +13,7 @@ import org.xebia.spdmanager.model.system.fx.subtypes.Slicer
 import org.xebia.spdmanager.ui.components.common.ButtonRow
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SlicerView(
     slicer: Slicer,
@@ -21,14 +22,16 @@ fun SlicerView(
     Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
         Text("Slicer", fontSize = 18.sp, fontWeight = FontWeight.Bold)
 
-        SliderWithLabel(
-            label = "Pattern",
-            value = slicer.pattern.toFloat(),
-            onValueChange = { newPattern ->
-                onFxChange(slicer.copy(pattern = newPattern.toInt()))
-            },
-            valueRange = 0f..100f
-        )
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            SliderWithLabel(
+                label = "Pattern",
+                value = slicer.pattern.toFloat(),
+                onValueChange = { newPattern ->
+                    onFxChange(slicer.copy(pattern = newPattern.toInt()))
+                },
+                valueRange = 0f..100f
+            )
+        }
 
         ButtonRow(
             label = "Rate Sync",
@@ -39,13 +42,15 @@ fun SlicerView(
             }
         )
 
-        SliderWithLabel(
-            label = "Attack",
-            value = slicer.attack.toFloat(),
-            onValueChange = { newAttack ->
-                onFxChange(slicer.copy(attack = newAttack.toInt()))
-            },
-            valueRange = 0f..100f
-        )
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            SliderWithLabel(
+                label = "Attack",
+                value = slicer.attack.toFloat(),
+                onValueChange = { newAttack ->
+                    onFxChange(slicer.copy(attack = newAttack.toInt()))
+                },
+                valueRange = 0f..100f
+            )
+        }
     }
 }

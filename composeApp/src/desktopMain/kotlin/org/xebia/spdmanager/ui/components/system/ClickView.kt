@@ -11,6 +11,7 @@ import org.xebia.spdmanager.model.system.*
 import org.xebia.spdmanager.ui.components.common.DropdownSelector
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ClickView(
     clickConfig: ClickConfig,
@@ -66,8 +67,19 @@ fun ClickView(
             items = Interval.entries.toList()
         )
 
-        ClickPanSlider("Pan", clickConfig.clickPan) { pan ->
-            onUpdate(clickConfig.copy(clickPan = pan))
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            ClickPanSlider("Pan", clickConfig.clickPan) { pan ->
+                onUpdate(clickConfig.copy(clickPan = pan))
+            }
+
+            SliderWithLabel(
+                label = "Level",
+                value = clickConfig.level.toFloat(),
+                onValueChange = { level ->
+                    onUpdate(clickConfig.copy(level = level.toInt()))
+                },
+                valueRange = 0f..100f,
+            )
         }
 
         DropdownSelector(
@@ -77,15 +89,6 @@ fun ClickView(
                 onUpdate(clickConfig.copy(output = output))
             },
             items = Output.entries.toList()
-        )
-
-        SliderWithLabel(
-            label = "Level",
-            value = clickConfig.level.toFloat(),
-            onValueChange = { level ->
-                onUpdate(clickConfig.copy(level = level.toInt()))
-            },
-            valueRange = 0f..100f,
         )
     }
 }

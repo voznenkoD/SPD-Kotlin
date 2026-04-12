@@ -13,6 +13,7 @@ import org.xebia.spdmanager.ui.components.common.ButtonRow
 import org.xebia.spdmanager.ui.components.common.DropdownSelector
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SyncDelayView(
     syncDelay: SyncDelay,
@@ -39,14 +40,16 @@ fun SyncDelayView(
             }
         )
 
-        SliderWithLabel(
-            label = "Tap Time",
-            value = syncDelay.tapTime.toFloat(),
-            onValueChange = { newTapTime ->
-                onFxChange(syncDelay.copy(tapTime = newTapTime.toInt()))
-            },
-            valueRange = 0f..100f
-        )
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            SliderWithLabel(
+                label = "Tap Time",
+                value = syncDelay.tapTime.toFloat(),
+                onValueChange = { newTapTime ->
+                    onFxChange(syncDelay.copy(tapTime = newTapTime.toInt()))
+                },
+                valueRange = 0f..100f
+            )
+        }
 
         ButtonRow(
             label = "Low Cut",
@@ -66,13 +69,15 @@ fun SyncDelayView(
             }
         )
 
-        SliderWithLabel(
-            label = "Direct Level",
-            value = syncDelay.directLevel.toFloat(),
-            onValueChange = { newDirectLevel ->
-                onFxChange(syncDelay.copy(directLevel = newDirectLevel.toInt()))
-            },
-            valueRange = 0f..100f
-        )
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            SliderWithLabel(
+                label = "Direct Level",
+                value = syncDelay.directLevel.toFloat(),
+                onValueChange = { newDirectLevel ->
+                    onFxChange(syncDelay.copy(directLevel = newDirectLevel.toInt()))
+                },
+                valueRange = 0f..100f
+            )
+        }
     }
 }

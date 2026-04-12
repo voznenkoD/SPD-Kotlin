@@ -12,6 +12,7 @@ import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
 import org.xebia.spdmanager.ui.components.common.ButtonRow
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun CompressorView(
     fx: Compressor,
@@ -20,32 +21,43 @@ fun CompressorView(
     Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
         Text("Compressor Settings", fontSize = 18.sp)
 
-        SliderWithLabel(
-            label = "Threshold",
-            value = fx.threshold,
-            onValueChange = { newThreshold ->
-                onFxChange(fx.copy(threshold = newThreshold))
-            },
-            valueRange = -80f..0f
-        )
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            SliderWithLabel(
+                label = "Threshold",
+                value = fx.threshold,
+                onValueChange = { newThreshold ->
+                    onFxChange(fx.copy(threshold = newThreshold))
+                },
+                valueRange = -80f..0f
+            )
 
-        SliderWithLabel(
-            label = "Attack",
-            value = fx.attack.toFloat(),
-            onValueChange = { newAttack ->
-                onFxChange(fx.copy(attack = newAttack.toInt()))
-            },
-            valueRange = 1f..1000f
-        )
+            SliderWithLabel(
+                label = "Attack",
+                value = fx.attack.toFloat(),
+                onValueChange = { newAttack ->
+                    onFxChange(fx.copy(attack = newAttack.toInt()))
+                },
+                valueRange = 1f..1000f
+            )
 
-        SliderWithLabel(
-            label = "Release",
-            value = fx.release.toFloat(),
-            onValueChange = { newRelease ->
-                onFxChange(fx.copy(release = newRelease.toInt()))
-            },
-            valueRange = 1f..1000f
-        )
+            SliderWithLabel(
+                label = "Release",
+                value = fx.release.toFloat(),
+                onValueChange = { newRelease ->
+                    onFxChange(fx.copy(release = newRelease.toInt()))
+                },
+                valueRange = 1f..1000f
+            )
+
+            SliderWithLabel(
+                label = "Makeup Gain",
+                value = fx.makeup.toFloat(),
+                onValueChange = { newMakeup ->
+                    onFxChange(fx.copy(makeup = newMakeup.toInt()))
+                },
+                valueRange = 0f..30f
+            )
+        }
 
         ButtonRow(
             label = "Ratio",
@@ -63,15 +75,6 @@ fun CompressorView(
             onItemSelected = { newKnee ->
                 onFxChange(fx.copy(knee = newKnee))
             }
-        )
-
-        SliderWithLabel(
-            label = "Makeup Gain",
-            value = fx.makeup.toFloat(),
-            onValueChange = { newMakeup ->
-                onFxChange(fx.copy(makeup = newMakeup.toInt()))
-            },
-            valueRange = 0f..30f
         )
     }
 }

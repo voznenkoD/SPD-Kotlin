@@ -87,6 +87,7 @@ fun PadSetupView(
 }
 
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun IntPadView(
     intPad: IntPad,
@@ -96,23 +97,25 @@ fun IntPadView(
 ) {
     Row(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.weight(0.4f).padding(16.dp)) {
-            IntStepSliderWithLabel(
-                label = "Sensitivity",
-                value = intPad.sens,
-                range = 1..32,
-                onValueChange = { newSens ->
-                    onUpdateIntPad(intPad.copy(sens = newSens))
-                }
-            )
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                IntStepSliderWithLabel(
+                    label = "Sensitivity",
+                    value = intPad.sens,
+                    range = 1..32,
+                    onValueChange = { newSens ->
+                        onUpdateIntPad(intPad.copy(sens = newSens))
+                    }
+                )
 
-            IntStepSliderWithLabel(
-                label = "Threshold",
-                value = intPad.threshold,
-                range = 0..31,
-                onValueChange = { newThreshold ->
-                    onUpdateIntPad(intPad.copy(threshold = newThreshold))
-                }
-            )
+                IntStepSliderWithLabel(
+                    label = "Threshold",
+                    value = intPad.threshold,
+                    range = 0..31,
+                    onValueChange = { newThreshold ->
+                        onUpdateIntPad(intPad.copy(threshold = newThreshold))
+                    }
+                )
+            }
 
             Column(modifier = Modifier.width(200.dp)) {
                 DropdownSelector(
@@ -140,6 +143,7 @@ fun IntPadView(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ExtPadView(
     extPad: ExtPad,
@@ -149,23 +153,25 @@ fun ExtPadView(
 ) {
     Row(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.weight(0.55f).padding(16.dp)) {
-            IntStepSliderWithLabel(
-                label = "Sensitivity",
-                value = extPad.sens,
-                range = 1..32,
-                onValueChange = { newSens ->
-                    onUpdateExtPad(extPad.copy(sens = newSens))
-                }
-            )
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                IntStepSliderWithLabel(
+                    label = "Sensitivity",
+                    value = extPad.sens,
+                    range = 1..32,
+                    onValueChange = { newSens ->
+                        onUpdateExtPad(extPad.copy(sens = newSens))
+                    }
+                )
 
-            IntStepSliderWithLabel(
-                label = "Threshold",
-                value = extPad.threshold,
-                range = 0..31,
-                onValueChange = { newThreshold ->
-                    onUpdateExtPad(extPad.copy(threshold = newThreshold))
-                }
-            )
+                IntStepSliderWithLabel(
+                    label = "Threshold",
+                    value = extPad.threshold,
+                    range = 0..31,
+                    onValueChange = { newThreshold ->
+                        onUpdateExtPad(extPad.copy(threshold = newThreshold))
+                    }
+                )
+            }
 
             Column(modifier = Modifier.width(200.dp)) {
                 DropdownSelector(
@@ -209,42 +215,44 @@ fun ExtPadView(
         }
 
         Column(modifier = Modifier.weight(0.35f).padding(16.dp)) {
-            IntStepSliderWithLabel(
-                label = "Scan Time (ms)",
-                value = extPad.scanTime,
-                range = 1..40,
-                step = 1,
-                onValueChange = { newScanTime ->
-                    onUpdateExtPad(extPad.copy(scanTime = newScanTime))
-                }
-            )
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                IntStepSliderWithLabel(
+                    label = "Scan Time (ms)",
+                    value = extPad.scanTime,
+                    range = 1..40,
+                    step = 1,
+                    onValueChange = { newScanTime ->
+                        onUpdateExtPad(extPad.copy(scanTime = newScanTime))
+                    }
+                )
 
-            IntStepSliderWithLabel(
-                label = "Retrig Cancel",
-                value = extPad.retrigCxl,
-                range = 1..16,
-                onValueChange = { newRetrigCxl ->
-                    onUpdateExtPad(extPad.copy(retrigCxl = newRetrigCxl))
-                }
-            )
+                IntStepSliderWithLabel(
+                    label = "Retrig Cancel",
+                    value = extPad.retrigCxl,
+                    range = 1..16,
+                    onValueChange = { newRetrigCxl ->
+                        onUpdateExtPad(extPad.copy(retrigCxl = newRetrigCxl))
+                    }
+                )
 
-            IntStepSliderWithLabel(
-                label = "Mask Time",
-                value = extPad.maskTime,
-                range = 1..64,
-                onValueChange = { newMaskTime ->
-                    onUpdateExtPad(extPad.copy(maskTime = newMaskTime))
-                }
-            )
+                IntStepSliderWithLabel(
+                    label = "Mask Time",
+                    value = extPad.maskTime,
+                    range = 1..64,
+                    onValueChange = { newMaskTime ->
+                        onUpdateExtPad(extPad.copy(maskTime = newMaskTime))
+                    }
+                )
 
-            IntStepSliderWithLabel(
-                label = "Xtalk Cancel (%)",
-                value = extPad.xtalkCxl,
-                range = 0..80,
-                onValueChange = { newXtalkCxl ->
-                    onUpdateExtPad(extPad.copy(xtalkCxl = newXtalkCxl))
-                }
-            )
+                IntStepSliderWithLabel(
+                    label = "Xtalk Cancel (%)",
+                    value = extPad.xtalkCxl,
+                    range = 0..80,
+                    onValueChange = { newXtalkCxl ->
+                        onUpdateExtPad(extPad.copy(xtalkCxl = newXtalkCxl))
+                    }
+                )
+            }
         }
     }
 }

@@ -16,6 +16,7 @@ import org.xebia.spdmanager.ui.components.common.ButtonRow
 import org.xebia.spdmanager.ui.components.common.ButtonRowCompact
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun StereoDelayView(
     stereoDelay: StereoDelay,
@@ -42,23 +43,25 @@ fun StereoDelayView(
             }
         )
 
-        SliderWithLabel(
-            label = "Delay Time",
-            value = stereoDelay.delayTime.toFloat(),
-            onValueChange = { newDelayTime ->
-                onFxChange(stereoDelay.copy(delayTime = newDelayTime.toInt()))
-            },
-            valueRange = 0f..100f
-        )
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            SliderWithLabel(
+                label = "Delay Time",
+                value = stereoDelay.delayTime.toFloat(),
+                onValueChange = { newDelayTime ->
+                    onFxChange(stereoDelay.copy(delayTime = newDelayTime.toInt()))
+                },
+                valueRange = 0f..100f
+            )
 
-        SliderWithLabel(
-            label = "Tap Time",
-            value = stereoDelay.tapTime.toFloat(),
-            onValueChange = { newTapTime ->
-                onFxChange(stereoDelay.copy(tapTime = newTapTime.toInt()))
-            },
-            valueRange = 0f..100f
-        )
+            SliderWithLabel(
+                label = "Tap Time",
+                value = stereoDelay.tapTime.toFloat(),
+                onValueChange = { newTapTime ->
+                    onFxChange(stereoDelay.copy(tapTime = newTapTime.toInt()))
+                },
+                valueRange = 0f..100f
+            )
+        }
 
         ButtonRowCompact(
             label = "Low Cut",
@@ -78,13 +81,15 @@ fun StereoDelayView(
             }
         )
 
-        SliderWithLabel(
-            label = "Direct Level",
-            value = stereoDelay.directLevel.toFloat(),
-            onValueChange = { newDirectLevel ->
-                onFxChange(stereoDelay.copy(directLevel = newDirectLevel.toInt()))
-            },
-            valueRange = 0f..100f
-        )
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            SliderWithLabel(
+                label = "Direct Level",
+                value = stereoDelay.directLevel.toFloat(),
+                onValueChange = { newDirectLevel ->
+                    onFxChange(stereoDelay.copy(directLevel = newDirectLevel.toInt()))
+                },
+                valueRange = 0f..100f
+            )
+        }
     }
 }

@@ -11,6 +11,7 @@ import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
 import org.xebia.spdmanager.model.system.fx.subtypes.Pitchshift
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun PitchshiftView(
     pitchshift: Pitchshift,
@@ -19,31 +20,33 @@ fun PitchshiftView(
     Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
         Text("Pitch Shift", fontSize = 18.sp, fontWeight = FontWeight.Bold)
 
-        SliderWithLabel(
-            label = "Fine",
-            value = pitchshift.fine,
-            onValueChange = { newFine ->
-                onFxChange(pitchshift.copy(fine = newFine))
-            },
-            valueRange = -50f..50f
-        )
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            SliderWithLabel(
+                label = "Fine",
+                value = pitchshift.fine,
+                onValueChange = { newFine ->
+                    onFxChange(pitchshift.copy(fine = newFine))
+                },
+                valueRange = -50f..50f, bipolar = true
+            )
 
-        SliderWithLabel(
-            label = "Effect Level",
-            value = pitchshift.effectLevel.toFloat(),
-            onValueChange = { newEffectLevel ->
-                onFxChange(pitchshift.copy(effectLevel = newEffectLevel.toInt()))
-            },
-            valueRange = 0f..100f
-        )
+            SliderWithLabel(
+                label = "Effect Level",
+                value = pitchshift.effectLevel.toFloat(),
+                onValueChange = { newEffectLevel ->
+                    onFxChange(pitchshift.copy(effectLevel = newEffectLevel.toInt()))
+                },
+                valueRange = 0f..100f
+            )
 
-        SliderWithLabel(
-            label = "Direct Level",
-            value = pitchshift.directLevel.toFloat(),
-            onValueChange = { newDirectLevel ->
-                onFxChange(pitchshift.copy(directLevel = newDirectLevel.toInt()))
-            },
-            valueRange = 0f..100f
-        )
+            SliderWithLabel(
+                label = "Direct Level",
+                value = pitchshift.directLevel.toFloat(),
+                onValueChange = { newDirectLevel ->
+                    onFxChange(pitchshift.copy(directLevel = newDirectLevel.toInt()))
+                },
+                valueRange = 0f..100f
+            )
+        }
     }
 }

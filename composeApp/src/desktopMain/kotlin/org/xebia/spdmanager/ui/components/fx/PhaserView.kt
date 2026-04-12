@@ -13,6 +13,7 @@ import org.xebia.spdmanager.ui.components.common.ButtonRow
 import org.xebia.spdmanager.ui.components.common.DropdownSelector
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun PhaserView(
     fx: Phaser,
@@ -39,49 +40,51 @@ fun PhaserView(
             }
         )
 
-        SliderWithLabel(
-            label = "Manual",
-            value = fx.manual.toFloat(),
-            onValueChange = { newManual ->
-                onFxChange(fx.copy(manual = newManual.toInt()))
-            },
-            valueRange = 0f..100f
-        )
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            SliderWithLabel(
+                label = "Manual",
+                value = fx.manual.toFloat(),
+                onValueChange = { newManual ->
+                    onFxChange(fx.copy(manual = newManual.toInt()))
+                },
+                valueRange = 0f..100f
+            )
 
-        SliderWithLabel(
-            label = "Resonance",
-            value = fx.resonance.toFloat(),
-            onValueChange = { newResonance ->
-                onFxChange(fx.copy(resonance = newResonance.toInt()))
-            },
-            valueRange = 0f..100f
-        )
+            SliderWithLabel(
+                label = "Resonance",
+                value = fx.resonance.toFloat(),
+                onValueChange = { newResonance ->
+                    onFxChange(fx.copy(resonance = newResonance.toInt()))
+                },
+                valueRange = 0f..100f
+            )
 
-        SliderWithLabel(
-            label = "Separation",
-            value = fx.separation.toFloat(),
-            onValueChange = { newSeparation ->
-                onFxChange(fx.copy(separation = newSeparation.toInt()))
-            },
-            valueRange = 0f..100f
-        )
+            SliderWithLabel(
+                label = "Separation",
+                value = fx.separation.toFloat(),
+                onValueChange = { newSeparation ->
+                    onFxChange(fx.copy(separation = newSeparation.toInt()))
+                },
+                valueRange = 0f..100f
+            )
 
-        SliderWithLabel(
-            label = "Effect Level",
-            value = fx.effectLevel.toFloat(),
-            onValueChange = { newEffectLevel ->
-                onFxChange(fx.copy(effectLevel = newEffectLevel.toInt()))
-            },
-            valueRange = 0f..100f
-        )
+            SliderWithLabel(
+                label = "Effect Level",
+                value = fx.effectLevel.toFloat(),
+                onValueChange = { newEffectLevel ->
+                    onFxChange(fx.copy(effectLevel = newEffectLevel.toInt()))
+                },
+                valueRange = 0f..100f
+            )
 
-        SliderWithLabel(
-            label = "Direct Level",
-            value = fx.directLevel.toFloat(),
-            onValueChange = { newDirectLevel ->
-                onFxChange(fx.copy(directLevel = newDirectLevel.toInt()))
-            },
-            valueRange = 0f..100f
-        )
+            SliderWithLabel(
+                label = "Direct Level",
+                value = fx.directLevel.toFloat(),
+                onValueChange = { newDirectLevel ->
+                    onFxChange(fx.copy(directLevel = newDirectLevel.toInt()))
+                },
+                valueRange = 0f..100f
+            )
+        }
     }
 }

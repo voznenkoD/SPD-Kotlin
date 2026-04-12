@@ -12,6 +12,7 @@ import org.xebia.spdmanager.model.system.fx.subtypes.TouchWah
 import org.xebia.spdmanager.ui.components.common.ButtonRow
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun TouchWahView(
     touchWah: TouchWah,
@@ -38,31 +39,33 @@ fun TouchWahView(
             }
         )
 
-        SliderWithLabel(
-            label = "Peak",
-            value = touchWah.peak.toFloat(),
-            onValueChange = { newPeak ->
-                onFxChange(touchWah.copy(peak = newPeak.toInt()))
-            },
-            valueRange = 0f..100f
-        )
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            SliderWithLabel(
+                label = "Peak",
+                value = touchWah.peak.toFloat(),
+                onValueChange = { newPeak ->
+                    onFxChange(touchWah.copy(peak = newPeak.toInt()))
+                },
+                valueRange = 0f..100f
+            )
 
-        SliderWithLabel(
-            label = "Effect Level",
-            value = touchWah.effectLevel.toFloat(),
-            onValueChange = { newEffectLevel ->
-                onFxChange(touchWah.copy(effectLevel = newEffectLevel.toInt()))
-            },
-            valueRange = 0f..100f
-        )
+            SliderWithLabel(
+                label = "Effect Level",
+                value = touchWah.effectLevel.toFloat(),
+                onValueChange = { newEffectLevel ->
+                    onFxChange(touchWah.copy(effectLevel = newEffectLevel.toInt()))
+                },
+                valueRange = 0f..100f
+            )
 
-        SliderWithLabel(
-            label = "Direct Level",
-            value = touchWah.directLevel.toFloat(),
-            onValueChange = { newDirectLevel ->
-                onFxChange(touchWah.copy(directLevel = newDirectLevel.toInt()))
-            },
-            valueRange = 0f..100f
-        )
+            SliderWithLabel(
+                label = "Direct Level",
+                value = touchWah.directLevel.toFloat(),
+                onValueChange = { newDirectLevel ->
+                    onFxChange(touchWah.copy(directLevel = newDirectLevel.toInt()))
+                },
+                valueRange = 0f..100f
+            )
+        }
     }
 }

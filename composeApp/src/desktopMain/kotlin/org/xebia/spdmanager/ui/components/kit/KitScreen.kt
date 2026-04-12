@@ -19,6 +19,7 @@ import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 import org.xebia.spdmanager.ui.components.pad.PadDetailsScreen
 import org.xebia.spdmanager.viewmodel.KitViewModel
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun KitScreen(
     kitIndex: Int,
@@ -61,19 +62,21 @@ fun KitScreen(
             )
         }
 
-        SliderWithLabel(
-            label = "Tempo",
-            value = kit.tempo.toFloat(),
-            onValueChange = { viewModel.updateTempo(it.toDouble()) },
-            valueRange = 20f..260f
-        )
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            SliderWithLabel(
+                label = "Tempo",
+                value = kit.tempo.toFloat(),
+                onValueChange = { viewModel.updateTempo(it.toDouble()) },
+                valueRange = 20f..260f
+            )
 
-        IntStepSliderWithLabel(
-            label = "Volume",
-            value = kit.volume,
-            onValueChange = viewModel::updateVolume,
-            range = 0..100
-        )
+            IntStepSliderWithLabel(
+                label = "Volume",
+                value = kit.volume,
+                onValueChange = viewModel::updateVolume,
+                range = 0..100
+            )
+        }
 
         PadLinkSelector(
             padLink1 = kit.padLink?.first ?: PadNumber.PAD_1,

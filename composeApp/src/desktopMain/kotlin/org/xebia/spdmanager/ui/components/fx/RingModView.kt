@@ -13,6 +13,7 @@ import org.xebia.spdmanager.ui.components.common.ButtonRow
 import org.xebia.spdmanager.ui.components.common.DryWetMixSlider
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun RingModView(
     ringMod: RingMod,
@@ -30,23 +31,25 @@ fun RingModView(
             }
         )
 
-        SliderWithLabel(
-            label = "Low Gain",
-            value = ringMod.lowGain,
-            onValueChange = { newLowGain ->
-                onFxChange(ringMod.copy(lowGain = newLowGain))
-            },
-            valueRange = -15f..15f
-        )
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            SliderWithLabel(
+                label = "Low Gain",
+                value = ringMod.lowGain,
+                onValueChange = { newLowGain ->
+                    onFxChange(ringMod.copy(lowGain = newLowGain))
+                },
+                valueRange = -15f..15f, bipolar = true
+            )
 
-        SliderWithLabel(
-            label = "High Gain",
-            value = ringMod.hiGain,
-            onValueChange = { newHiGain ->
-                onFxChange(ringMod.copy(hiGain = newHiGain))
-            },
-            valueRange = -15f..15f
-        )
+            SliderWithLabel(
+                label = "High Gain",
+                value = ringMod.hiGain,
+                onValueChange = { newHiGain ->
+                    onFxChange(ringMod.copy(hiGain = newHiGain))
+                },
+                valueRange = -15f..15f, bipolar = true
+            )
+        }
 
         DryWetMixSlider(
             label = "Balance (Dry/Wet)",
@@ -56,13 +59,15 @@ fun RingModView(
             }
         )
 
-        SliderWithLabel(
-            label = "Level",
-            value = ringMod.level.toFloat(),
-            onValueChange = { newLevel ->
-                onFxChange(ringMod.copy(level = newLevel.toInt()))
-            },
-            valueRange = 0f..100f
-        )
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            SliderWithLabel(
+                label = "Level",
+                value = ringMod.level.toFloat(),
+                onValueChange = { newLevel ->
+                    onFxChange(ringMod.copy(level = newLevel.toInt()))
+                },
+                valueRange = 0f..100f
+            )
+        }
     }
 }

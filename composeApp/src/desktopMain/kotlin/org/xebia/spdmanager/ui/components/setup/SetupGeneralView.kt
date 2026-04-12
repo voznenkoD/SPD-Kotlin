@@ -14,22 +14,25 @@ import org.xebia.spdmanager.ui.components.common.DropdownSelector
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 import org.xebia.spdmanager.ui.components.common.SwitchWithLabel
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SetupGeneralView(setupConfig: SetupConfig, onUpdate: (SetupConfig) -> Unit) {
     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-        SliderWithLabel(
-            label = "LCD Contrast",
-            value = setupConfig.lcdContrast.toFloat(),
-            valueRange = 1f..10f,
-            onValueChange = { onUpdate(setupConfig.copy(lcdContrast = it.toInt())) }
-        )
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            SliderWithLabel(
+                label = "LCD Contrast",
+                value = setupConfig.lcdContrast.toFloat(),
+                valueRange = 1f..10f,
+                onValueChange = { onUpdate(setupConfig.copy(lcdContrast = it.toInt())) }
+            )
 
-        SliderWithLabel(
-            label = "LCD Brightness",
-            value = setupConfig.lcdBrightness.toFloat(),
-            valueRange = 0f..10f,
-            onValueChange = { onUpdate(setupConfig.copy(lcdBrightness = it.toInt())) }
-        )
+            SliderWithLabel(
+                label = "LCD Brightness",
+                value = setupConfig.lcdBrightness.toFloat(),
+                valueRange = 0f..10f,
+                onValueChange = { onUpdate(setupConfig.copy(lcdBrightness = it.toInt())) }
+            )
+        }
 
         DropdownSelector(
             label = "Pad Indication",

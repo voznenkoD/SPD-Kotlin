@@ -15,6 +15,7 @@ import org.xebia.spdmanager.model.system.fx.subtypes.Reverb
 import org.xebia.spdmanager.ui.components.common.ButtonRow
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ReverbView(
     reverb: Reverb,
@@ -50,49 +51,51 @@ fun ReverbView(
             }
         )
 
-        SliderWithLabel(
-            label = "Reverb Time",
-            value = reverb.reverbTime.toFloat(),
-            onValueChange = { newReverbTime ->
-                onFxChange(reverb.copy(reverbTime = newReverbTime.toInt()))
-            },
-            valueRange = 0f..100f
-        )
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            SliderWithLabel(
+                label = "Reverb Time",
+                value = reverb.reverbTime.toFloat(),
+                onValueChange = { newReverbTime ->
+                    onFxChange(reverb.copy(reverbTime = newReverbTime.toInt()))
+                },
+                valueRange = 0f..100f
+            )
 
-        SliderWithLabel(
-            label = "Pre Delay",
-            value = reverb.preDelay.toFloat(),
-            onValueChange = { newPreDelay ->
-                onFxChange(reverb.copy(preDelay = newPreDelay.toInt()))
-            },
-            valueRange = 0f..500f
-        )
+            SliderWithLabel(
+                label = "Pre Delay",
+                value = reverb.preDelay.toFloat(),
+                onValueChange = { newPreDelay ->
+                    onFxChange(reverb.copy(preDelay = newPreDelay.toInt()))
+                },
+                valueRange = 0f..500f
+            )
 
-        SliderWithLabel(
-            label = "Density",
-            value = reverb.density.toFloat(),
-            onValueChange = { newDensity ->
-                onFxChange(reverb.copy(density = newDensity.toInt()))
-            },
-            valueRange = 0f..100f
-        )
+            SliderWithLabel(
+                label = "Density",
+                value = reverb.density.toFloat(),
+                onValueChange = { newDensity ->
+                    onFxChange(reverb.copy(density = newDensity.toInt()))
+                },
+                valueRange = 0f..100f
+            )
 
-        SliderWithLabel(
-            label = "Direct Level",
-            value = reverb.directLevel.toFloat(),
-            onValueChange = { newDirectLevel ->
-                onFxChange(reverb.copy(directLevel = newDirectLevel.toInt()))
-            },
-            valueRange = 0f..100f
-        )
+            SliderWithLabel(
+                label = "Direct Level",
+                value = reverb.directLevel.toFloat(),
+                onValueChange = { newDirectLevel ->
+                    onFxChange(reverb.copy(directLevel = newDirectLevel.toInt()))
+                },
+                valueRange = 0f..100f
+            )
 
-        SliderWithLabel(
-            label = "Global Reverb Level",
-            value = reverb.glblRevLvl.toFloat(),
-            onValueChange = { newGlblRevLvl ->
-                onFxChange(reverb.copy(glblRevLvl = newGlblRevLvl.toInt()))
-            },
-            valueRange = 0f..100f
-        )
+            SliderWithLabel(
+                label = "Global Reverb Level",
+                value = reverb.glblRevLvl.toFloat(),
+                onValueChange = { newGlblRevLvl ->
+                    onFxChange(reverb.copy(glblRevLvl = newGlblRevLvl.toInt()))
+                },
+                valueRange = 0f..100f
+            )
+        }
     }
 }

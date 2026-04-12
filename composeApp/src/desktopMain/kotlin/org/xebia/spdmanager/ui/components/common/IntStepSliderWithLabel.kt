@@ -1,10 +1,6 @@
 package org.xebia.spdmanager.ui.components.common
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Slider
-import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 
 @Composable
 fun IntStepSliderWithLabel(
@@ -14,15 +10,12 @@ fun IntStepSliderWithLabel(
     step: Int = 1,
     onValueChange: (Int) -> Unit = {}
 ) {
-    Column {
-        Text("$label: $value", style = MaterialTheme.typography.bodyLarge)
-        Slider(
-            value = value.toFloat(),
-            onValueChange = { newValue ->
-                onValueChange(newValue.toInt())
-            },
-            valueRange = range.first.toFloat()..range.last.toFloat(),
-            steps = (range.last - range.first) / step - 1
-        )
-    }
+    KnobControl(
+        label = label,
+        value = value.toFloat(),
+        onValueChange = { onValueChange(it.toInt()) },
+        valueRange = range.first.toFloat()..range.last.toFloat(),
+        mode = KnobMode.Unipolar,
+        steps = (range.last - range.first) / step
+    )
 }
