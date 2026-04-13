@@ -18,7 +18,7 @@ fun ClickView(
     waves: List<Wave>,
     onUpdate: (ClickConfig) -> Unit
 ) {
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
         Text("Sound Group", style = MaterialTheme.typography.bodyLarge)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             SoundGroup.entries.forEach { group ->
