@@ -5,7 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.foundation.layout.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import org.xebia.spdmanager.ui.components.common.ButtonRow
+import org.xebia.spdmanager.ui.components.common.ToggleSwitchWithLabel
 import org.xebia.spdmanager.ui.components.common.DropdownSelector
 import org.xebia.spdmanager.model.kit.pad.MidiParams
 import org.xebia.spdmanager.model.kit.pad.midi.ExternalControl
@@ -37,10 +37,11 @@ fun MidiParamsView(
             }
         )
 
-        ButtonRow(
+        ToggleSwitchWithLabel(
             label = "External Control",
-            items = ExternalControl.entries.toTypedArray(),
             selectedItem = midiParams.externalControl,
+            offItem = ExternalControl.OFF,
+            onItem = ExternalControl.ON,
             onItemSelected = { newExternalControl ->
                 onMidiParamsChange(midiParams.copy(externalControl = newExternalControl))
             }

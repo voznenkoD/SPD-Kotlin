@@ -11,6 +11,7 @@ import org.xebia.spdmanager.model.system.fx.subtypes.Filter
 import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
 import org.xebia.spdmanager.ui.components.common.ButtonRow
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
+import org.xebia.spdmanager.ui.components.common.ToggleSwitchWithLabel
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -50,10 +51,11 @@ fun FilterView(
             }
         )
 
-        ButtonRow(
+        ToggleSwitchWithLabel(
             label = "Rate Sync",
             selectedItem = fx.rateSyncSW,
-            items = SyncSwitch.entries.toTypedArray(),
+            offItem = SyncSwitch.OFF,
+            onItem = SyncSwitch.ON,
             onItemSelected = { newRateSyncSW ->
                 onFxChange(fx.copy(rateSyncSW = newRateSyncSW))
             }

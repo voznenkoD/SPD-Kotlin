@@ -12,6 +12,7 @@ import org.xebia.spdmanager.model.system.fx.subtypes.SyncDelay
 import org.xebia.spdmanager.ui.components.common.ButtonRow
 import org.xebia.spdmanager.ui.components.common.DropdownSelector
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
+import org.xebia.spdmanager.ui.components.common.ToggleSwitchWithLabel
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -22,13 +23,16 @@ fun SyncDelayView(
     Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
         Text("Sync Delay", fontSize = 18.sp)
 
-        ButtonRow(
+        ToggleSwitchWithLabel(
             label = "Delay Type",
             selectedItem = syncDelay.type,
-            items = DelayType.entries.toTypedArray(),
+            offItem = DelayType.NORMAL,
+            onItem = DelayType.PAN,
             onItemSelected = { newType ->
                 onFxChange(syncDelay.copy(type = newType))
-            }
+            },
+            offLabel = "Normal",
+            onLabel = "Pan"
         )
 
         DropdownSelector(

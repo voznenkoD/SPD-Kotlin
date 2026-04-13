@@ -11,6 +11,7 @@ import org.xebia.spdmanager.model.system.fx.subtypes.Compressor
 import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
 import org.xebia.spdmanager.ui.components.common.ButtonRow
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
+import org.xebia.spdmanager.ui.components.common.ToggleSwitchWithLabel
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -68,13 +69,16 @@ fun CompressorView(
             }
         )
 
-        ButtonRow(
+        ToggleSwitchWithLabel(
             label = "Knee",
             selectedItem = fx.knee,
-            items = Knee.entries.toTypedArray(),
+            offItem = Knee.SOFT,
+            onItem = Knee.HARD,
             onItemSelected = { newKnee ->
                 onFxChange(fx.copy(knee = newKnee))
-            }
+            },
+            offLabel = "Soft",
+            onLabel = "Hard"
         )
     }
 }

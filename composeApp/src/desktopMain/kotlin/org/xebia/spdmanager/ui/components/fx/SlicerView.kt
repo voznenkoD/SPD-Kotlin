@@ -10,8 +10,8 @@ import androidx.compose.ui.unit.sp
 import org.xebia.spdmanager.model.system.fx.common.*
 import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
 import org.xebia.spdmanager.model.system.fx.subtypes.Slicer
-import org.xebia.spdmanager.ui.components.common.ButtonRow
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
+import org.xebia.spdmanager.ui.components.common.ToggleSwitchWithLabel
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -33,10 +33,11 @@ fun SlicerView(
             )
         }
 
-        ButtonRow(
+        ToggleSwitchWithLabel(
             label = "Rate Sync",
-            items = SyncSwitch.entries.toTypedArray(),
             selectedItem = slicer.rateSync,
+            offItem = SyncSwitch.OFF,
+            onItem = SyncSwitch.ON,
             onItemSelected = { newRateSync ->
                 onFxChange(slicer.copy(rateSync = newRateSync))
             }

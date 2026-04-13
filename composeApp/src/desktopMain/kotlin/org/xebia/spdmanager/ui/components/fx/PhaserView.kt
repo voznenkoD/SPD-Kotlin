@@ -9,9 +9,9 @@ import androidx.compose.ui.unit.sp
 import org.xebia.spdmanager.model.system.fx.common.*
 import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
 import org.xebia.spdmanager.model.system.fx.subtypes.Phaser
-import org.xebia.spdmanager.ui.components.common.ButtonRow
 import org.xebia.spdmanager.ui.components.common.DropdownSelector
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
+import org.xebia.spdmanager.ui.components.common.ToggleSwitchWithLabel
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -31,10 +31,11 @@ fun PhaserView(
             }
         )
 
-        ButtonRow(
+        ToggleSwitchWithLabel(
             label = "Rate Sync Switch",
             selectedItem = fx.rateSyncSW,
-            items = SyncSwitch.entries.toTypedArray(),
+            offItem = SyncSwitch.OFF,
+            onItem = SyncSwitch.ON,
             onItemSelected = { newRateSyncSW ->
                 onFxChange(fx.copy(rateSyncSW = newRateSyncSW))
             }

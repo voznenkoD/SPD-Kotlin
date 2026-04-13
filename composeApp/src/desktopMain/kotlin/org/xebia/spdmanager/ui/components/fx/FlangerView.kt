@@ -11,6 +11,7 @@ import org.xebia.spdmanager.model.system.fx.subtypes.Flanger
 import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
 import org.xebia.spdmanager.ui.components.common.ButtonRow
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
+import org.xebia.spdmanager.ui.components.common.ToggleSwitchWithLabel
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -21,10 +22,11 @@ fun FlangerView(
     Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
         Text("Flanger", fontSize = 18.sp)
 
-        ButtonRow(
+        ToggleSwitchWithLabel(
             label = "Rate Sync",
             selectedItem = fx.rateSync,
-            items = SyncSwitch.entries.toTypedArray(),
+            offItem = SyncSwitch.OFF,
+            onItem = SyncSwitch.ON,
             onItemSelected = { newRateSync ->
                 onFxChange(fx.copy(rateSync = newRateSync))
             }

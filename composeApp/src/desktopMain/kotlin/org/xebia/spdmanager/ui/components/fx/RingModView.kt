@@ -9,8 +9,8 @@ import androidx.compose.ui.unit.sp
 import org.xebia.spdmanager.model.system.fx.common.*
 import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
 import org.xebia.spdmanager.model.system.fx.subtypes.RingMod
-import org.xebia.spdmanager.ui.components.common.ButtonRow
 import org.xebia.spdmanager.ui.components.common.DryWetMixSlider
+import org.xebia.spdmanager.ui.components.common.ToggleSwitchWithLabel
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -22,13 +22,16 @@ fun RingModView(
     Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
         Text("Ring Modulator", fontSize = 18.sp)
 
-        ButtonRow(
+        ToggleSwitchWithLabel(
             label = "Polarity",
             selectedItem = ringMod.polarity,
-            items = Polarity.entries.toTypedArray(),
+            offItem = Polarity.DOWN,
+            onItem = Polarity.UP,
             onItemSelected = { newPolarity ->
                 onFxChange(ringMod.copy(polarity = newPolarity))
-            }
+            },
+            offLabel = "Down",
+            onLabel = "Up"
         )
 
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

@@ -9,9 +9,9 @@ import androidx.compose.ui.unit.sp
 import org.xebia.spdmanager.model.system.fx.common.*
 import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
 import org.xebia.spdmanager.model.system.fx.subtypes.StepFLNGR
-import org.xebia.spdmanager.ui.components.common.ButtonRow
 import org.xebia.spdmanager.ui.components.common.DropdownSelector
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
+import org.xebia.spdmanager.ui.components.common.ToggleSwitchWithLabel
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -22,19 +22,21 @@ fun StepFlangerView(
     Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
         Text("Step Flanger", fontSize = 18.sp)
 
-        ButtonRow(
+        ToggleSwitchWithLabel(
             label = "Rate Sync",
             selectedItem = fx.rateSync,
-            items = SyncSwitch.entries.toTypedArray(),
+            offItem = SyncSwitch.OFF,
+            onItem = SyncSwitch.ON,
             onItemSelected = { newRateSync ->
                 onFxChange(fx.copy(rateSync = newRateSync))
             }
         )
 
-        ButtonRow(
+        ToggleSwitchWithLabel(
             label = "Step Sync",
             selectedItem = fx.stepSync,
-            items = SyncSwitch.entries.toTypedArray(),
+            offItem = SyncSwitch.OFF,
+            onItem = SyncSwitch.ON,
             onItemSelected = { newStepSync ->
                 onFxChange(fx.copy(stepSync = newStepSync))
             }

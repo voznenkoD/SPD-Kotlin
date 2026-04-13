@@ -12,9 +12,9 @@ import org.xebia.spdmanager.model.system.fx.common.LowCut
 import org.xebia.spdmanager.model.system.fx.common.SyncSwitch
 import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
 import org.xebia.spdmanager.model.system.fx.subtypes.StereoDelay
-import org.xebia.spdmanager.ui.components.common.ButtonRow
 import org.xebia.spdmanager.ui.components.common.ButtonRowCompact
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
+import org.xebia.spdmanager.ui.components.common.ToggleSwitchWithLabel
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -25,19 +25,23 @@ fun StereoDelayView(
     Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
         Text("Stereo Delay", fontSize = 18.sp)
 
-        ButtonRow(
+        ToggleSwitchWithLabel(
             label = "Delay Type",
             selectedItem = stereoDelay.type,
-            items = DelayType.entries.toTypedArray(),
+            offItem = DelayType.NORMAL,
+            onItem = DelayType.PAN,
             onItemSelected = { newType ->
                 onFxChange(stereoDelay.copy(type = newType))
-            }
+            },
+            offLabel = "Normal",
+            onLabel = "Pan"
         )
 
-        ButtonRow(
+        ToggleSwitchWithLabel(
             label = "Sync Switch",
             selectedItem = stereoDelay.syncSW,
-            items = SyncSwitch.entries.toTypedArray(),
+            offItem = SyncSwitch.OFF,
+            onItem = SyncSwitch.ON,
             onItemSelected = { newSyncSW ->
                 onFxChange(stereoDelay.copy(syncSW = newSyncSW))
             }

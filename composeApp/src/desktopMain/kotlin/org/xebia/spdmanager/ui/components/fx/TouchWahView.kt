@@ -9,8 +9,8 @@ import androidx.compose.ui.unit.sp
 import org.xebia.spdmanager.model.system.fx.common.*
 import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
 import org.xebia.spdmanager.model.system.fx.subtypes.TouchWah
-import org.xebia.spdmanager.ui.components.common.ButtonRow
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
+import org.xebia.spdmanager.ui.components.common.ToggleSwitchWithLabel
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -21,22 +21,28 @@ fun TouchWahView(
     Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
         Text("Touch Wah", fontSize = 18.sp)
 
-        ButtonRow(
-            label = "Mode",
+        ToggleSwitchWithLabel(
+            label = "Wah Mode",
             selectedItem = touchWah.mode,
-            items = WahMode.entries.toTypedArray(),
+            offItem = WahMode.LPF,
+            onItem = WahMode.BPF,
             onItemSelected = { newMode ->
                 onFxChange(touchWah.copy(mode = newMode))
-            }
+            },
+            offLabel = "LPF",
+            onLabel = "BPF"
         )
 
-        ButtonRow(
+        ToggleSwitchWithLabel(
             label = "Polarity",
             selectedItem = touchWah.polarity,
-            items = Polarity.entries.toTypedArray(),
+            offItem = Polarity.DOWN,
+            onItem = Polarity.UP,
             onItemSelected = { newPolarity ->
                 onFxChange(touchWah.copy(polarity = newPolarity))
-            }
+            },
+            offLabel = "Down",
+            onLabel = "Up"
         )
 
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

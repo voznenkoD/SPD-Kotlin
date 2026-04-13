@@ -7,6 +7,7 @@ import androidx.compose.ui.unit.dp
 import org.xebia.spdmanager.model.kit.pad.mode.*
 import org.xebia.spdmanager.model.system.fx.common.*
 import org.xebia.spdmanager.ui.components.common.ButtonRow
+import org.xebia.spdmanager.ui.components.common.ToggleSwitchWithLabel
 
 @Composable
 fun PadModeView(
@@ -32,31 +33,38 @@ fun PadModeView(
             }
         )
 
-        ButtonRow(
+        ToggleSwitchWithLabel(
             label = "Trigger Type",
-            items = TrigType.entries.toTypedArray(),
             selectedItem = padMode.trigType,
+            offItem = TrigType.SHOT,
+            onItem = TrigType.ALT,
             onItemSelected = { newTrigType ->
                 onPadModeChange(padMode.copy(trigType = newTrigType))
-            }
+            },
+            offLabel = "Shot",
+            onLabel = "Alt"
         )
 
-        ButtonRow(
+        ToggleSwitchWithLabel(
             label = "Dynamics",
-            items = SyncSwitch.entries.toTypedArray(),
             selectedItem = padMode.dynamics,
+            offItem = SyncSwitch.OFF,
+            onItem = SyncSwitch.ON,
             onItemSelected = { newDynamics ->
                 onPadModeChange(padMode.copy(dynamics = newDynamics))
             }
         )
 
-        ButtonRow(
+        ToggleSwitchWithLabel(
             label = "PolyMono",
-            items = PolyMono.entries.toTypedArray(),
             selectedItem = padMode.polyMono,
+            offItem = PolyMono.MONO,
+            onItem = PolyMono.POLY,
             onItemSelected = { newPolyMono ->
                 onPadModeChange(padMode.copy(polyMono = newPolyMono))
-            }
+            },
+            offLabel = "Mono",
+            onLabel = "Poly"
         )
     }
 }

@@ -14,6 +14,7 @@ import org.xebia.spdmanager.model.system.fx.mainTypes.DelayEffect
 import org.xebia.spdmanager.model.system.fx.mainTypes.DelayPreset
 import org.xebia.spdmanager.ui.components.common.ButtonRow
 import org.xebia.spdmanager.ui.components.common.IntStepSliderWithLabel
+import org.xebia.spdmanager.ui.components.common.ToggleSwitchWithLabel
 
 @Composable
 fun DelayEffectView(
@@ -32,13 +33,16 @@ fun DelayEffectView(
             }
         )
 
-        ButtonRow(
+        ToggleSwitchWithLabel(
             label = "Type",
             selectedItem = delayEffect.type,
-            items = DelayType.entries.toTypedArray(),
+            offItem = DelayType.NORMAL,
+            onItem = DelayType.PAN,
             onItemSelected = { newType ->
                 onDelayChange(delayEffect.copy(type = newType))
-            }
+            },
+            offLabel = "Normal",
+            onLabel = "Pan"
         )
 
         Switch(

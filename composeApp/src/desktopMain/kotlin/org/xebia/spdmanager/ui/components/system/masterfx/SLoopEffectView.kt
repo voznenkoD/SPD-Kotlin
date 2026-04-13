@@ -13,6 +13,7 @@ import org.xebia.spdmanager.model.system.fx.common.SyncSwitch
 import org.xebia.spdmanager.model.system.fx.mainTypes.*
 import org.xebia.spdmanager.ui.components.common.ButtonRow
 import org.xebia.spdmanager.ui.components.common.IntStepSliderWithLabel
+import org.xebia.spdmanager.ui.components.common.ToggleSwitchWithLabel
 
 @Composable
 fun SLoopEffectView(
@@ -31,13 +32,16 @@ fun SLoopEffectView(
             }
         )
 
-        ButtonRow(
+        ToggleSwitchWithLabel(
             label = "Mode",
             selectedItem = sLoopEffect.mode,
-            items = SLoopMode.entries.toTypedArray(),
+            offItem = SLoopMode.MANUAL,
+            onItem = SLoopMode.AUTO,
             onItemSelected = { newMode ->
                 onSLoopChange(sLoopEffect.copy(mode = newMode))
-            }
+            },
+            offLabel = "Manual",
+            onLabel = "Auto"
         )
 
         Switch(
@@ -80,13 +84,16 @@ fun SLoopEffectView(
             )
         }
 
-        ButtonRow(
+        ToggleSwitchWithLabel(
             label = "Timing",
             selectedItem = sLoopEffect.timing,
-            items = SLoopTiming.entries.toTypedArray(),
+            offItem = SLoopTiming.FIRST_HALF,
+            onItem = SLoopTiming.SECOND_HALF,
             onItemSelected = { newTiming ->
                 onSLoopChange(sLoopEffect.copy(timing = newTiming))
-            }
+            },
+            offLabel = "1st Half",
+            onLabel = "2nd Half"
         )
     }
 }
