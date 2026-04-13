@@ -9,7 +9,7 @@ import androidx.compose.ui.unit.sp
 import org.xebia.spdmanager.model.system.fx.common.*
 import org.xebia.spdmanager.model.system.fx.subtypes.Filter
 import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
-import org.xebia.spdmanager.ui.components.common.ButtonRow
+import org.xebia.spdmanager.ui.components.common.ButtonRowCompact
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 import org.xebia.spdmanager.ui.components.common.ToggleSwitchWithLabel
 
@@ -22,12 +22,21 @@ fun FilterView(
     Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
         Text("Filter Settings", fontSize = 18.sp)
 
-        ButtonRow(
+        ButtonRowCompact(
             label = "Filter Type",
             selectedItem = fx.type,
             items = FilterType.entries.toTypedArray(),
             onItemSelected = { newType ->
                 onFxChange(fx.copy(type = newType))
+            }
+        )
+
+        ButtonRowCompact(
+            label = "Slope",
+            selectedItem = fx.slope,
+            items = FilterSlope.entries.toTypedArray(),
+            onItemSelected = { newSlope ->
+                onFxChange(fx.copy(slope = newSlope))
             }
         )
 
@@ -40,40 +49,29 @@ fun FilterView(
                 },
                 valueRange = 0f..100f
             )
-        }
 
-        ButtonRow(
-            label = "Slope",
-            selectedItem = fx.slope,
-            items = FilterSlope.entries.toTypedArray(),
-            onItemSelected = { newSlope ->
-                onFxChange(fx.copy(slope = newSlope))
-            }
-        )
-
-        ToggleSwitchWithLabel(
-            label = "Rate Sync",
-            selectedItem = fx.rateSyncSW,
-            offItem = SyncSwitch.OFF,
-            onItem = SyncSwitch.ON,
-            onItemSelected = { newRateSyncSW ->
-                onFxChange(fx.copy(rateSyncSW = newRateSyncSW))
-            }
-        )
-
-        if (fx.rateSyncSW == SyncSwitch.ON) {
-            val modRateEnum = (fx.modRate as? ModRate.EnumRate)?.modRateEnum ?: ModRateEnum.QUARTER
-            ButtonRow(
-                label = "Modulation Rate",
-                selectedItem = modRateEnum,
-                items = ModRateEnum.entries.toTypedArray(),
-                onItemSelected = { newModRateEnum ->
-                    onFxChange(fx.copy(modRate = ModRate.EnumRate(newModRateEnum)))
+            ToggleSwitchWithLabel(
+                label = "Rate Sync",
+                selectedItem = fx.rateSyncSW,
+                offItem = SyncSwitch.OFF,
+                onItem = SyncSwitch.ON,
+                onItemSelected = { newRateSyncSW ->
+                    onFxChange(fx.copy(rateSyncSW = newRateSyncSW))
                 }
             )
-        } else {
-            val modRateInt = (fx.modRate as? ModRate.IntRate)?.intRate?.toFloat() ?: 0f
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+
+            if (fx.rateSyncSW == SyncSwitch.ON) {
+                val modRateEnum = (fx.modRate as? ModRate.EnumRate)?.modRateEnum ?: ModRateEnum.QUARTER
+                ButtonRowCompact(
+                    label = "Modulation Rate",
+                    selectedItem = modRateEnum,
+                    items = ModRateEnum.entries.toTypedArray(),
+                    onItemSelected = { newModRateEnum ->
+                        onFxChange(fx.copy(modRate = ModRate.EnumRate(newModRateEnum)))
+                    }
+                )
+            } else {
+                val modRateInt = (fx.modRate as? ModRate.IntRate)?.intRate?.toFloat() ?: 0f
                 SliderWithLabel(
                     label = "Modulation Rate",
                     value = modRateInt,
@@ -85,7 +83,7 @@ fun FilterView(
             }
         }
 
-        ButtonRow(
+        ButtonRowCompact(
             label = "LFO Wave",
             selectedItem = fx.lfoWave,
             items = LfoWave.entries.toTypedArray(),

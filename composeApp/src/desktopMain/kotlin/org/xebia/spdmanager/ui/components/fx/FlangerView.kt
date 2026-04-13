@@ -9,7 +9,7 @@ import androidx.compose.ui.unit.sp
 import org.xebia.spdmanager.model.system.fx.common.*
 import org.xebia.spdmanager.model.system.fx.subtypes.Flanger
 import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
-import org.xebia.spdmanager.ui.components.common.ButtonRow
+import org.xebia.spdmanager.ui.components.common.ButtonRowCompact
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 import org.xebia.spdmanager.ui.components.common.ToggleSwitchWithLabel
 
@@ -52,26 +52,6 @@ fun FlangerView(
             )
 
             SliderWithLabel(
-                label = "Separation",
-                value = fx.separation.toFloat(),
-                onValueChange = { newSeparation ->
-                    onFxChange(fx.copy(separation = newSeparation.toInt()))
-                },
-                valueRange = 0f..100f
-            )
-        }
-
-        ButtonRow(
-            label = "Low Cut",
-            selectedItem = fx.lowCut,
-            items = LowCut.entries.toTypedArray(),
-            onItemSelected = { newLowCut ->
-                onFxChange(fx.copy(lowCut = newLowCut))
-            }
-        )
-
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            SliderWithLabel(
                 label = "Effect Level",
                 value = fx.effectLevel.toFloat(),
                 onValueChange = { newEffectLevel ->
@@ -88,6 +68,24 @@ fun FlangerView(
                 },
                 valueRange = 0f..100f
             )
+
+            SliderWithLabel(
+                label = "Separation",
+                value = fx.separation.toFloat(),
+                onValueChange = { newSeparation ->
+                    onFxChange(fx.copy(separation = newSeparation.toInt()))
+                },
+                valueRange = 0f..100f
+            )
         }
+
+        ButtonRowCompact(
+            label = "Low Cut (Hz)",
+            selectedItem = fx.lowCut,
+            items = LowCut.entries.toTypedArray(),
+            onItemSelected = { newLowCut ->
+                onFxChange(fx.copy(lowCut = newLowCut))
+            }
+        )
     }
 }

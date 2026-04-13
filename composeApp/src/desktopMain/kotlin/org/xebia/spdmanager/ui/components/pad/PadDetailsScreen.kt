@@ -38,63 +38,52 @@ fun PadDetailsScreen(
     }
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        SoundSection(
-            title = "Main",
-            sound = pad.main,
-            onSoundChange = { newSound ->
-                viewModel.updateMainSound(newSound)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Box(modifier = Modifier.weight(1f)) {
+                SoundSection(
+                    title = "Main",
+                    sound = pad.main,
+                    onSoundChange = { newSound ->
+                        viewModel.updateMainSound(newSound)
+                    }
+                )
             }
-        )
-
-        SoundSection(
-            title = "Sub",
-            sound = pad.sub,
-            onSoundChange = { newSound ->
-                viewModel.updateSubSound(newSound)
+            Box(modifier = Modifier.weight(1f)) {
+                SoundSection(
+                    title = "Sub",
+                    sound = pad.sub,
+                    onSoundChange = { newSound ->
+                        viewModel.updateSubSound(newSound)
+                    }
+                )
             }
-        )
+        }
 
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .height(60.dp)
-            ) {
-                MuteGroupSelector(
-                    selectedMuteGroup = pad.muteGroup,
-                    onMuteGroupSelected = viewModel::updateMuteGroup
-                )
-            }
 
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .height(60.dp)
-            ) {
-                SwitchWithLabel(
-                    label = "Tempo Sync",
-                    syncSwitch = pad.tempoSync,
-                    onValueChange = { isOn ->
-                        viewModel.updateTempoSync(SyncSwitch.fromBoolean(isOn))
-                    }
-                )
-            }
-
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .height(60.dp)
-            ) {
-                DropdownSelector(
-                    label = "Output",
-                    selectedItem = pad.output,
-                    onItemSelected = viewModel::updateOutput,
-                    items = PadOutput.entries
-                )
-            }
+            MuteGroupSelector(
+                selectedMuteGroup = pad.muteGroup,
+                onMuteGroupSelected = viewModel::updateMuteGroup
+            )
+            DropdownSelector(
+                label = "Output",
+                selectedItem = pad.output,
+                onItemSelected = viewModel::updateOutput,
+                items = PadOutput.entries
+            )
+            SwitchWithLabel(
+                label = "Tempo Sync",
+                syncSwitch = pad.tempoSync,
+                onValueChange = { isOn ->
+                    viewModel.updateTempoSync(SyncSwitch.fromBoolean(isOn))
+                }
+            )
         }
 
         Spacer(modifier = Modifier.height(10.dp))

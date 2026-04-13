@@ -11,7 +11,7 @@ import org.xebia.spdmanager.model.system.fx.common.HighCut
 import org.xebia.spdmanager.model.system.fx.common.LowCut
 import org.xebia.spdmanager.model.system.fx.subtypes.Chorus
 import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
-import org.xebia.spdmanager.ui.components.common.ButtonRow
+import org.xebia.spdmanager.ui.components.common.ButtonRowCompact
 import org.xebia.spdmanager.ui.components.common.IntStepSliderWithLabel
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -23,7 +23,7 @@ fun ChorusView(
     Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
         Text("Chorus", fontSize = 18.sp)
 
-        ButtonRow(
+        ButtonRowCompact(
             label = "Mode",
             selectedItem = chorus.mode,
             items = ChorusMode.entries.toTypedArray(),
@@ -50,27 +50,7 @@ fun ChorusView(
                 },
                 range = 0..100
             )
-        }
 
-        ButtonRow(
-            label = "Low Cut",
-            selectedItem = chorus.lowCut,
-            items = LowCut.entries.toTypedArray(),
-            onItemSelected = { newLowCut ->
-                onFxChange(chorus.copy(lowCut = newLowCut))
-            }
-        )
-
-        ButtonRow(
-            label = "High Cut",
-            selectedItem = chorus.highCut,
-            items = HighCut.entries.toTypedArray(),
-            onItemSelected = { newHighCut ->
-                onFxChange(chorus.copy(highCut = newHighCut))
-            }
-        )
-
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             IntStepSliderWithLabel(
                 label = "Direct Level",
                 value = chorus.directLevel,
@@ -80,5 +60,23 @@ fun ChorusView(
                 range = 0..100
             )
         }
+
+        ButtonRowCompact(
+            label = "Low Cut (Hz)",
+            selectedItem = chorus.lowCut,
+            items = LowCut.entries.toTypedArray(),
+            onItemSelected = { newLowCut ->
+                onFxChange(chorus.copy(lowCut = newLowCut))
+            }
+        )
+
+        ButtonRowCompact(
+            label = "High Cut (Hz)",
+            selectedItem = chorus.highCut,
+            items = HighCut.entries.toTypedArray(),
+            onItemSelected = { newHighCut ->
+                onFxChange(chorus.copy(highCut = newHighCut))
+            }
+        )
     }
 }

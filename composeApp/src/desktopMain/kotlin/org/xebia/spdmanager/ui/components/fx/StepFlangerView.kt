@@ -22,25 +22,33 @@ fun StepFlangerView(
     Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
         Text("Step Flanger", fontSize = 18.sp)
 
-        ToggleSwitchWithLabel(
-            label = "Rate Sync",
-            selectedItem = fx.rateSync,
-            offItem = SyncSwitch.OFF,
-            onItem = SyncSwitch.ON,
-            onItemSelected = { newRateSync ->
-                onFxChange(fx.copy(rateSync = newRateSync))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Box(modifier = Modifier.weight(1f)) {
+                ToggleSwitchWithLabel(
+                    label = "Step Sync",
+                    selectedItem = fx.stepSync,
+                    offItem = SyncSwitch.OFF,
+                    onItem = SyncSwitch.ON,
+                    onItemSelected = { newStepSync ->
+                        onFxChange(fx.copy(stepSync = newStepSync))
+                    }
+                )
             }
-        )
-
-        ToggleSwitchWithLabel(
-            label = "Step Sync",
-            selectedItem = fx.stepSync,
-            offItem = SyncSwitch.OFF,
-            onItem = SyncSwitch.ON,
-            onItemSelected = { newStepSync ->
-                onFxChange(fx.copy(stepSync = newStepSync))
+            Box(modifier = Modifier.weight(1f)) {
+                ToggleSwitchWithLabel(
+                    label = "Rate Sync",
+                    selectedItem = fx.rateSync,
+                    offItem = SyncSwitch.OFF,
+                    onItem = SyncSwitch.ON,
+                    onItemSelected = { newRateSync ->
+                        onFxChange(fx.copy(rateSync = newRateSync))
+                    }
+                )
             }
-        )
+        }
 
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             SliderWithLabel(
@@ -69,19 +77,10 @@ fun StepFlangerView(
                 },
                 valueRange = 0f..100f
             )
-
-            SliderWithLabel(
-                label = "Separation",
-                value = fx.separation.toFloat(),
-                onValueChange = { newSeparation ->
-                    onFxChange(fx.copy(separation = newSeparation.toInt()))
-                },
-                valueRange = 0f..100f
-            )
         }
 
         DropdownSelector(
-            label = "Low Cut",
+            label = "Low Cut (Hz)",
             selectedItem = fx.lowCut,
             items = LowCut.entries.toList(),
             onItemSelected = { newLowCut ->
@@ -104,6 +103,15 @@ fun StepFlangerView(
                 value = fx.directLevel.toFloat(),
                 onValueChange = { newDirectLevel ->
                     onFxChange(fx.copy(directLevel = newDirectLevel.toInt()))
+                },
+                valueRange = 0f..100f
+            )
+
+            SliderWithLabel(
+                label = "Separation",
+                value = fx.separation.toFloat(),
+                onValueChange = { newSeparation ->
+                    onFxChange(fx.copy(separation = newSeparation.toInt()))
                 },
                 valueRange = 0f..100f
             )

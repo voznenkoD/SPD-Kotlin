@@ -43,7 +43,6 @@ fun RingModView(
                 },
                 valueRange = -15f..15f, bipolar = true
             )
-
             SliderWithLabel(
                 label = "High Gain",
                 value = ringMod.hiGain,
@@ -52,17 +51,13 @@ fun RingModView(
                 },
                 valueRange = -15f..15f, bipolar = true
             )
-        }
-
-        DryWetMixSlider(
-            label = "Balance (Dry/Wet)",
-            value = ringMod.balance,
-            onValueChange = { newBalance ->
-                onFxChange(ringMod.copy(balance = newBalance))
-            }
-        )
-
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            DryWetMixSlider(
+                label = "Balance (Dry/Wet)",
+                value = ringMod.balance,
+                onValueChange = { newBalance ->
+                    onFxChange(ringMod.copy(balance = newBalance))
+                }
+            )
             SliderWithLabel(
                 label = "Level",
                 value = ringMod.level.toFloat(),

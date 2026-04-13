@@ -30,28 +30,30 @@ fun StepPhaserView(
                 onFxChange(fx.copy(type = newType))
             }
         )
-
-        ToggleSwitchWithLabel(
-            label = "Rate Sync Switch",
-            selectedItem = fx.rateSyncSW,
-            offItem = SyncSwitch.OFF,
-            onItem = SyncSwitch.ON,
-            onItemSelected = { newRateSyncSW ->
-                onFxChange(fx.copy(rateSyncSW = newRateSyncSW))
-            }
-        )
-
-        ToggleSwitchWithLabel(
-            label = "Step Sync Switch",
-            selectedItem = fx.stepSyncSW,
-            offItem = SyncSwitch.OFF,
-            onItem = SyncSwitch.ON,
-            onItemSelected = { newStepSyncSW ->
-                onFxChange(fx.copy(stepSyncSW = newStepSyncSW))
-            }
-        )
-
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            ToggleSwitchWithLabel(
+                label = "Rate Sync Switch",
+                selectedItem = fx.rateSyncSW,
+                offItem = SyncSwitch.OFF,
+                onItem = SyncSwitch.ON,
+                onItemSelected = { newRateSyncSW ->
+                    onFxChange(fx.copy(rateSyncSW = newRateSyncSW))
+                }
+            )
+
+            ToggleSwitchWithLabel(
+                label = "Step Sync Switch",
+                selectedItem = fx.stepSyncSW,
+                offItem = SyncSwitch.OFF,
+                onItem = SyncSwitch.ON,
+                onItemSelected = { newStepSyncSW ->
+                    onFxChange(fx.copy(stepSyncSW = newStepSyncSW))
+                }
+            )
+        }
+
+
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
             SliderWithLabel(
                 label = "Depth",
                 value = fx.depth.toFloat(),

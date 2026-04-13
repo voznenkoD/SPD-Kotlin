@@ -23,6 +23,16 @@ fun SlicerView(
         Text("Slicer", fontSize = 18.sp, fontWeight = FontWeight.Bold)
 
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            ToggleSwitchWithLabel(
+                label = "Rate Sync",
+                selectedItem = slicer.rateSync,
+                offItem = SyncSwitch.OFF,
+                onItem = SyncSwitch.ON,
+                onItemSelected = { newRateSync ->
+                    onFxChange(slicer.copy(rateSync = newRateSync))
+                }
+            )
+
             SliderWithLabel(
                 label = "Pattern",
                 value = slicer.pattern.toFloat(),
@@ -31,19 +41,7 @@ fun SlicerView(
                 },
                 valueRange = 0f..100f
             )
-        }
 
-        ToggleSwitchWithLabel(
-            label = "Rate Sync",
-            selectedItem = slicer.rateSync,
-            offItem = SyncSwitch.OFF,
-            onItem = SyncSwitch.ON,
-            onItemSelected = { newRateSync ->
-                onFxChange(slicer.copy(rateSync = newRateSync))
-            }
-        )
-
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             SliderWithLabel(
                 label = "Attack",
                 value = slicer.attack.toFloat(),

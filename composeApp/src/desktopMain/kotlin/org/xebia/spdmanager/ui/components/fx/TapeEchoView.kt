@@ -9,7 +9,7 @@ import androidx.compose.ui.unit.sp
 import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
 import org.xebia.spdmanager.model.system.fx.subtypes.TapeEcho
 import org.xebia.spdmanager.model.system.fx.subtypes.TapeEchoMode
-import org.xebia.spdmanager.ui.components.common.ButtonRow
+import org.xebia.spdmanager.ui.components.common.ButtonRowCompact
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -21,7 +21,7 @@ fun TapeEchoView(
     Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
         Text("Tape Echo", fontSize = 18.sp)
 
-        ButtonRow(
+        ButtonRowCompact(
             label = "Mode",
             selectedItem = tapeEcho.mode,
             items = TapeEchoMode.entries.toTypedArray(),
@@ -48,6 +48,15 @@ fun TapeEchoView(
                 },
                 valueRange = -15f..15f, bipolar = true
             )
+
+            SliderWithLabel(
+                label = "Level",
+                value = tapeEcho.level.toFloat(),
+                onValueChange = { newLevel ->
+                    onFxChange(tapeEcho.copy(level = newLevel.toInt().coerceIn(0, 100)))
+                },
+                valueRange = 0f..100f
+            )
         }
 
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -67,6 +76,26 @@ fun TapeEchoView(
                     onFxChange(tapeEcho.copy(headMPan = newHeadMPan.toInt()))
                 },
                 valueRange = -64f..63f, bipolar = true
+            )
+        }
+
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            SliderWithLabel(
+                label = "Echo Level",
+                value = tapeEcho.echoLevel.toFloat(),
+                onValueChange = { newEchoLevel ->
+                    onFxChange(tapeEcho.copy(echoLevel = newEchoLevel.toInt().coerceIn(0, 100)))
+                },
+                valueRange = 0f..100f
+            )
+
+            SliderWithLabel(
+                label = "Direct Level",
+                value = tapeEcho.directLevel.toFloat(),
+                onValueChange = { newDirectLevel ->
+                    onFxChange(tapeEcho.copy(directLevel = newDirectLevel.toInt().coerceIn(0, 100)))
+                },
+                valueRange = 0f..100f
             )
 
             SliderWithLabel(
@@ -105,33 +134,6 @@ fun TapeEchoView(
                     onFxChange(tapeEcho.copy(wfDepth = newWfDepth.toInt().coerceIn(0, 127)))
                 },
                 valueRange = 0f..127f
-            )
-
-            SliderWithLabel(
-                label = "Echo Level",
-                value = tapeEcho.echoLevel.toFloat(),
-                onValueChange = { newEchoLevel ->
-                    onFxChange(tapeEcho.copy(echoLevel = newEchoLevel.toInt().coerceIn(0, 100)))
-                },
-                valueRange = 0f..100f
-            )
-
-            SliderWithLabel(
-                label = "Direct Level",
-                value = tapeEcho.directLevel.toFloat(),
-                onValueChange = { newDirectLevel ->
-                    onFxChange(tapeEcho.copy(directLevel = newDirectLevel.toInt().coerceIn(0, 100)))
-                },
-                valueRange = 0f..100f
-            )
-
-            SliderWithLabel(
-                label = "Level",
-                value = tapeEcho.level.toFloat(),
-                onValueChange = { newLevel ->
-                    onFxChange(tapeEcho.copy(level = newLevel.toInt().coerceIn(0, 100)))
-                },
-                valueRange = 0f..100f
             )
         }
     }

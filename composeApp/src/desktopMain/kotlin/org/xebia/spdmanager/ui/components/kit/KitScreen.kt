@@ -42,11 +42,11 @@ fun KitScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(5.dp),
-        verticalArrangement = Arrangement.spacedBy(5.dp)
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Text("Name: ", fontSize = 14.sp, modifier = Modifier.weight(0.5f))
             TextField(
@@ -69,7 +69,6 @@ fun KitScreen(
                 onValueChange = { viewModel.updateTempo(it.toDouble()) },
                 valueRange = 20f..260f
             )
-
             IntStepSliderWithLabel(
                 label = "Volume",
                 value = kit.volume,
@@ -78,22 +77,30 @@ fun KitScreen(
             )
         }
 
-        PadLinkSelector(
-            padLink1 = kit.padLink?.first ?: PadNumber.PAD_1,
-            onPadLink1Selected = { pad1 ->
-                viewModel.updatePadLink(
-                    pad1,
-                    kit.padLink?.second ?: PadNumber.PAD_2
-                )
-            },
-            padLink2 = kit.padLink?.second ?: PadNumber.PAD_2,
-            onPadLink2Selected = { pad2 ->
-                viewModel.updatePadLink(
-                    kit.padLink?.first ?: PadNumber.PAD_1,
-                    pad2
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+
+            Box(modifier = Modifier.weight(1f)) {
+                PadLinkSelector(
+                    padLink1 = kit.padLink?.first ?: PadNumber.PAD_1,
+                    onPadLink1Selected = { pad1 ->
+                        viewModel.updatePadLink(
+                            pad1,
+                            kit.padLink?.second ?: PadNumber.PAD_2
+                        )
+                    },
+                    padLink2 = kit.padLink?.second ?: PadNumber.PAD_2,
+                    onPadLink2Selected = { pad2 ->
+                        viewModel.updatePadLink(
+                            kit.padLink?.first ?: PadNumber.PAD_1,
+                            pad2
+                        )
+                    }
                 )
             }
-        )
+        }
 
         TabRow(
             selectedTabIndex = selectedTabIndex,

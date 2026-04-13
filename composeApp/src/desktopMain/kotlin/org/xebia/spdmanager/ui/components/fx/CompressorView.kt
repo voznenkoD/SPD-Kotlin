@@ -3,13 +3,14 @@ package org.xebia.spdmanager.ui.components.fx
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.xebia.spdmanager.model.system.fx.common.*
 import org.xebia.spdmanager.model.system.fx.subtypes.Compressor
 import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
-import org.xebia.spdmanager.ui.components.common.ButtonRow
+import org.xebia.spdmanager.ui.components.common.ButtonRowCompact
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 import org.xebia.spdmanager.ui.components.common.ToggleSwitchWithLabel
 
@@ -22,7 +23,19 @@ fun CompressorView(
     Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
         Text("Compressor Settings", fontSize = 18.sp)
 
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        ToggleSwitchWithLabel(
+            label = "Knee",
+            selectedItem = fx.knee,
+            offItem = Knee.SOFT,
+            onItem = Knee.HARD,
+            onItemSelected = { newKnee ->
+                onFxChange(fx.copy(knee = newKnee))
+            },
+            offLabel = "Soft",
+            onLabel = "Hard"
+        )
+
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
             SliderWithLabel(
                 label = "Threshold",
                 value = fx.threshold,
@@ -50,35 +63,25 @@ fun CompressorView(
                 valueRange = 1f..1000f
             )
 
-            SliderWithLabel(
-                label = "Makeup Gain",
-                value = fx.makeup.toFloat(),
-                onValueChange = { newMakeup ->
-                    onFxChange(fx.copy(makeup = newMakeup.toInt()))
-                },
-                valueRange = 0f..30f
-            )
+            Box(modifier = Modifier.weight(1f)) {
+                SliderWithLabel(
+                    label = "Makeup Gain",
+                    value = fx.makeup.toFloat(),
+                    onValueChange = { newMakeup ->
+                        onFxChange(fx.copy(makeup = newMakeup.toInt()))
+                    },
+                    valueRange = 0f..30f
+                )
+            }
         }
 
-        ButtonRow(
+        ButtonRowCompact(
             label = "Ratio",
             selectedItem = fx.ratio,
             items = Ratio.entries.toTypedArray(),
             onItemSelected = { newRatio ->
                 onFxChange(fx.copy(ratio = newRatio))
             }
-        )
-
-        ToggleSwitchWithLabel(
-            label = "Knee",
-            selectedItem = fx.knee,
-            offItem = Knee.SOFT,
-            onItem = Knee.HARD,
-            onItemSelected = { newKnee ->
-                onFxChange(fx.copy(knee = newKnee))
-            },
-            offLabel = "Soft",
-            onLabel = "Hard"
         )
     }
 }

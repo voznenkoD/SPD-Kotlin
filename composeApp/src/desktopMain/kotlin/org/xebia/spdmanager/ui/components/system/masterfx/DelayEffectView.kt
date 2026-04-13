@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import org.xebia.spdmanager.model.system.fx.common.*
 import org.xebia.spdmanager.model.system.fx.mainTypes.DelayEffect
 import org.xebia.spdmanager.model.system.fx.mainTypes.DelayPreset
-import org.xebia.spdmanager.ui.components.common.ButtonRow
+import org.xebia.spdmanager.ui.components.common.ButtonRowCompact
 import org.xebia.spdmanager.ui.components.common.IntStepSliderWithLabel
 import org.xebia.spdmanager.ui.components.common.ToggleSwitchWithLabel
 
@@ -24,7 +24,7 @@ fun DelayEffectView(
     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
         Text("Delay Effect", style = MaterialTheme.typography.titleMedium)
 
-        ButtonRow(
+        ButtonRowCompact(
             label = "Preset",
             selectedItem = delayEffect.preset,
             items = DelayPreset.entries.toTypedArray(),
@@ -66,7 +66,7 @@ fun DelayEffectView(
         )
 
         if (delayEffect.syncSW == SyncSwitch.ON) {
-            ButtonRow(
+            ButtonRowCompact(
                 label = "Delay Time",
                 selectedItem = (delayEffect.delayTime as? DelayTime.EnumTime)?.delayTimeEnum ?: DelayTimeEnum.fromIndex(0),
                 items = DelayTimeEnum.entries.toTypedArray(),
@@ -94,8 +94,8 @@ fun DelayEffectView(
             }
         )
 
-        ButtonRow(
-            label = "Low Cut",
+        ButtonRowCompact(
+            label = "Low Cut (Hz)",
             selectedItem = delayEffect.lowCut,
             items = LowCut.entries.toTypedArray(),
             onItemSelected = { newLowCut ->
@@ -103,8 +103,8 @@ fun DelayEffectView(
             }
         )
 
-        ButtonRow(
-            label = "High Cut",
+        ButtonRowCompact(
+            label = "High Cut (Hz)",
             selectedItem = delayEffect.highCut,
             items = HighCut.entries.toTypedArray(),
             onItemSelected = { newHighCut ->

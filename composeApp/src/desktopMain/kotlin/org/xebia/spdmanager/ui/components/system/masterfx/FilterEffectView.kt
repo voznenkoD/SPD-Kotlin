@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import org.xebia.spdmanager.model.system.fx.common.*
 import org.xebia.spdmanager.model.system.fx.mainTypes.FilterEffect
 import org.xebia.spdmanager.model.system.fx.mainTypes.FilterPreset
-import org.xebia.spdmanager.ui.components.common.ButtonRow
+import org.xebia.spdmanager.ui.components.common.ButtonRowCompact
 import org.xebia.spdmanager.ui.components.common.DropdownSelector
 import org.xebia.spdmanager.ui.components.common.IntStepSliderWithLabel
 
@@ -24,7 +24,7 @@ fun FilterEffectView(
     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
         Text("Filter Effect", style = MaterialTheme.typography.titleMedium)
 
-        ButtonRow(
+        ButtonRowCompact(
             label = "Preset",
             selectedItem = filterEffect.preset,
             items = FilterPreset.entries.toTypedArray(),
@@ -33,7 +33,7 @@ fun FilterEffectView(
             }
         )
 
-        ButtonRow(
+        ButtonRowCompact(
             label = "Type",
             selectedItem = filterEffect.type,
             items = FilterType.entries.toTypedArray(),
@@ -42,7 +42,7 @@ fun FilterEffectView(
             }
         )
 
-        ButtonRow(
+        ButtonRowCompact(
             label = "Slope",
             selectedItem = filterEffect.slope,
             items = FilterSlope.entries.toTypedArray(),
@@ -72,7 +72,7 @@ fun FilterEffectView(
         )
 
         if (filterEffect.rateSync == SyncSwitch.ON) {
-            ButtonRow(
+            ButtonRowCompact(
                 label = "Mod Rate",
                 selectedItem = (filterEffect.modRate as? ModRate.EnumRate)?.modRateEnum ?: ModRateEnum.fromIndex(0),
                 items = ModRateEnum.entries.toTypedArray(),

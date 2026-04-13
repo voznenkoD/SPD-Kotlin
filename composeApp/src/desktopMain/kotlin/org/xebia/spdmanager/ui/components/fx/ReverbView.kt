@@ -12,7 +12,7 @@ import org.xebia.spdmanager.model.system.fx.common.LowCut
 import org.xebia.spdmanager.model.system.fx.common.ReverbType
 import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
 import org.xebia.spdmanager.model.system.fx.subtypes.Reverb
-import org.xebia.spdmanager.ui.components.common.ButtonRow
+import org.xebia.spdmanager.ui.components.common.ButtonRowCompact
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -24,7 +24,7 @@ fun ReverbView(
     Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
         Text("Reverb", fontSize = 18.sp, fontWeight = FontWeight.Bold)
 
-        ButtonRow(
+        ButtonRowCompact(
             label = "Reverb Type",
             items = ReverbType.entries.toTypedArray(),
             selectedItem = reverb.type,
@@ -33,8 +33,8 @@ fun ReverbView(
             }
         )
 
-        ButtonRow(
-            label = "Low Cut",
+        ButtonRowCompact(
+            label = "Low Cut (Hz)",
             items = LowCut.entries.toTypedArray(),
             selectedItem = reverb.lowCut,
             onItemSelected = { newLowCut ->
@@ -42,8 +42,8 @@ fun ReverbView(
             }
         )
 
-        ButtonRow(
-            label = "High Cut",
+        ButtonRowCompact(
+            label = "High Cut (Hz)",
             items = HighCut.entries.toTypedArray(),
             selectedItem = reverb.highCut,
             onItemSelected = { newHighCut ->

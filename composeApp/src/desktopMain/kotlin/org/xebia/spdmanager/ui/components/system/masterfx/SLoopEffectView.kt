@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.xebia.spdmanager.model.system.fx.common.SyncSwitch
 import org.xebia.spdmanager.model.system.fx.mainTypes.*
-import org.xebia.spdmanager.ui.components.common.ButtonRow
+import org.xebia.spdmanager.ui.components.common.ButtonRowCompact
 import org.xebia.spdmanager.ui.components.common.IntStepSliderWithLabel
 import org.xebia.spdmanager.ui.components.common.ToggleSwitchWithLabel
 
@@ -23,7 +23,7 @@ fun SLoopEffectView(
     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
         Text("S.Loop Effect", style = MaterialTheme.typography.titleMedium)
 
-        ButtonRow(
+        ButtonRowCompact(
             label = "Preset",
             selectedItem = sLoopEffect.preset,
             items = SLoopPreset.entries.toTypedArray(),
@@ -65,7 +65,7 @@ fun SLoopEffectView(
         )
 
         if (sLoopEffect.rateSync == SyncSwitch.ON) {
-            ButtonRow(
+            ButtonRowCompact(
                 label = "Rate",
                 selectedItem = (sLoopEffect.rate as? SLoopRate.EnumRate)?.rateEnum ?: SLoopRateEnum.fromIndex(0),
                 items = SLoopRateEnum.entries.toTypedArray(),

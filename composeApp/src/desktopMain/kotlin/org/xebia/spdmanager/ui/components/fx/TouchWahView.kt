@@ -3,6 +3,7 @@ package org.xebia.spdmanager.ui.components.fx
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -21,29 +22,38 @@ fun TouchWahView(
     Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
         Text("Touch Wah", fontSize = 18.sp)
 
-        ToggleSwitchWithLabel(
-            label = "Wah Mode",
-            selectedItem = touchWah.mode,
-            offItem = WahMode.LPF,
-            onItem = WahMode.BPF,
-            onItemSelected = { newMode ->
-                onFxChange(touchWah.copy(mode = newMode))
-            },
-            offLabel = "LPF",
-            onLabel = "BPF"
-        )
-
-        ToggleSwitchWithLabel(
-            label = "Polarity",
-            selectedItem = touchWah.polarity,
-            offItem = Polarity.DOWN,
-            onItem = Polarity.UP,
-            onItemSelected = { newPolarity ->
-                onFxChange(touchWah.copy(polarity = newPolarity))
-            },
-            offLabel = "Down",
-            onLabel = "Up"
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(modifier = Modifier.weight(1f)) {
+                ToggleSwitchWithLabel(
+                    label = "Polarity",
+                    selectedItem = touchWah.polarity,
+                    offItem = Polarity.DOWN,
+                    onItem = Polarity.UP,
+                    onItemSelected = { newPolarity ->
+                        onFxChange(touchWah.copy(polarity = newPolarity))
+                    },
+                    offLabel = "Down",
+                    onLabel = "Up"
+                )
+            }
+            Box(modifier = Modifier.weight(1f)) {
+                ToggleSwitchWithLabel(
+                    label = "Wah Mode",
+                    selectedItem = touchWah.mode,
+                    offItem = WahMode.LPF,
+                    onItem = WahMode.BPF,
+                    onItemSelected = { newMode ->
+                        onFxChange(touchWah.copy(mode = newMode))
+                    },
+                    offLabel = "LPF",
+                    onLabel = "BPF"
+                )
+            }
+        }
 
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             SliderWithLabel(
