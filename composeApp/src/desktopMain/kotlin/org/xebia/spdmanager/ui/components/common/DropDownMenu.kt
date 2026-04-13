@@ -28,16 +28,19 @@ fun <T> DropdownSelector(
 
     Column(Modifier.width(width)) {
         Text(label, fontSize = 14.sp, modifier = Modifier.padding(bottom = 4.dp))
-        Box(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .border(BorderStroke(1.dp, Color.DarkGray), shape = RoundedCornerShape(4.dp))
                 .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(4.dp))
                 .clickable { expanded = true }
                 .padding(horizontal = 16.dp, vertical = 12.dp),
-            contentAlignment = Alignment.CenterStart
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            content(selectedItem)
+            Box(modifier = Modifier.weight(1f)) {
+                content(selectedItem)
+            }
+            Text("▼", fontSize = 10.sp, color = Color.DarkGray)
         }
 
         DropdownMenu(
