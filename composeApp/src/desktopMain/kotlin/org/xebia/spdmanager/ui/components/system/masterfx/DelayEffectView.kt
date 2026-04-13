@@ -1,6 +1,9 @@
 package org.xebia.spdmanager.ui.components.system.masterfx
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -33,17 +36,37 @@ fun DelayEffectView(
             }
         )
 
-        ToggleSwitchWithLabel(
-            label = "Type",
-            selectedItem = delayEffect.type,
-            offItem = DelayType.NORMAL,
-            onItem = DelayType.PAN,
-            onItemSelected = { newType ->
-                onDelayChange(delayEffect.copy(type = newType))
-            },
-            offLabel = "Normal",
-            onLabel = "Pan"
-        )
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            ToggleSwitchWithLabel(
+                label = "Type",
+                selectedItem = delayEffect.type,
+                offItem = DelayType.NORMAL,
+                onItem = DelayType.PAN,
+                onItemSelected = { newType ->
+                    onDelayChange(delayEffect.copy(type = newType))
+                },
+                offLabel = "Normal",
+                onLabel = "Pan"
+            )
+
+            IntStepSliderWithLabel(
+                label = "Tap Time",
+                value = delayEffect.tapTime,
+                range = 0..100,
+                onValueChange = { newTapTime ->
+                    onDelayChange(delayEffect.copy(tapTime = newTapTime))
+                }
+            )
+
+            IntStepSliderWithLabel(
+                label = "Direct Level",
+                value = delayEffect.directLevel,
+                range = 0..100,
+                onValueChange = { newDirectLevel ->
+                    onDelayChange(delayEffect.copy(directLevel = newDirectLevel))
+                }
+            )
+        }
 
         Switch(
             checked = delayEffect.syncSW == SyncSwitch.ON,
@@ -85,15 +108,6 @@ fun DelayEffectView(
             )
         }
 
-        IntStepSliderWithLabel(
-            label = "Tap Time",
-            value = delayEffect.tapTime,
-            range = 0..100,
-            onValueChange = { newTapTime ->
-                onDelayChange(delayEffect.copy(tapTime = newTapTime))
-            }
-        )
-
         ButtonRowCompact(
             label = "Low Cut (Hz)",
             selectedItem = delayEffect.lowCut,
@@ -109,15 +123,6 @@ fun DelayEffectView(
             items = HighCut.entries.toTypedArray(),
             onItemSelected = { newHighCut ->
                 onDelayChange(delayEffect.copy(highCut = newHighCut))
-            }
-        )
-
-        IntStepSliderWithLabel(
-            label = "Direct Level",
-            value = delayEffect.directLevel,
-            range = 0..100,
-            onValueChange = { newDirectLevel ->
-                onDelayChange(delayEffect.copy(directLevel = newDirectLevel))
             }
         )
     }

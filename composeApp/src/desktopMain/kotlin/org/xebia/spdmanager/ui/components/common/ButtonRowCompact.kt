@@ -33,10 +33,10 @@ fun <T : Enum<T>> ButtonRowCompact(
                     shape = RectangleShape,
                     modifier = Modifier
                         .weight(1f)
-                        .aspectRatio(1f)
+                        .height(32.dp)
                 ) {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text(item.name, fontSize = 10.sp)
+                        Text(item.toString(), fontSize = 10.sp)
                     }
                 }
             }

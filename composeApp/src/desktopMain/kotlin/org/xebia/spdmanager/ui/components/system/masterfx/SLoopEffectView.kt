@@ -1,6 +1,9 @@
 package org.xebia.spdmanager.ui.components.system.masterfx
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -32,17 +35,31 @@ fun SLoopEffectView(
             }
         )
 
-        ToggleSwitchWithLabel(
-            label = "Mode",
-            selectedItem = sLoopEffect.mode,
-            offItem = SLoopMode.MANUAL,
-            onItem = SLoopMode.AUTO,
-            onItemSelected = { newMode ->
-                onSLoopChange(sLoopEffect.copy(mode = newMode))
-            },
-            offLabel = "Manual",
-            onLabel = "Auto"
-        )
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            ToggleSwitchWithLabel(
+                label = "Mode",
+                selectedItem = sLoopEffect.mode,
+                offItem = SLoopMode.MANUAL,
+                onItem = SLoopMode.AUTO,
+                onItemSelected = { newMode ->
+                    onSLoopChange(sLoopEffect.copy(mode = newMode))
+                },
+                offLabel = "Manual",
+                onLabel = "Auto"
+            )
+
+            ToggleSwitchWithLabel(
+                label = "Timing",
+                selectedItem = sLoopEffect.timing,
+                offItem = SLoopTiming.FIRST_HALF,
+                onItem = SLoopTiming.SECOND_HALF,
+                onItemSelected = { newTiming ->
+                    onSLoopChange(sLoopEffect.copy(timing = newTiming))
+                },
+                offLabel = "1st Half",
+                onLabel = "2nd Half"
+            )
+        }
 
         Switch(
             checked = sLoopEffect.rateSync == SyncSwitch.ON,
@@ -83,17 +100,5 @@ fun SLoopEffectView(
                 }
             )
         }
-
-        ToggleSwitchWithLabel(
-            label = "Timing",
-            selectedItem = sLoopEffect.timing,
-            offItem = SLoopTiming.FIRST_HALF,
-            onItem = SLoopTiming.SECOND_HALF,
-            onItemSelected = { newTiming ->
-                onSLoopChange(sLoopEffect.copy(timing = newTiming))
-            },
-            offLabel = "1st Half",
-            onLabel = "2nd Half"
-        )
     }
 }

@@ -32,6 +32,15 @@ fun TapeEchoView(
 
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             SliderWithLabel(
+                label = "Level",
+                value = tapeEcho.level.toFloat(),
+                onValueChange = { newLevel ->
+                    onFxChange(tapeEcho.copy(level = newLevel.toInt().coerceIn(0, 100)))
+                },
+                valueRange = 0f..100f
+            )
+
+            SliderWithLabel(
                 label = "Bass",
                 value = tapeEcho.bass,
                 onValueChange = { newBass ->
@@ -50,10 +59,19 @@ fun TapeEchoView(
             )
 
             SliderWithLabel(
-                label = "Level",
-                value = tapeEcho.level.toFloat(),
-                onValueChange = { newLevel ->
-                    onFxChange(tapeEcho.copy(level = newLevel.toInt().coerceIn(0, 100)))
+                label = "Echo Level",
+                value = tapeEcho.echoLevel.toFloat(),
+                onValueChange = { newEchoLevel ->
+                    onFxChange(tapeEcho.copy(echoLevel = newEchoLevel.toInt().coerceIn(0, 100)))
+                },
+                valueRange = 0f..100f
+            )
+
+            SliderWithLabel(
+                label = "Direct Level",
+                value = tapeEcho.directLevel.toFloat(),
+                onValueChange = { newDirectLevel ->
+                    onFxChange(tapeEcho.copy(directLevel = newDirectLevel.toInt().coerceIn(0, 100)))
                 },
                 valueRange = 0f..100f
             )
@@ -76,26 +94,6 @@ fun TapeEchoView(
                     onFxChange(tapeEcho.copy(headMPan = newHeadMPan.toInt()))
                 },
                 valueRange = -64f..63f, bipolar = true
-            )
-        }
-
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            SliderWithLabel(
-                label = "Echo Level",
-                value = tapeEcho.echoLevel.toFloat(),
-                onValueChange = { newEchoLevel ->
-                    onFxChange(tapeEcho.copy(echoLevel = newEchoLevel.toInt().coerceIn(0, 100)))
-                },
-                valueRange = 0f..100f
-            )
-
-            SliderWithLabel(
-                label = "Direct Level",
-                value = tapeEcho.directLevel.toFloat(),
-                onValueChange = { newDirectLevel ->
-                    onFxChange(tapeEcho.copy(directLevel = newDirectLevel.toInt().coerceIn(0, 100)))
-                },
-                valueRange = 0f..100f
             )
 
             SliderWithLabel(

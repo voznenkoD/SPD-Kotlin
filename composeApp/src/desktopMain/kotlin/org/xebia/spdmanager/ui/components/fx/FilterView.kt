@@ -41,14 +41,6 @@ fun FilterView(
         )
 
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            SliderWithLabel(
-                label = "Resonance",
-                value = fx.resonance.toFloat(),
-                onValueChange = { newResonance ->
-                    onFxChange(fx.copy(resonance = newResonance.toInt()))
-                },
-                valueRange = 0f..100f
-            )
 
             ToggleSwitchWithLabel(
                 label = "Rate Sync",
@@ -58,6 +50,15 @@ fun FilterView(
                 onItemSelected = { newRateSyncSW ->
                     onFxChange(fx.copy(rateSyncSW = newRateSyncSW))
                 }
+            )
+
+            SliderWithLabel(
+                label = "Resonance",
+                value = fx.resonance.toFloat(),
+                onValueChange = { newResonance ->
+                    onFxChange(fx.copy(resonance = newResonance.toInt()))
+                },
+                valueRange = 0f..100f
             )
 
             if (fx.rateSyncSW == SyncSwitch.ON) {
