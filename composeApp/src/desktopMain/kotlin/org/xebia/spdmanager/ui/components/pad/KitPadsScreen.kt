@@ -2,6 +2,7 @@ package org.xebia.spdmanager.ui.components.pad
 
 import androidx.compose.foundation.ContextMenuArea
 import androidx.compose.foundation.ContextMenuItem
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -11,12 +12,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -36,7 +41,11 @@ fun PadScreen(
     onRemoveWave: (PadNumber) -> Unit = {},
     onRemoveSubWave: (PadNumber) -> Unit = {},
     hasCopiedPad: Boolean = false,
-    waveNameLookup: (Int) -> String? = { null }
+    waveNameLookup: (Int) -> String? = { null },
+    isDragActive: Boolean = false,
+    dragPosition: Offset? = null,
+    onRegisterPadBounds: (PadNumber, Rect, Rect) -> Unit = { _, _, _ -> },
+    onUnregisterPadBounds: (PadNumber) -> Unit = {}
 ) {
     if (kit != null) {
         Surface(
@@ -70,7 +79,11 @@ fun PadScreen(
                             onRemoveWave = onRemoveWave,
                             onRemoveSubWave = onRemoveSubWave,
                             hasCopiedPad = hasCopiedPad,
-                            waveNameLookup = waveNameLookup
+                            waveNameLookup = waveNameLookup,
+                            isDragActive = isDragActive,
+                            dragPosition = dragPosition,
+                            onRegisterPadBounds = onRegisterPadBounds,
+                            onUnregisterPadBounds = onUnregisterPadBounds
                         )
                     }
                 }
@@ -95,7 +108,11 @@ fun PadScreen(
                             onRemoveWave = onRemoveWave,
                             onRemoveSubWave = onRemoveSubWave,
                             hasCopiedPad = hasCopiedPad,
-                            waveNameLookup = waveNameLookup
+                            waveNameLookup = waveNameLookup,
+                            isDragActive = isDragActive,
+                            dragPosition = dragPosition,
+                            onRegisterPadBounds = onRegisterPadBounds,
+                            onUnregisterPadBounds = onUnregisterPadBounds
                         )
                     }
                 }
@@ -121,7 +138,11 @@ fun PadScreen(
                             onRemoveWave = onRemoveWave,
                             onRemoveSubWave = onRemoveSubWave,
                             hasCopiedPad = hasCopiedPad,
-                            waveNameLookup = waveNameLookup
+                            waveNameLookup = waveNameLookup,
+                            isDragActive = isDragActive,
+                            dragPosition = dragPosition,
+                            onRegisterPadBounds = onRegisterPadBounds,
+                            onUnregisterPadBounds = onUnregisterPadBounds
                         )
                     }
                 }
@@ -143,12 +164,26 @@ fun PadItem(
     onRemoveWave: (PadNumber) -> Unit = {},
     onRemoveSubWave: (PadNumber) -> Unit = {},
     hasCopiedPad: Boolean = false,
-    waveNameLookup: (Int) -> String? = { null }
+    waveNameLookup: (Int) -> String? = { null },
+    isDragActive: Boolean = false,
+    dragPosition: Offset? = null,
+    onRegisterPadBounds: (PadNumber, Rect, Rect) -> Unit = { _, _, _ -> },
+    onUnregisterPadBounds: (PadNumber) -> Unit = {}
 ) {
     val backgroundColor = if (isSelected) {
         Color(0x88B71C1C)
     } else {
         Color.DarkGray
+    }
+
+    var mainBounds by remember { mutableStateOf(Rect.Zero) }
+    var subBounds by remember { mutableStateOf(Rect.Zero) }
+
+    val mainHovered = isDragActive && dragPosition != null && mainBounds != Rect.Zero && mainBounds.contains(dragPosition)
+    val subHovered = isDragActive && dragPosition != null && subBounds != Rect.Zero && subBounds.contains(dragPosition)
+
+    DisposableEffect(padNumber) {
+        onDispose { onUnregisterPadBounds(padNumber) }
     }
 
     ContextMenuArea(
@@ -181,7 +216,12 @@ fun PadItem(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
-                    .clickable { onSelect(padNumber, true) }  // true for main
+                    .onGloballyPositioned { coords ->
+                        mainBounds = coords.boundsInWindow()
+                        onRegisterPadBounds(padNumber, mainBounds, subBounds)
+                    }
+                    .clickable { onSelect(padNumber, true) }
+                    .then(if (mainHovered) Modifier.background(Color(0x4400CC00)) else Modifier)
                     .then(
                         if (isSelected && isMainSelected) {
                             Modifier.padding(2.dp)
@@ -211,7 +251,12 @@ fun PadItem(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
+                    .onGloballyPositioned { coords ->
+                        subBounds = coords.boundsInWindow()
+                        onRegisterPadBounds(padNumber, mainBounds, subBounds)
+                    }
                     .clickable { onSelect(padNumber, false) }
+                    .then(if (subHovered) Modifier.background(Color(0x4400CC00)) else Modifier)
                     .then(
                         if (isSelected && !isMainSelected) {
                             Modifier.padding(2.dp)

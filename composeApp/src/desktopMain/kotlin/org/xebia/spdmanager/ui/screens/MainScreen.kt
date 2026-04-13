@@ -1,12 +1,18 @@
 package org.xebia.spdmanager.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import org.xebia.spdmanager.LocalDeviceManager
 import org.xebia.spdmanager.model.list.WaveListsHolder
 import org.xebia.spdmanager.service.DeviceManager
@@ -37,6 +43,8 @@ fun MainScreen() {
     val deleteBlocked by mainViewModel.deleteBlocked.collectAsState()
     val deleteError by mainViewModel.deleteError.collectAsState()
     val listsSelectedTab by mainViewModel.listsSelectedTab.collectAsState()
+    val dragInfo by mainViewModel.dragInfo.collectAsState()
+    val dragPosition by mainViewModel.dragPosition.collectAsState()
 
     val kits = device?.kits.orEmpty()
     val waves = device?.waves.orEmpty()
@@ -58,6 +66,7 @@ fun MainScreen() {
         return
     }
 
+    Box(modifier = Modifier.fillMaxSize()) {
     Row {
         Column(Modifier.weight(0.3f).fillMaxHeight()) {
             DetailsTabs(
@@ -88,7 +97,11 @@ fun MainScreen() {
                 onRemoveWave = mainViewModel::removeWave,
                 onRemoveSubWave = mainViewModel::removeSubWave,
                 hasCopiedPad = clipboardPad != null,
-                waveNameLookup = waveNameLookup
+                waveNameLookup = waveNameLookup,
+                isDragActive = dragInfo != null,
+                dragPosition = dragPosition,
+                onRegisterPadBounds = mainViewModel::registerPadBounds,
+                onUnregisterPadBounds = mainViewModel::unregisterPadBounds
             )
 
             WaveDetailsScreen(
@@ -126,8 +139,31 @@ fun MainScreen() {
                 onClearDeleteError = mainViewModel::clearDeleteError,
                 selectedTab = listsSelectedTab,
                 onSelectedTabChange = mainViewModel::selectListsTab,
-                selectedWaveNumber = selectedWave?.number
+                selectedWaveNumber = selectedWave?.number,
+                onStartWaveDrag = mainViewModel::startWaveDrag,
+                onUpdateDragPosition = mainViewModel::updateDragPosition,
+                onEndWaveDrag = mainViewModel::endWaveDrag,
+                onCancelWaveDrag = mainViewModel::cancelWaveDrag
             )
         }
+    }
+
+    val currentDragInfo = dragInfo
+    val currentDragPos = dragPosition
+    if (currentDragInfo != null && currentDragPos != null) {
+        val density = LocalDensity.current
+        Box(
+            modifier = Modifier
+                .offset { IntOffset(currentDragPos.x.toInt() + 16, currentDragPos.y.toInt() - 16) }
+                .background(Color(0xDD333333), RoundedCornerShape(4.dp))
+                .padding(horizontal = 8.dp, vertical = 4.dp)
+        ) {
+            Text(
+                text = "${currentDragInfo.waveNumber}. ${currentDragInfo.waveName}",
+                color = Color.White,
+                fontSize = 12.sp
+            )
+        }
+    }
     }
 }

@@ -1,5 +1,7 @@
 package org.xebia.spdmanager.viewmodel
 
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,6 +14,7 @@ import org.xebia.spdmanager.model.kit.pad.Sound
 import org.xebia.spdmanager.model.list.ListedWave
 import org.xebia.spdmanager.service.DeviceManager
 import java.io.File
+import java.util.concurrent.ConcurrentHashMap
 
 class MainViewModel(
     val deviceManager: DeviceManager
@@ -222,6 +225,65 @@ class MainViewModel(
     /**
      * Toggle between main and sub wave for the current pad
      */
+    // --- Wave drag-and-drop state ---
+
+    data class DragInfo(val waveNumber: Int, val waveName: String)
+
+    private val _dragInfo = MutableStateFlow<DragInfo?>(null)
+    val dragInfo: StateFlow<DragInfo?> = _dragInfo.asStateFlow()
+
+    private val _dragPosition = MutableStateFlow<Offset?>(null)
+    val dragPosition: StateFlow<Offset?> = _dragPosition.asStateFlow()
+
+    data class PadDropTarget(val padNumber: PadNumber, val mainBounds: Rect, val subBounds: Rect)
+    private val padDropTargets = ConcurrentHashMap<PadNumber, PadDropTarget>()
+
+    fun registerPadBounds(padNumber: PadNumber, mainBounds: Rect, subBounds: Rect) {
+        padDropTargets[padNumber] = PadDropTarget(padNumber, mainBounds, subBounds)
+    }
+
+    fun unregisterPadBounds(padNumber: PadNumber) {
+        padDropTargets.remove(padNumber)
+    }
+
+    fun startWaveDrag(waveNumber: Int, waveName: String) {
+        _dragInfo.value = DragInfo(waveNumber, waveName)
+    }
+
+    fun updateDragPosition(position: Offset) {
+        _dragPosition.value = position
+    }
+
+    fun endWaveDrag() {
+        val info = _dragInfo.value
+        val pos = _dragPosition.value
+        _dragInfo.value = null
+        _dragPosition.value = null
+
+        if (info == null || pos == null) return
+        val kitIndex = _selectedKitIndex.value ?: return
+
+        for ((_, target) in padDropTargets) {
+            if (target.mainBounds.contains(pos)) {
+                deviceManager.updatePad(kitIndex, target.padNumber) { pad ->
+                    pad.copy(main = pad.main.copy(wave = info.waveNumber))
+                }
+                return
+            }
+            if (target.subBounds.contains(pos)) {
+                deviceManager.updatePad(kitIndex, target.padNumber) { pad ->
+                    pad.copy(sub = pad.sub.copy(wave = info.waveNumber))
+                }
+                return
+            }
+        }
+    }
+
+    fun cancelWaveDrag() {
+        _dragInfo.value = null
+        _dragPosition.value = null
+    }
+
     fun toggleMainSub() {
         _selectedPad.value?.let { pad ->
             val newIsMain = !_isMainSelected.value

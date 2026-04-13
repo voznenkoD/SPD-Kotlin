@@ -4,13 +4,18 @@ import androidx.compose.foundation.ContextMenuArea
 import androidx.compose.foundation.ContextMenuItem
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.xebia.spdmanager.model.kit.Kit
@@ -49,7 +54,11 @@ fun ListsScreen(
     onClearDeleteError: () -> Unit = {},
     selectedTab: Int = 0,
     onSelectedTabChange: (Int) -> Unit = {},
-    selectedWaveNumber: Int? = null
+    selectedWaveNumber: Int? = null,
+    onStartWaveDrag: (waveNumber: Int, waveName: String) -> Unit = { _, _ -> },
+    onUpdateDragPosition: (Offset) -> Unit = {},
+    onEndWaveDrag: () -> Unit = {},
+    onCancelWaveDrag: () -> Unit = {}
 ) {
     var sortingMode by remember { mutableStateOf(SortingMode.BY_CATEGORY_NAME) }
     var showImportCategoryDialog by remember { mutableStateOf(false) }
@@ -108,7 +117,11 @@ fun ListsScreen(
                             sortingMenuItems,
                             onRequestImport,
                             onRequestDeleteWave,
-                            selectedWaveNumber
+                            selectedWaveNumber,
+                            onStartWaveDrag,
+                            onUpdateDragPosition,
+                            onEndWaveDrag,
+                            onCancelWaveDrag
                         )
 
                         SortingMode.BY_CATEGORY_NAME -> WaveListByCategory(
@@ -120,7 +133,11 @@ fun ListsScreen(
                             onRenameCategory,
                             onRequestImport,
                             onRequestDeleteWave,
-                            selectedWaveNumber
+                            selectedWaveNumber,
+                            onStartWaveDrag,
+                            onUpdateDragPosition,
+                            onEndWaveDrag,
+                            onCancelWaveDrag
                         )
 
                         SortingMode.BY_CATEGORY_NUM -> WaveListByCategory(
@@ -132,7 +149,11 @@ fun ListsScreen(
                             onRenameCategory,
                             onRequestImport,
                             onRequestDeleteWave,
-                            selectedWaveNumber
+                            selectedWaveNumber,
+                            onStartWaveDrag,
+                            onUpdateDragPosition,
+                            onEndWaveDrag,
+                            onCancelWaveDrag
                         )
                     }
                 }
@@ -223,7 +244,11 @@ fun WaveListByName(
     sortingMenuItems: () -> List<ContextMenuItem>,
     onRequestImport: () -> Unit,
     onRequestDeleteWave: (Int) -> Unit,
-    selectedWaveNumber: Int?
+    selectedWaveNumber: Int?,
+    onStartWaveDrag: (Int, String) -> Unit = { _, _ -> },
+    onUpdateDragPosition: (Offset) -> Unit = {},
+    onEndWaveDrag: () -> Unit = {},
+    onCancelWaveDrag: () -> Unit = {}
 ) {
     val listState = rememberLazyListState()
 
@@ -246,7 +271,11 @@ fun WaveListByName(
                 sortingMenuItems,
                 onRequestImport,
                 onRequestDeleteWave,
-                isHighlighted = wave.number == selectedWaveNumber
+                isHighlighted = wave.number == selectedWaveNumber,
+                onStartWaveDrag = onStartWaveDrag,
+                onUpdateDragPosition = onUpdateDragPosition,
+                onEndWaveDrag = onEndWaveDrag,
+                onCancelWaveDrag = onCancelWaveDrag
             )
         }
     }
@@ -262,7 +291,11 @@ fun WaveListByCategory(
     onRenameCategory: (String, String) -> Unit,
     onRequestImport: () -> Unit,
     onRequestDeleteWave: (Int) -> Unit,
-    selectedWaveNumber: Int?
+    selectedWaveNumber: Int?,
+    onStartWaveDrag: (Int, String) -> Unit = { _, _ -> },
+    onUpdateDragPosition: (Offset) -> Unit = {},
+    onEndWaveDrag: () -> Unit = {},
+    onCancelWaveDrag: () -> Unit = {}
 ) {
     val expandedCategories = remember { mutableStateMapOf<String, Boolean>().apply { put("Default", true) } }
     var renameDialogFor by remember { mutableStateOf<String?>(null) }
@@ -339,7 +372,11 @@ fun WaveListByCategory(
                         sortingMenuItems,
                         onRequestImport,
                         onRequestDeleteWave,
-                        isHighlighted = wave.number == selectedWaveNumber
+                        isHighlighted = wave.number == selectedWaveNumber,
+                        onStartWaveDrag = onStartWaveDrag,
+                        onUpdateDragPosition = onUpdateDragPosition,
+                        onEndWaveDrag = onEndWaveDrag,
+                        onCancelWaveDrag = onCancelWaveDrag
                     )
                 }
             }
@@ -476,10 +513,15 @@ private fun WaveListItem(
     sortingMenuItems: () -> List<ContextMenuItem>,
     onRequestImport: () -> Unit,
     onRequestDeleteWave: (Int) -> Unit,
-    isHighlighted: Boolean = false
+    isHighlighted: Boolean = false,
+    onStartWaveDrag: (Int, String) -> Unit = { _, _ -> },
+    onUpdateDragPosition: (Offset) -> Unit = {},
+    onEndWaveDrag: () -> Unit = {},
+    onCancelWaveDrag: () -> Unit = {}
 ) {
     val usedInKits = waveUsageMap[wave.number].orEmpty()
     val isUsed = usedInKits.isNotEmpty()
+    var itemWindowPosition by remember { mutableStateOf(Offset.Zero) }
 
     ContextMenuArea(
         items = {
@@ -501,20 +543,41 @@ private fun WaveListItem(
         } else {
             Color.White
         }
-        GenericListItemView(
-            item = wave,
-            onItemClicked = onItemSelected,
-            backgroundColor = backgroundColor
+        Box(
+            modifier = Modifier
+                .onGloballyPositioned { coords ->
+                    itemWindowPosition = coords.positionInWindow()
+                }
+                .pointerInput(wave.number, wave.name) {
+                    detectDragGesturesAfterLongPress(
+                        onDragStart = {
+                            onStartWaveDrag(wave.number, wave.name)
+                            onUpdateDragPosition(itemWindowPosition + it)
+                        },
+                        onDrag = { change, _ ->
+                            change.consume()
+                            onUpdateDragPosition(itemWindowPosition + change.position)
+                        },
+                        onDragEnd = { onEndWaveDrag() },
+                        onDragCancel = { onCancelWaveDrag() }
+                    )
+                }
         ) {
-            if (isUsed) {
-                Text(
-                    text = "● ",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF1976D2)
-                )
+            GenericListItemView(
+                item = wave,
+                onItemClicked = onItemSelected,
+                backgroundColor = backgroundColor
+            ) {
+                if (isUsed) {
+                    Text(
+                        text = "● ",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF1976D2)
+                    )
+                }
+                Text(text = "${wave.number}. ${wave.name}", fontSize = 18.sp)
             }
-            Text(text = "${wave.number}. ${wave.name}", fontSize = 18.sp)
         }
     }
 }
