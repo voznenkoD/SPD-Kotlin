@@ -6,7 +6,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import org.xebia.spdmanager.ui.theme.*
+import org.xebia.spdmanager.ui.theme.Typography
 import org.xebia.spdmanager.model.kit.fx.KitFX
 import org.xebia.spdmanager.model.system.fx.common.SyncSwitch
 import org.xebia.spdmanager.model.system.fx.subtypes.FXType
@@ -24,7 +25,7 @@ fun KitFXView(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("FX Enabled", fontSize = 16.sp)
+            Text("FX Enabled", fontSize = Typography.titleSize)
             Switch(
                 checked = kitFX.sw == SyncSwitch.ON,
                 onCheckedChange = { isEnabled ->
@@ -33,7 +34,12 @@ fun KitFXView(
                             sw = if (isEnabled) SyncSwitch.ON else SyncSwitch.OFF
                         )
                     )
-                }
+                },
+                colors = SwitchDefaults.colors(
+                    checkedTrackColor = ColorAccentOrange,
+                    uncheckedTrackColor = ColorDivider,
+                    checkedThumbColor = ColorBackground
+                )
             )
         }
 
@@ -42,8 +48,8 @@ fun KitFXView(
         if (kitFX.sw == SyncSwitch.OFF) {
             Text(
                 "FX Disabled",
-                fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                fontSize = Typography.bodySize,
+                color = ColorTextSecondary
             )
         } else {
             DropdownSelector(

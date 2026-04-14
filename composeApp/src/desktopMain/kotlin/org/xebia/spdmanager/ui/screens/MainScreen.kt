@@ -3,16 +3,14 @@ package org.xebia.spdmanager.ui.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import org.xebia.spdmanager.ui.theme.*
 import org.xebia.spdmanager.LocalDeviceManager
 import org.xebia.spdmanager.model.list.WaveListsHolder
 import org.xebia.spdmanager.service.DeviceManager
@@ -82,7 +80,7 @@ fun MainScreen() {
             Modifier
                 .weight(0.5f)
                 .fillMaxHeight()
-                .border(width = 2.dp, color = Color.DarkGray)
+                .border(width = 2.dp, color = ColorDivider)
         ) {
             val clipboardPad by mainViewModel.clipboardPad.collectAsState()
             PadScreen(
@@ -155,13 +153,13 @@ fun MainScreen() {
         Box(
             modifier = Modifier
                 .offset { IntOffset(currentDragPos.x.toInt() + 16, currentDragPos.y.toInt() - 16) }
-                .background(Color(0xDD333333), RoundedCornerShape(4.dp))
-                .padding(horizontal = 8.dp, vertical = 4.dp)
+                .background(ColorSurfaceSelected, ShapeCard)
+                .padding(horizontal = Spacing.xl, vertical = Spacing.m)
         ) {
             Text(
                 text = "${currentDragInfo.waveNumber}. ${currentDragInfo.waveName}",
-                color = Color.White,
-                fontSize = 12.sp
+                color = ColorTextOnAccent,
+                fontSize = Typography.captionSize
             )
         }
     }

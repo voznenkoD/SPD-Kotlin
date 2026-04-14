@@ -4,8 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import org.xebia.spdmanager.ui.theme.*
 import org.xebia.spdmanager.model.setup.*
 import org.xebia.spdmanager.model.system.fx.common.SyncSwitch
 import org.xebia.spdmanager.ui.components.common.DropdownSelector
@@ -26,7 +25,7 @@ fun SetupMidiView(setupConfig: SetupConfig, onUpdate: (SetupConfig) -> Unit) {
     var mstrFxCtrl1Cc by remember { mutableStateOf(setupConfig.mstrFxCtrl1Cc) } // MIDI CTRL slider (0..95)
     var mstrFxCtrl2Cc by remember { mutableStateOf(setupConfig.mstrFxCtrl2Cc) } // MIDI CTRL slider (0..95)
 
-    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+    Column(modifier = Modifier.fillMaxWidth().padding(Spacing.xxl)) {
         Row(modifier = Modifier.fillMaxWidth()) {
             DropdownSelector(
                 label = "MIDI Channel",
@@ -44,7 +43,7 @@ fun SetupMidiView(setupConfig: SetupConfig, onUpdate: (SetupConfig) -> Unit) {
         Row (
             modifier = Modifier
                 .weight(1f)
-                .height(60.dp)
+                .height(Heights.listItem)
         ) {
                 SwitchWithLabel("Local Control", localCtrl) {
                     localCtrl = SyncSwitch.fromBoolean(it);
@@ -65,7 +64,7 @@ fun SetupMidiView(setupConfig: SetupConfig, onUpdate: (SetupConfig) -> Unit) {
         Row(
             modifier = Modifier
                 .weight(1f)
-                .height(60.dp)
+                .height(Heights.listItem)
         ) {
             SwitchWithLabel("MIDI PC Control", midiPCCtrl) {
                 midiPCCtrl = SyncSwitch.fromBoolean(it);
@@ -78,7 +77,7 @@ fun SetupMidiView(setupConfig: SetupConfig, onUpdate: (SetupConfig) -> Unit) {
         }
 
 
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.xl)) {
             IntStepSliderWithLabel(
                 label = "MIDI FX Select CC",
                 value = midiFxSelCc,

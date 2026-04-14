@@ -2,12 +2,14 @@ package org.xebia.spdmanager.ui.components.pad
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import org.xebia.spdmanager.ui.theme.*
+import org.xebia.spdmanager.ui.theme.Typography
 import org.xebia.spdmanager.model.kit.pad.PadNumber
 import org.xebia.spdmanager.model.kit.pad.PadOutput
 import org.xebia.spdmanager.model.system.fx.common.SyncSwitch
@@ -32,7 +34,7 @@ fun PadDetailsScreen(
 
     if (pad == null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text("Pad not found", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            Text("Pad not found", fontSize = Typography.titleSize, fontWeight = FontWeight.Bold)
         }
         return
     }
@@ -88,12 +90,22 @@ fun PadDetailsScreen(
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        TabRow(selectedTabIndex = selectedTab) {
+        TabRow(
+            selectedTabIndex = selectedTab,
+            containerColor = ColorSurface,
+            contentColor = ColorTextPrimary,
+            indicator = { tabPositions ->
+                TabRowDefaults.SecondaryIndicator(
+                    Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
+                    color = ColorAccentOrange
+                )
+            }
+        ) {
             listOf("Mode", "MIDI").forEachIndexed { index, title ->
                 Tab(
                     selected = selectedTab == index,
                     onClick = { selectedTab = index },
-                    text = { Text(title) }
+                    text = { Text(title, color = if (selectedTab == index) ColorTextPrimary else ColorTextSecondary) }
                 )
             }
         }

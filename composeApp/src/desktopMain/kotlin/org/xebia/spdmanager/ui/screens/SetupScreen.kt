@@ -4,8 +4,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
+import org.xebia.spdmanager.ui.theme.*
 import org.xebia.spdmanager.LocalDeviceManager
 import org.xebia.spdmanager.ui.components.setup.PadSetupView
 import org.xebia.spdmanager.ui.components.setup.PadsSetupScreen
@@ -32,7 +31,7 @@ fun SetupScreen() {
     Column(modifier = Modifier.fillMaxSize()) {
         Row(modifier = Modifier.weight(0.6f).fillMaxWidth()) {
             Column(
-                modifier = Modifier.weight(0.2f).fillMaxHeight().border(width = 2.dp, color = Color.DarkGray)
+                modifier = Modifier.weight(0.2f).fillMaxHeight().border(width = Spacing.s, color = ColorDivider)
             ) {
                 SetupGeneralView(
                     setupConfig = setupConfig!!,
@@ -40,7 +39,7 @@ fun SetupScreen() {
                 )
             }
             Column(
-                modifier = Modifier.weight(0.5f).fillMaxHeight().border(width = 2.dp, color = Color.DarkGray)
+                modifier = Modifier.weight(0.5f).fillMaxHeight().border(width = Spacing.s, color = ColorDivider)
             ) {
                 PadsSetupScreen(
                     selectedPadNumber = selectedPadNumber,
@@ -48,7 +47,7 @@ fun SetupScreen() {
                 )
             }
             Column(
-                modifier = Modifier.weight(0.3f).fillMaxHeight().border(width = 2.dp, color = Color.DarkGray)
+                modifier = Modifier.weight(0.3f).fillMaxHeight().border(width = Spacing.s, color = ColorDivider)
             ) {
                 SetupMidiView(
                     setupConfig = setupConfig!!,
@@ -56,7 +55,7 @@ fun SetupScreen() {
                 )
             }
         }
-        Row(modifier = Modifier.weight(0.4f).fillMaxWidth().border(width = 2.dp, color = Color.DarkGray)) {
+        Row(modifier = Modifier.weight(0.4f).fillMaxWidth().border(width = Spacing.s, color = ColorDivider)) {
             val currentPadControl = padFsControl!![selectedPadNumber] ?: return@Row
 
             PadSetupView(

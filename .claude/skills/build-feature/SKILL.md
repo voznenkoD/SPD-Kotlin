@@ -331,3 +331,7 @@ Refer to `Map_Kit.md`, `Map_Pad.md`, `Map_Setup.md`, `Map_System.md` in the proj
 ## Suggested Test Plan
 
 Create test plan with detailed instructions and suggestions on tests and save it in ./test-plans/<the same name as feature file>.md .
+
+## UI guidelines
+
+Follow the design system defined in /ui-guidelines skill for all UI work.

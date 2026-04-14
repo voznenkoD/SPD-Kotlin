@@ -5,7 +5,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import org.xebia.spdmanager.ui.theme.*
+import org.xebia.spdmanager.ui.theme.Typography
 import org.xebia.spdmanager.model.system.fx.common.*
 import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
 import org.xebia.spdmanager.model.system.fx.subtypes.StepPHASR
@@ -19,8 +20,8 @@ fun StepPhaserView(
     fx: StepPHASR,
     onFxChange: (FxEffect) -> Unit
 ) {
-    Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
-        Text("Step Phaser", fontSize = 18.sp)
+    Column(modifier = Modifier.padding(Spacing.xxl).fillMaxWidth()) {
+        Text("Step Phaser", fontSize = Typography.titleSize)
 
         DropdownSelector(
             label = "Phaser Type",
@@ -30,7 +31,7 @@ fun StepPhaserView(
                 onFxChange(fx.copy(type = newType))
             }
         )
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.xl)) {
             ToggleSwitchWithLabel(
                 label = "Rate Sync Switch",
                 selectedItem = fx.rateSyncSW,
@@ -53,7 +54,7 @@ fun StepPhaserView(
         }
 
 
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.s)) {
             SliderWithLabel(
                 label = "Depth",
                 value = fx.depth.toFloat(),

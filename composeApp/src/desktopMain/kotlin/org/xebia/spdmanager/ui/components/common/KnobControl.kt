@@ -5,9 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.border
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -17,17 +15,15 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import org.xebia.spdmanager.ui.theme.*
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.cos
@@ -37,7 +33,6 @@ enum class KnobMode { Unipolar, Bipolar }
 
 private const val ARC_START = 135f
 private const val ARC_SWEEP = 270f
-private const val ARC_CENTER = ARC_START + ARC_SWEEP / 2f
 private const val DRAG_PIXELS_FOR_FULL_RANGE = 250f
 
 @Composable
@@ -51,8 +46,8 @@ fun KnobControl(
     valueDisplay: String? = null,
     modifier: Modifier = Modifier
 ) {
-    val primaryColor = MaterialTheme.colorScheme.primary
-    val trackColor = Color.Gray.copy(alpha = 0.3f)
+    val accentColor = ColorAccentOrange
+    val trackColor = ColorDivider
 
     val fraction = if (valueRange.endInclusive == valueRange.start) 0f
     else (value - valueRange.start) / (valueRange.endInclusive - valueRange.start)
@@ -67,25 +62,30 @@ fun KnobControl(
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
 
+    val scale = LocalScale.current
+    val knobSize = (48 * scale).dp
+    val columnWidth = (64 * scale).dp
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.width(80.dp).padding(4.dp)
+        modifier = modifier.width(columnWidth).padding(Spacing.m)
     ) {
         Text(
             text = label,
-            fontSize = 11.sp,
+            style = Typography.caption,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center,
+            color = ColorTextSecondary,
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(Modifier.height(2.dp))
+        Spacer(Modifier.height(Spacing.s))
 
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                .size(64.dp)
+                .size(knobSize)
                 .pointerInput(valueRange, steps) {
                     detectVerticalDragGestures { _, dragAmount ->
                         val range = valueRange.endInclusive - valueRange.start
@@ -100,8 +100,8 @@ fun KnobControl(
                     }
                 }
         ) {
-            Canvas(modifier = Modifier.fillMaxSize().padding(6.dp)) {
-                val strokeWidth = 6.dp.toPx()
+            Canvas(modifier = Modifier.fillMaxSize().padding((6 * scale).dp)) {
+                val strokeWidth = (6 * scale).dp.toPx()
                 val arcSize = Size(size.width - strokeWidth, size.height - strokeWidth)
                 val topLeft = Offset(strokeWidth / 2f, strokeWidth / 2f)
 
@@ -120,7 +120,7 @@ fun KnobControl(
                         val fillSweep = ARC_SWEEP * fraction
                         if (fillSweep > 0.5f) {
                             drawArc(
-                                color = primaryColor,
+                                color = accentColor,
                                 startAngle = ARC_START,
                                 sweepAngle = fillSweep,
                                 useCenter = false,
@@ -138,7 +138,7 @@ fun KnobControl(
                         val sweep = currentAngle - centerAngle
                         if (abs(sweep) > 0.5f) {
                             drawArc(
-                                color = primaryColor,
+                                color = accentColor,
                                 startAngle = if (sweep >= 0) centerAngle else currentAngle,
                                 sweepAngle = abs(sweep),
                                 useCenter = false,
@@ -156,8 +156,8 @@ fun KnobControl(
                 val cy = size.height / 2f
                 val radius = (arcSize.width / 2f)
                 drawCircle(
-                    color = primaryColor,
-                    radius = 4.dp.toPx(),
+                    color = accentColor,
+                    radius = (4 * scale).dp.toPx(),
                     center = Offset(
                         cx + radius * cos(angleRad),
                         cy + radius * sin(angleRad)
@@ -166,7 +166,7 @@ fun KnobControl(
             }
         }
 
-        Spacer(Modifier.height(2.dp))
+        Spacer(Modifier.height(Spacing.s))
 
         if (isEditing) {
             var hasBeenFocused by remember { mutableStateOf(false) }
@@ -174,11 +174,11 @@ fun KnobControl(
                 value = editText,
                 onValueChange = { editText = it },
                 singleLine = true,
-                textStyle = TextStyle(fontSize = 12.sp, textAlign = TextAlign.Center),
+                textStyle = Typography.mono.copy(textAlign = TextAlign.Center),
                 modifier = Modifier
-                    .width(60.dp)
-                    .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(4.dp))
-                    .padding(horizontal = 4.dp, vertical = 4.dp)
+                    .width((60 * scale).dp)
+                    .border(1.dp, ColorDivider, ShapeDefault)
+                    .padding(horizontal = Spacing.m, vertical = Spacing.m)
                     .focusRequester(focusRequester)
                     .onFocusChanged { state ->
                         if (state.isFocused) {
@@ -213,8 +213,9 @@ fun KnobControl(
         } else {
             Text(
                 text = displayText,
-                fontSize = 12.sp,
+                style = Typography.mono,
                 textAlign = TextAlign.Center,
+                color = ColorTextPrimary,
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable {

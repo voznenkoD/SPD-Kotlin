@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.layout.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import org.xebia.spdmanager.ui.theme.*
 import org.xebia.spdmanager.ui.components.common.ToggleSwitchWithLabel
 import org.xebia.spdmanager.ui.components.common.DropdownSelector
 import org.xebia.spdmanager.model.kit.pad.MidiParams
@@ -18,7 +18,7 @@ fun MidiParamsView(
     midiParams: MidiParams,
     onMidiParamsChange: (MidiParams) -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+    Column(modifier = Modifier.fillMaxWidth().padding(Spacing.xxl)) {
         DropdownSelector(
             label = "Pad Channel",
             selectedItem = midiParams.padCH,

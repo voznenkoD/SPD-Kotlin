@@ -5,7 +5,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import org.xebia.spdmanager.ui.theme.*
+import org.xebia.spdmanager.ui.theme.Typography
 import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
 import org.xebia.spdmanager.model.system.fx.subtypes.TapeEcho
 import org.xebia.spdmanager.model.system.fx.subtypes.TapeEchoMode
@@ -18,8 +19,8 @@ fun TapeEchoView(
     tapeEcho: TapeEcho,
     onFxChange: (FxEffect) -> Unit
 ) {
-    Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
-        Text("Tape Echo", fontSize = 18.sp)
+    Column(modifier = Modifier.padding(Spacing.xxl).fillMaxWidth()) {
+        Text("Tape Echo", fontSize = Typography.titleSize)
 
         ButtonRowCompact(
             label = "Mode",
@@ -30,7 +31,7 @@ fun TapeEchoView(
             }
         )
 
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.xl)) {
             SliderWithLabel(
                 label = "Level",
                 value = tapeEcho.level.toFloat(),
@@ -77,7 +78,7 @@ fun TapeEchoView(
             )
         }
 
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.xl)) {
             SliderWithLabel(
                 label = "Head S Pan",
                 value = tapeEcho.headSPan.toFloat(),
@@ -106,7 +107,7 @@ fun TapeEchoView(
             )
         }
 
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.xl)) {
             SliderWithLabel(
                 label = "Tape Distortion",
                 value = tapeEcho.tapeDist.toFloat(),

@@ -6,7 +6,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import org.xebia.spdmanager.ui.theme.*
+import org.xebia.spdmanager.ui.theme.Typography
 import org.xebia.spdmanager.model.system.fx.common.DelayType
 import org.xebia.spdmanager.model.system.fx.common.HighCut
 import org.xebia.spdmanager.model.system.fx.common.LowCut
@@ -23,12 +24,12 @@ fun StereoDelayView(
     stereoDelay: StereoDelay,
     onFxChange: (FxEffect) -> Unit
 ) {
-    Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
-        Text("Stereo Delay", fontSize = 18.sp)
+    Column(modifier = Modifier.padding(Spacing.xxl).fillMaxWidth()) {
+        Text("Stereo Delay", fontSize = Typography.titleSize)
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.xl),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(modifier = Modifier.weight(1f)) {
@@ -57,7 +58,7 @@ fun StereoDelayView(
             }
         }
 
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.xl)) {
             SliderWithLabel(
                 label = "Delay Time",
                 value = stereoDelay.delayTime.toFloat(),

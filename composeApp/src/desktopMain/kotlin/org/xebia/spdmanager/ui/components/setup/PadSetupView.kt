@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import org.xebia.spdmanager.ui.theme.*
 import org.xebia.spdmanager.model.setup.*
 import org.xebia.spdmanager.model.system.PadFsControl
 import org.xebia.spdmanager.ui.components.common.DropdownSelector
@@ -96,8 +97,8 @@ fun IntPadView(
     onUpdatePadControl: (PadFsControl) -> Unit
 ) {
     Row(modifier = Modifier.fillMaxSize()) {
-        Column(modifier = Modifier.weight(0.4f).padding(16.dp)) {
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(modifier = Modifier.weight(0.4f).padding(Spacing.xxl)) {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.xl)) {
                 IntStepSliderWithLabel(
                     label = "Sensitivity",
                     value = intPad.sens,
@@ -137,7 +138,7 @@ fun IntPadView(
                 )
             }
         }
-        Column(modifier = Modifier.weight(0.6f).padding(16.dp)) {
+        Column(modifier = Modifier.weight(0.6f).padding(Spacing.xxl)) {
             // Additional controls can be added here if needed
         }
     }
@@ -152,8 +153,8 @@ fun ExtPadView(
     onUpdatePadControl: (PadFsControl) -> Unit
 ) {
     Row(modifier = Modifier.fillMaxSize()) {
-        Column(modifier = Modifier.weight(0.55f).padding(16.dp)) {
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(modifier = Modifier.weight(0.55f).padding(Spacing.xxl)) {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.xl)) {
                 IntStepSliderWithLabel(
                     label = "Sensitivity",
                     value = extPad.sens,
@@ -194,7 +195,7 @@ fun ExtPadView(
             }
         }
 
-        Column(modifier = Modifier.weight(0.10f).padding(16.dp)) {
+        Column(modifier = Modifier.weight(0.10f).padding(Spacing.xxl)) {
             DropdownSelector(
                 label = "Input Mode",
                 selectedItem = extPad.inputMode,
@@ -214,8 +215,8 @@ fun ExtPadView(
             )
         }
 
-        Column(modifier = Modifier.weight(0.35f).padding(16.dp)) {
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(modifier = Modifier.weight(0.35f).padding(Spacing.xxl)) {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.xl)) {
                 IntStepSliderWithLabel(
                     label = "Scan Time (ms)",
                     value = extPad.scanTime,
@@ -264,7 +265,7 @@ fun FootSwitchView(
     onUpdatePolarity: (FootSwitchPolarity) -> Unit,
     onUpdatePadControl: (PadFsControl) -> Unit
 ) {
-    Row(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Row(modifier = Modifier.fillMaxSize().padding(Spacing.xxl)) {
         Column(modifier = Modifier.width(200.dp)) {
             DropdownSelector(
                 label = "Polarity",

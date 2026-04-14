@@ -6,12 +6,12 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import org.xebia.spdmanager.ui.theme.*
 import org.xebia.spdmanager.model.system.fx.common.*
 import org.xebia.spdmanager.model.system.fx.mainTypes.DelayEffect
 import org.xebia.spdmanager.model.system.fx.mainTypes.DelayPreset
@@ -24,8 +24,8 @@ fun DelayEffectView(
     delayEffect: DelayEffect,
     onDelayChange: (DelayEffect) -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-        Text("Delay Effect", style = MaterialTheme.typography.titleMedium)
+    Column(modifier = Modifier.fillMaxWidth().padding(Spacing.xxl)) {
+        Text("Delay Effect", style = Typography.title, color = ColorTextPrimary)
 
         ButtonRowCompact(
             label = "Preset",
@@ -36,7 +36,7 @@ fun DelayEffectView(
             }
         )
 
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(Spacing.xl)) {
             ToggleSwitchWithLabel(
                 label = "Type",
                 selectedItem = delayEffect.type,
@@ -85,7 +85,12 @@ fun DelayEffectView(
                         delayTime = newDelayTime
                     )
                 )
-            }
+            },
+            colors = SwitchDefaults.colors(
+                checkedTrackColor = ColorAccentOrange,
+                uncheckedTrackColor = ColorDivider,
+                checkedThumbColor = ColorBackground
+            )
         )
 
         if (delayEffect.syncSW == SyncSwitch.ON) {

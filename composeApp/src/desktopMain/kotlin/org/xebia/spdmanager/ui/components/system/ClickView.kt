@@ -4,8 +4,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
+import org.xebia.spdmanager.ui.theme.ColorSurface
+import org.xebia.spdmanager.ui.theme.ColorSurfaceSelected
+import org.xebia.spdmanager.ui.theme.ColorTextOnDark
+import org.xebia.spdmanager.ui.theme.ColorTextPrimary
+import org.xebia.spdmanager.ui.theme.Spacing
+import org.xebia.spdmanager.ui.theme.Typography as AppTypography
 import org.xebia.spdmanager.model.Wave
 import org.xebia.spdmanager.model.system.*
 import org.xebia.spdmanager.ui.components.common.DropdownSelector
@@ -18,19 +22,19 @@ fun ClickView(
     waves: List<Wave>,
     onUpdate: (ClickConfig) -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-        Text("Sound Group", style = MaterialTheme.typography.bodyLarge)
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(modifier = Modifier.fillMaxWidth().padding(Spacing.xxl)) {
+        Text("Sound Group", style = AppTypography.title, color = ColorTextPrimary)
+        Row(horizontalArrangement = Arrangement.spacedBy(Spacing.xl)) {
             SoundGroup.entries.forEach { group ->
                 Button(
                     onClick = {
                         onUpdate(clickConfig.copy(soundGroup = group))
                     },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (clickConfig.soundGroup == group) Color.Gray else Color.LightGray
+                        containerColor = if (clickConfig.soundGroup == group) ColorSurfaceSelected else ColorSurface
                     )
                 ) {
-                    Text(group.name)
+                    Text(group.name, color = if (clickConfig.soundGroup == group) ColorTextOnDark else ColorTextPrimary)
                 }
             }
         }
@@ -67,7 +71,7 @@ fun ClickView(
             items = Interval.entries.toList()
         )
 
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.xl)) {
             ClickPanSlider("Pan", clickConfig.clickPan) { pan ->
                 onUpdate(clickConfig.copy(clickPan = pan))
             }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import org.xebia.spdmanager.ui.theme.*
 import org.xebia.spdmanager.model.system.fx.subtypes.FXType
 import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
 import org.xebia.spdmanager.ui.components.common.DropdownSelector
@@ -16,7 +17,7 @@ fun FxEffectView(
     fx: FxEffect,
     onFxChange: (FxEffect) -> Unit
 ) {
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(modifier = Modifier.padding(Spacing.xxl)) {
         DropdownSelector(
             label = "FX Type",
             selectedItem = fx.fxType,
@@ -28,7 +29,7 @@ fun FxEffectView(
             width = 200.dp
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(Spacing.xl))
 
         fx.renderEditableParameters(onFxChange)
     }

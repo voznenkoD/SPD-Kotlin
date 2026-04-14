@@ -1,20 +1,27 @@
 package org.xebia.spdmanager
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.window.*
 import org.xebia.spdmanager.service.DeviceManager
 import org.xebia.spdmanager.service.openFolderDialog
 import org.xebia.spdmanager.ui.screens.MainScreen
 import org.xebia.spdmanager.ui.screens.SetupScreen
 import org.xebia.spdmanager.ui.screens.SystemScreen
+import org.xebia.spdmanager.ui.theme.BASE_WIDTH
+import org.xebia.spdmanager.ui.theme.ColorBackground
+import org.xebia.spdmanager.ui.theme.LocalScale
 
 fun main() = application {
     val deviceManager = remember { DeviceManager() }
 
     CompositionLocalProvider(LocalDeviceManager provides deviceManager) {
         Window(title = "SPD Manager", onCloseRequest = ::exitApplication) {
+            var scaleFactor by remember { mutableFloatStateOf(1f) }
             MenuBar {
                 Menu("File", mnemonic = 'F') {
                     Item("Choose folder", onClick = {
@@ -32,14 +39,23 @@ fun main() = application {
                     Item("System", onClick = { AppState.currentScreen = Screen.System })
                 }
             }
-            App()
+            CompositionLocalProvider(LocalScale provides scaleFactor) {
+                App(onMeasured = { widthPx -> scaleFactor = (widthPx / BASE_WIDTH).coerceIn(0.75f, 1.5f) })
+            }
         }
     }
 }
 
 @Composable
-fun App() {
-    Box(modifier = Modifier.fillMaxSize()) {
+fun App(onMeasured: (Float) -> Unit = {}) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(ColorBackground)
+            .onGloballyPositioned { coords ->
+                onMeasured(coords.size.width.toFloat())
+            }
+    ) {
         when (AppState.currentScreen) {
             Screen.Main -> MainScreen()
             Screen.Setup -> SetupScreen()

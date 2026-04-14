@@ -5,7 +5,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import org.xebia.spdmanager.ui.theme.*
+import org.xebia.spdmanager.ui.theme.Typography
 import org.xebia.spdmanager.model.system.fx.common.*
 import org.xebia.spdmanager.model.system.fx.subtypes.Distortion
 import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
@@ -18,8 +19,8 @@ fun DistortionView(
     distortion: Distortion,
     onFxChange: (FxEffect) -> Unit
 ) {
-    Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
-        Text("Distortion", fontSize = 18.sp)
+    Column(modifier = Modifier.padding(Spacing.xxl).fillMaxWidth()) {
+        Text("Distortion", fontSize = Typography.titleSize)
 
         DropdownSelector(
             label = "Distortion Type",
@@ -30,7 +31,7 @@ fun DistortionView(
             }
         )
 
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.xl)) {
             SliderWithLabel(
                 label = "Drive",
                 value = distortion.drive.toFloat(),

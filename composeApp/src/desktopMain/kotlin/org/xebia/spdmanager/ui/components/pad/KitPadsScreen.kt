@@ -5,11 +5,9 @@ import androidx.compose.foundation.ContextMenuItem
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -17,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.layout.boundsInWindow
@@ -25,7 +22,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import org.xebia.spdmanager.ui.theme.*
 import org.xebia.spdmanager.model.kit.Kit
 import org.xebia.spdmanager.model.kit.pad.Pad
 import org.xebia.spdmanager.model.kit.pad.PadNumber
@@ -48,102 +45,58 @@ fun PadScreen(
     onUnregisterPadBounds: (PadNumber) -> Unit = {}
 ) {
     if (kit != null) {
-        Surface(
-            color = Color.Gray,
+        val padEntries = kit.pads.entries.sortedBy { it.key.value }
+        val mainPads = padEntries.filter { (key, _) -> key in PadNumber.PAD_1..PadNumber.PAD_9 }
+        val trigPads = padEntries.filter { (key, _) -> key in PadNumber.TRIG_1..PadNumber.TRIG_4 }
+        val fsPads = padEntries.filter { (key, _) -> key in PadNumber.FS_1..PadNumber.FS_2 }
+
+        Column(
             modifier = Modifier
-                .padding(8.dp)
-                .height(800.dp)
+                .fillMaxWidth()
+                .padding(Spacing.s)
+                .background(ColorBackground),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(3),
-                    modifier = Modifier.weight(0.75f)
-                ) {
-                    items(
-                        kit.pads.entries
-                            .filter { (key, _) -> key in PadNumber.PAD_1..PadNumber.PAD_9 }
-                            .sortedBy { it.key.value }
-                    ) { (padNumber, pad) ->
-                        PadItem(
-                            pad = pad,
-                            padNumber = padNumber,
-                            onSelect = onSelect,
-                            isSelected = padNumber == selectedPadNumber,
-                            isMainSelected = isMainSelected,
-                            onCopyPad = onCopyPad,
-                            onPastePad = onPastePad,
-                            onRemoveWave = onRemoveWave,
-                            onRemoveSubWave = onRemoveSubWave,
-                            hasCopiedPad = hasCopiedPad,
-                            waveNameLookup = waveNameLookup,
-                            isDragActive = isDragActive,
-                            dragPosition = dragPosition,
-                            onRegisterPadBounds = onRegisterPadBounds,
-                            onUnregisterPadBounds = onUnregisterPadBounds
-                        )
+            mainPads.chunked(3).forEach { rowPads ->
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    rowPads.forEach { (padNumber, pad) ->
+                        Box(modifier = Modifier.weight(2f)) {
+                            PadItem(pad, padNumber, onSelect,
+                                isSelected = padNumber == selectedPadNumber, isMainSelected = isMainSelected,
+                                onCopyPad = onCopyPad, onPastePad = onPastePad,
+                                onRemoveWave = onRemoveWave, onRemoveSubWave = onRemoveSubWave,
+                                hasCopiedPad = hasCopiedPad, waveNameLookup = waveNameLookup,
+                                isDragActive = isDragActive, dragPosition = dragPosition,
+                                onRegisterPadBounds = onRegisterPadBounds, onUnregisterPadBounds = onUnregisterPadBounds)
+                        }
                     }
                 }
+            }
 
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(4),
-                    modifier = Modifier.weight(0.25f)
-                ) {
-                    items(
-                        kit.pads.entries
-                            .filter { (key, _) -> key in PadNumber.TRIG_1..PadNumber.TRIG_4 }
-                            .sortedBy { it.key.value }
-                    ) { (padNumber, pad) ->
-                        PadItem(
-                            pad = pad,
-                            padNumber = padNumber,
-                            onSelect = onSelect,
-                            isSelected = padNumber == selectedPadNumber,
-                            isMainSelected = isMainSelected,
-                            onCopyPad = onCopyPad,
-                            onPastePad = onPastePad,
-                            onRemoveWave = onRemoveWave,
-                            onRemoveSubWave = onRemoveSubWave,
-                            hasCopiedPad = hasCopiedPad,
-                            waveNameLookup = waveNameLookup,
-                            isDragActive = isDragActive,
-                            dragPosition = dragPosition,
-                            onRegisterPadBounds = onRegisterPadBounds,
-                            onUnregisterPadBounds = onUnregisterPadBounds
-                        )
+            Row(modifier = Modifier.fillMaxWidth()) {
+                trigPads.forEach { (padNumber, pad) ->
+                    Box(modifier = Modifier.weight(2f)) {
+                        PadItem(pad, padNumber, onSelect, isFS = true,
+                            isSelected = padNumber == selectedPadNumber, isMainSelected = isMainSelected,
+                            onCopyPad = onCopyPad, onPastePad = onPastePad,
+                            onRemoveWave = onRemoveWave, onRemoveSubWave = onRemoveSubWave,
+                            hasCopiedPad = hasCopiedPad, waveNameLookup = waveNameLookup,
+                            isDragActive = isDragActive, dragPosition = dragPosition,
+                            onRegisterPadBounds = onRegisterPadBounds, onUnregisterPadBounds = onUnregisterPadBounds)
                     }
                 }
+            }
 
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    modifier = Modifier.weight(0.15f)
-                ) {
-                    items(
-                        kit.pads.entries
-                            .filter { (key, _) -> key in PadNumber.FS_1..PadNumber.FS_2 }
-                            .sortedBy { it.key.value }
-                    ) { (padNumber, pad) ->
-                        PadItem(
-                            pad = pad,
-                            padNumber = padNumber,
-                            onSelect = onSelect,
-                            isFS = true,
-                            isSelected = padNumber == selectedPadNumber,
-                            isMainSelected = isMainSelected,
-                            onCopyPad = onCopyPad,
-                            onPastePad = onPastePad,
-                            onRemoveWave = onRemoveWave,
-                            onRemoveSubWave = onRemoveSubWave,
-                            hasCopiedPad = hasCopiedPad,
-                            waveNameLookup = waveNameLookup,
-                            isDragActive = isDragActive,
-                            dragPosition = dragPosition,
-                            onRegisterPadBounds = onRegisterPadBounds,
-                            onUnregisterPadBounds = onUnregisterPadBounds
-                        )
+            Row(modifier = Modifier.fillMaxWidth(0.8f)) {
+                fsPads.forEach { (padNumber, pad) ->
+                    Box(modifier = Modifier.weight(2f)) {
+                        PadItem(pad, padNumber, onSelect, isFS = true,
+                            isSelected = padNumber == selectedPadNumber, isMainSelected = isMainSelected,
+                            onCopyPad = onCopyPad, onPastePad = onPastePad,
+                            onRemoveWave = onRemoveWave, onRemoveSubWave = onRemoveSubWave,
+                            hasCopiedPad = hasCopiedPad, waveNameLookup = waveNameLookup,
+                            isDragActive = isDragActive, dragPosition = dragPosition,
+                            onRegisterPadBounds = onRegisterPadBounds, onUnregisterPadBounds = onUnregisterPadBounds)
                     }
                 }
             }
@@ -171,9 +124,9 @@ fun PadItem(
     onUnregisterPadBounds: (PadNumber) -> Unit = {}
 ) {
     val backgroundColor = if (isSelected) {
-        Color(0x88B71C1C)
+        ColorSurfaceSelected
     } else {
-        Color.DarkGray
+        ColorSurface
     }
 
     var mainBounds by remember { mutableStateOf(Rect.Zero) }
@@ -204,10 +157,9 @@ fun PadItem(
     ) {
     Surface(
         color = backgroundColor,
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(6.dp),
         modifier = Modifier
-            .height(if (isFS) 80.dp else 160.dp)
-            .then(if (isFS) Modifier.width(180.dp) else Modifier)
+            .height(if (isFS) 120.dp else 185.dp)
             .padding(4.dp)
             .pointerHoverIcon(PointerIcon.Hand)
     ) {
@@ -221,7 +173,7 @@ fun PadItem(
                         onRegisterPadBounds(padNumber, mainBounds, subBounds)
                     }
                     .clickable { onSelect(padNumber, true) }
-                    .then(if (mainHovered) Modifier.background(Color(0x4400CC00)) else Modifier)
+                    .then(if (mainHovered) Modifier.background(ColorAccentYellow.copy(alpha = 0.3f)) else Modifier)
                     .then(
                         if (isSelected && isMainSelected) {
                             Modifier.padding(2.dp)
@@ -234,16 +186,20 @@ fun PadItem(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        color = if (isSelected && isMainSelected) Color.White else Color.LightGray,
+                        color = when {
+                            isSelected && isMainSelected -> ColorTextOnDark
+                            isSelected -> ColorDivider
+                            else -> ColorTextSecondary
+                        },
                         text = waveNameLookup(pad.main.wave) ?: "----",
-                        fontSize = 14.sp,
+                        fontSize = Typography.bodySize,
                         fontWeight = if (isSelected && isMainSelected) FontWeight.Bold else FontWeight.Normal
                     )
                 }
             }
 
-            Divider(
-                color = if (isSelected) Color.Yellow else Color.Red,
+            HorizontalDivider(
+                color = if (isSelected) ColorAccentYellow else ColorAccentOrange,
                 thickness = 2.dp
             )
 
@@ -256,7 +212,7 @@ fun PadItem(
                         onRegisterPadBounds(padNumber, mainBounds, subBounds)
                     }
                     .clickable { onSelect(padNumber, false) }
-                    .then(if (subHovered) Modifier.background(Color(0x4400CC00)) else Modifier)
+                    .then(if (subHovered) Modifier.background(ColorAccentYellow.copy(alpha = 0.3f)) else Modifier)
                     .then(
                         if (isSelected && !isMainSelected) {
                             Modifier.padding(2.dp)
@@ -269,9 +225,13 @@ fun PadItem(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        color = if (isSelected && !isMainSelected) Color.White else Color.LightGray,
+                        color = when {
+                            isSelected && !isMainSelected -> ColorTextOnDark
+                            isSelected -> ColorDivider
+                            else -> ColorTextSecondary
+                        },
                         text = waveNameLookup(pad.sub.wave) ?: "----",
-                        fontSize = 14.sp,
+                        fontSize = Typography.bodySize,
                         fontWeight = if (isSelected && !isMainSelected) FontWeight.Bold else FontWeight.Normal
                     )
                 }
@@ -283,10 +243,10 @@ fun PadItem(
             ) {
                 Text(
                     text = padNumber.name.replace("_", " "),
-                    color = if (isSelected) Color.Yellow else Color.LightGray,
-                    fontSize = 12.sp,
+                    color = if (isSelected) ColorAccentYellow else ColorTextSecondary,
+                    fontSize = Typography.captionSize,
                     textAlign = TextAlign.End,
-                    modifier = Modifier.padding(4.dp)
+                    modifier = Modifier.padding(Spacing.m)
                 )
             }
         }

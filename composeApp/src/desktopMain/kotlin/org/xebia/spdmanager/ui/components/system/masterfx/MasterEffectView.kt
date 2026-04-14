@@ -2,9 +2,10 @@ package org.xebia.spdmanager.ui.components.system.masterfx
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import org.xebia.spdmanager.ui.theme.*
 import org.xebia.spdmanager.model.system.fx.MasterEffectConfig
 
 @Composable
@@ -15,17 +16,27 @@ fun MasterEffectView(
     var selectedTab by remember { mutableStateOf(0) }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        TabRow(selectedTabIndex = selectedTab) {
+        TabRow(
+            selectedTabIndex = selectedTab,
+            containerColor = ColorSurface,
+            contentColor = ColorTextPrimary,
+            indicator = { tabPositions ->
+                TabRowDefaults.SecondaryIndicator(
+                    Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
+                    color = ColorAccentOrange
+                )
+            }
+        ) {
             listOf("Filter", "Delay", "S.Loop", "FX").forEachIndexed { index, title ->
                 Tab(
                     selected = selectedTab == index,
                     onClick = { selectedTab = index },
-                    text = { Text(title) }
+                    text = { Text(title, color = if (selectedTab == index) ColorTextPrimary else ColorTextSecondary) }
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(Spacing.xxl))
 
         when (selectedTab) {
             0 -> FilterEffectView(

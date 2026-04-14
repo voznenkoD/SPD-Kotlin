@@ -4,7 +4,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import org.xebia.spdmanager.ui.theme.ColorTextPrimary
+import org.xebia.spdmanager.ui.theme.Spacing
+import org.xebia.spdmanager.ui.theme.Typography as AppTypography
 import org.xebia.spdmanager.model.system.FxOutput
 import org.xebia.spdmanager.model.system.Output
 import org.xebia.spdmanager.model.system.SystemAudioConfig
@@ -20,11 +22,11 @@ fun AudioView(
     audioConfig: SystemAudioConfig,
     onUpdate: (SystemAudioConfig) -> Unit
 ) {
-    Row(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-        Column(modifier = Modifier.weight(1f).padding(8.dp)) {
-            Text("Audio Settings")
+    Row(modifier = Modifier.fillMaxWidth().padding(Spacing.xxl)) {
+        Column(modifier = Modifier.weight(1f).padding(Spacing.xl)) {
+            Text("Audio Settings", style = AppTypography.title, color = ColorTextPrimary)
 
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.xl)) {
                 IntStepSliderWithLabel(
                     label = "Audio In Volume",
                     value = audioConfig.audioInVolume,
@@ -83,10 +85,10 @@ fun AudioView(
             }
         }
 
-        Column(modifier = Modifier.weight(1f).padding(8.dp)) {
-            Text("System EQ")
+        Column(modifier = Modifier.weight(1f).padding(Spacing.xl)) {
+            Text("System EQ", style = AppTypography.title, color = ColorTextPrimary)
 
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.xl)) {
                 SliderWithLabel(
                     label = "Low Gain (dB)",
                     value = audioConfig.systemEq.lowGain,
@@ -99,22 +101,7 @@ fun AudioView(
                         )
                     }
                 )
-            }
 
-            DropdownSelector(
-                label = "Mid Frequency",
-                selectedItem = audioConfig.systemEq.midFreq,
-                onItemSelected = { freq ->
-                    onUpdate(
-                        audioConfig.copy(
-                            systemEq = audioConfig.systemEq.copy(midFreq = freq)
-                        )
-                    )
-                },
-                items = EqFreq.entries.toList()
-            )
-
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 SliderWithLabel(
                     label = "Mid Gain (dB)",
                     value = audioConfig.systemEq.midGain,
@@ -141,6 +128,19 @@ fun AudioView(
                     }
                 )
             }
+
+            DropdownSelector(
+                label = "Mid Frequency",
+                selectedItem = audioConfig.systemEq.midFreq,
+                onItemSelected = { freq ->
+                    onUpdate(
+                        audioConfig.copy(
+                            systemEq = audioConfig.systemEq.copy(midFreq = freq)
+                        )
+                    )
+                },
+                items = EqFreq.entries.toList()
+            )
         }
     }
 }

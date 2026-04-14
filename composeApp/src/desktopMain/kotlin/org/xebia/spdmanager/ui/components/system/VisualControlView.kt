@@ -5,7 +5,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import org.xebia.spdmanager.ui.theme.*
+import org.xebia.spdmanager.ui.theme.Typography as AppTypography
 import org.xebia.spdmanager.model.system.fx.common.SyncSwitch
 import org.xebia.spdmanager.model.system.vControl.Bank
 import org.xebia.spdmanager.model.system.vControl.KnobCC
@@ -18,9 +19,9 @@ fun VisualControlView(
     visualControl: VisualControl,
     onUpdate: (VisualControl) -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+    Column(modifier = Modifier.fillMaxWidth().padding(Spacing.xxl)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("Visual Control: ")
+            Text("Visual Control: ", style = AppTypography.title, color = ColorTextPrimary)
             Switch(
                 checked = visualControl.visualControlSwitch == SyncSwitch.ON,
                 onCheckedChange = { isChecked ->
@@ -29,7 +30,12 @@ fun VisualControlView(
                             visualControlSwitch = if (isChecked) SyncSwitch.ON else SyncSwitch.OFF
                         )
                     )
-                }
+                },
+                colors = SwitchDefaults.colors(
+                    checkedTrackColor = ColorAccentOrange,
+                    uncheckedTrackColor = ColorDivider,
+                    checkedThumbColor = ColorBackground
+                )
             )
         }
 

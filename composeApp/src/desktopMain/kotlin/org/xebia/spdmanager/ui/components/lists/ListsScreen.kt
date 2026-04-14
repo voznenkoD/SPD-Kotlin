@@ -9,17 +9,18 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.*
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.xebia.spdmanager.model.kit.Kit
-import androidx.compose.ui.unit.sp
+import org.xebia.spdmanager.ui.theme.*
+import org.xebia.spdmanager.ui.theme.Typography
 import org.xebia.spdmanager.model.list.Category
 import org.xebia.spdmanager.model.list.ListedWave
 import org.xebia.spdmanager.model.list.WaveListsHolder
@@ -72,12 +73,22 @@ fun ListsScreen(
         }
     }
 
-    Column(modifier = Modifier.fillMaxSize().padding(3.dp).border(width = 1.dp, color = Color.Black)) {
-        TabRow(selectedTabIndex = selectedTab) {
+    Column(modifier = Modifier.fillMaxSize().padding(Spacing.s).border(width = 1.dp, color = ColorDivider)) {
+        TabRow(
+            selectedTabIndex = selectedTab,
+            containerColor = ColorSurface,
+            contentColor = ColorTextPrimary,
+            indicator = { tabPositions ->
+                TabRowDefaults.SecondaryIndicator(
+                    Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
+                    color = ColorAccentOrange
+                )
+            }
+        ) {
             Tab(
                 selected = selectedTab == 0,
                 onClick = { onSelectedTabChange(0) },
-                text = { Text(text = "Kits", style = MaterialTheme.typography.titleSmall) }
+                text = { Text(text = "Kits", style = Typography.body, color = if (selectedTab == 0) ColorTextPrimary else ColorTextSecondary) }
             )
             ContextMenuArea(items = sortingMenuItems) {
                 Tab(
@@ -86,7 +97,8 @@ fun ListsScreen(
                     text = {
                         Text(
                             text = "Waves (${sortingMode.displayName})",
-                            style = MaterialTheme.typography.titleSmall
+                            style = Typography.body,
+                            color = if (selectedTab == 1) ColorTextPrimary else ColorTextSecondary
                         )
                     }
                 )
@@ -178,10 +190,13 @@ fun ListsScreen(
     if (importError != null) {
         AlertDialog(
             onDismissRequest = onClearImportError,
+            containerColor = ColorSurface,
+            titleContentColor = ColorTextPrimary,
+            textContentColor = ColorTextPrimary,
             title = { Text("Import failed") },
             text = { Text(importError) },
             confirmButton = {
-                TextButton(onClick = onClearImportError) { Text("OK") }
+                TextButton(onClick = onClearImportError) { Text("OK", color = ColorAccentOrange) }
             }
         )
     }
@@ -204,10 +219,13 @@ fun ListsScreen(
     if (deleteError != null) {
         AlertDialog(
             onDismissRequest = onClearDeleteError,
+            containerColor = ColorSurface,
+            titleContentColor = ColorTextPrimary,
+            textContentColor = ColorTextPrimary,
             title = { Text("Delete failed") },
             text = { Text(deleteError) },
             confirmButton = {
-                TextButton(onClick = onClearDeleteError) { Text("OK") }
+                TextButton(onClick = onClearDeleteError) { Text("OK", color = ColorAccentOrange) }
             }
         )
     }
@@ -351,12 +369,12 @@ fun WaveListByCategory(
                     ) {
                         Text(
                             text = category.name,
-                            fontSize = 20.sp,
+                            fontSize = Typography.titleSize,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
                             text = if (isCollapsed) "▶" else "▼",
-                            fontSize = 16.sp
+                            fontSize = Typography.bodySize
                         )
                     }
                 }
@@ -411,14 +429,17 @@ private fun ImportCategoryDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        containerColor = ColorSurface,
+        titleContentColor = ColorTextPrimary,
+        textContentColor = ColorTextPrimary,
         title = { Text("Import Wave") },
         text = {
             Column {
-                Text("Select target category:", fontSize = 14.sp)
+                Text("Select target category:", fontSize = Typography.bodySize)
                 Spacer(Modifier.height(8.dp))
                 Box {
                     TextButton(onClick = { expanded = true }) {
-                        Text(selected.ifBlank { "(choose category)" })
+                        Text(selected.ifBlank { "(choose category)" }, color = ColorAccentOrange)
                     }
                     DropdownMenu(
                         expanded = expanded,
@@ -441,10 +462,10 @@ private fun ImportCategoryDialog(
             TextButton(
                 onClick = { onConfirm(selected) },
                 enabled = selected.isNotBlank()
-            ) { Text("Continue") }
+            ) { Text("Continue", color = ColorAccentOrange) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
+            TextButton(onClick = onDismiss) { Text("Cancel", color = ColorTextSecondary) }
         }
     )
 }
@@ -472,6 +493,9 @@ private fun RenameCategoryDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        containerColor = ColorSurface,
+        titleContentColor = ColorTextPrimary,
+        textContentColor = ColorTextPrimary,
         title = { Text("Rename Category") },
         text = {
             Column {
@@ -480,14 +504,21 @@ private fun RenameCategoryDialog(
                     onValueChange = { if (it.length <= 12) input = it },
                     singleLine = true,
                     isError = errorMessage != null,
-                    label = { Text("Category name") }
+                    label = { Text("Category name") },
+                    colors = TextFieldDefaults.colors(
+                        unfocusedContainerColor = ColorSurface,
+                        focusedContainerColor = ColorBackground,
+                        focusedIndicatorColor = ColorAccentOrange,
+                        unfocusedIndicatorColor = ColorDivider,
+                        cursorColor = ColorAccentOrange
+                    )
                 )
                 if (errorMessage != null) {
                     Spacer(Modifier.height(4.dp))
                     Text(
                         text = errorMessage,
-                        color = MaterialTheme.colorScheme.error,
-                        fontSize = 12.sp
+                        color = ColorAccentOrange,
+                        fontSize = Typography.captionSize
                     )
                 }
             }
@@ -496,10 +527,10 @@ private fun RenameCategoryDialog(
             TextButton(
                 onClick = { onConfirm(trimmed) },
                 enabled = isValid
-            ) { Text("OK") }
+            ) { Text("OK", color = ColorAccentOrange) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
+            TextButton(onClick = onDismiss) { Text("Cancel", color = ColorTextSecondary) }
         }
     )
 }
@@ -539,9 +570,9 @@ private fun WaveListItem(
         }
     ) {
         val backgroundColor = if (isHighlighted) {
-            MaterialTheme.colorScheme.secondaryContainer
+            ColorSurfaceSelected
         } else {
-            Color.White
+            ColorSurface
         }
         Box(
             modifier = Modifier
@@ -571,12 +602,12 @@ private fun WaveListItem(
                 if (isUsed) {
                     Text(
                         text = "● ",
-                        fontSize = 18.sp,
+                        fontSize = Typography.bodySize,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1976D2)
+                        color = ColorAccentOrange
                     )
                 }
-                Text(text = "${wave.number}. ${wave.name}", fontSize = 18.sp)
+                Text(text = "${wave.number}. ${wave.name}", fontSize = Typography.bodySize)
             }
         }
     }
@@ -590,28 +621,31 @@ private fun DeleteWaveConfirmDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
+        containerColor = ColorSurface,
+        titleContentColor = ColorTextPrimary,
+        textContentColor = ColorTextPrimary,
         title = { Text("Delete wave?") },
         text = {
             Column {
                 Text(
                     text = "Wave #${info.waveNumber} \"${info.waveName}\" will be permanently deleted.",
-                    fontSize = 14.sp
+                    fontSize = Typography.bodySize
                 )
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(Spacing.xl))
                 Text(
                     text = "Both the .spd parameter file and the .wav audio payload will be removed from disk. This action cannot be undone.",
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.error
+                    fontSize = Typography.captionSize,
+                    color = ColorAccentOrange
                 )
             }
         },
         confirmButton = {
             TextButton(onClick = onConfirm) {
-                Text("Delete", color = MaterialTheme.colorScheme.error)
+                Text("Delete", color = ColorAccentOrange)
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
+            TextButton(onClick = onDismiss) { Text("Cancel", color = ColorTextSecondary) }
         }
     )
 }
@@ -623,23 +657,26 @@ private fun WaveInUseDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
+        containerColor = ColorSurface,
+        titleContentColor = ColorTextPrimary,
+        textContentColor = ColorTextPrimary,
         title = { Text("Cannot delete wave") },
         text = {
             Column {
                 Text(
                     text = "Wave \"${info.waveName}\" is in use and cannot be deleted.",
-                    fontSize = 14.sp
+                    fontSize = Typography.bodySize
                 )
-                Spacer(Modifier.height(8.dp))
-                Text(text = "Used in:", fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                Spacer(Modifier.height(4.dp))
+                Spacer(Modifier.height(Spacing.xl))
+                Text(text = "Used in:", fontSize = Typography.captionSize, fontWeight = FontWeight.Bold)
+                Spacer(Modifier.height(Spacing.m))
                 info.kitNames.forEach { kitName ->
-                    Text(text = "• $kitName", fontSize = 12.sp)
+                    Text(text = "• $kitName", fontSize = Typography.captionSize)
                 }
             }
         },
         confirmButton = {
-            TextButton(onClick = onDismiss) { Text("OK") }
+            TextButton(onClick = onDismiss) { Text("OK", color = ColorAccentOrange) }
         }
     )
 }

@@ -2,11 +2,12 @@ package org.xebia.spdmanager.ui.components.system
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
+import org.xebia.spdmanager.ui.theme.*
+import org.xebia.spdmanager.ui.theme.Typography as AppTypography
 import org.xebia.spdmanager.model.KitChain
 import org.xebia.spdmanager.model.kit.Kit
 import org.xebia.spdmanager.model.kit.Kit.Companion.formatKitNumber
@@ -20,13 +21,23 @@ fun KitChainView(
 ) {
     var selectedTab by remember { mutableStateOf(kitChains.keys.firstOrNull() ?: 'A') }
 
-    Column(modifier = Modifier.fillMaxSize().padding(8.dp)) {
-        TabRow(selectedTabIndex = kitChains.keys.indexOf(selectedTab)) {
+    Column(modifier = Modifier.fillMaxSize().padding(Spacing.xl)) {
+        TabRow(
+            selectedTabIndex = kitChains.keys.indexOf(selectedTab),
+            containerColor = ColorSurface,
+            contentColor = ColorTextPrimary,
+            indicator = { tabPositions ->
+                TabRowDefaults.SecondaryIndicator(
+                    Modifier.tabIndicatorOffset(tabPositions[kitChains.keys.indexOf(selectedTab)]),
+                    color = ColorAccentOrange
+                )
+            }
+        ) {
             kitChains.keys.forEach { key ->
                 Tab(
                     selected = key == selectedTab,
                     onClick = { selectedTab = key },
-                    text = { Text(key.toString(), fontWeight = FontWeight.Bold) }
+                    text = { Text(key.toString(), fontWeight = FontWeight.Bold, color = if (key == selectedTab) ColorTextPrimary else ColorTextSecondary) }
                 )
             }
         }
@@ -34,8 +45,9 @@ fun KitChainView(
         kitChains[selectedTab]?.let { kitChain ->
             Text(
                 text = kitChain.name,
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(vertical = 8.dp)
+                style = AppTypography.title,
+                color = ColorTextPrimary,
+                modifier = Modifier.padding(vertical = Spacing.xl)
             )
 
             val mappedKits = kitChain.kitRefs.mapIndexedNotNull { remappedIndex, refIndex ->
@@ -55,7 +67,8 @@ fun KitChainView(
                     content = { mappedKit ->
                         Text(
                             "${"%02d".format(mappedKit.first)}    ${formatKitNumber(mappedKit.second)}  ${mappedKit.third.name} ${mappedKit.third.subName}",
-                            fontFamily = FontFamily.Monospace
+                            style = AppTypography.mono,
+                            color = ColorTextPrimary
                         )
                     }
                 )

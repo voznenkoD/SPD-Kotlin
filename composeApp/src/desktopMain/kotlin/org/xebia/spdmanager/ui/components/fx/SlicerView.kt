@@ -4,9 +4,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import org.xebia.spdmanager.ui.theme.*
+import org.xebia.spdmanager.ui.theme.Typography
 import org.xebia.spdmanager.model.system.fx.common.*
 import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
 import org.xebia.spdmanager.model.system.fx.subtypes.Slicer
@@ -19,10 +19,10 @@ fun SlicerView(
     slicer: Slicer,
     onFxChange: (FxEffect) -> Unit
 ) {
-    Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
-        Text("Slicer", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+    Column(modifier = Modifier.padding(Spacing.xxl).fillMaxWidth()) {
+        Text("Slicer", fontSize = Typography.titleSize)
 
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.xl)) {
             ToggleSwitchWithLabel(
                 label = "Rate Sync",
                 selectedItem = slicer.rateSync,

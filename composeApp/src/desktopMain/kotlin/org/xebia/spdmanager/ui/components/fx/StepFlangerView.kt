@@ -5,7 +5,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import org.xebia.spdmanager.ui.theme.*
+import org.xebia.spdmanager.ui.theme.Typography
 import org.xebia.spdmanager.model.system.fx.common.*
 import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
 import org.xebia.spdmanager.model.system.fx.subtypes.StepFLNGR
@@ -19,12 +20,12 @@ fun StepFlangerView(
     fx: StepFLNGR,
     onFxChange: (FxEffect) -> Unit
 ) {
-    Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
-        Text("Step Flanger", fontSize = 18.sp)
+    Column(modifier = Modifier.padding(Spacing.xxl).fillMaxWidth()) {
+        Text("Step Flanger", fontSize = Typography.titleSize)
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(Spacing.xl)
         ) {
             Box(modifier = Modifier.weight(1f)) {
                 ToggleSwitchWithLabel(
@@ -50,7 +51,7 @@ fun StepFlangerView(
             }
         }
 
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.xl)) {
             SliderWithLabel(
                 label = "Depth",
                 value = fx.depth.toFloat(),
@@ -88,7 +89,7 @@ fun StepFlangerView(
             }
         )
 
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.xl)) {
             SliderWithLabel(
                 label = "Effect Level",
                 value = fx.effectLevel.toFloat(),

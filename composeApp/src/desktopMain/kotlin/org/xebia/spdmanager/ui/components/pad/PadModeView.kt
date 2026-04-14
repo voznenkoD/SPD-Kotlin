@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import org.xebia.spdmanager.ui.theme.*
 import org.xebia.spdmanager.model.kit.pad.mode.*
 import org.xebia.spdmanager.model.system.fx.common.*
 import org.xebia.spdmanager.ui.components.common.ButtonRowCompact
@@ -17,8 +17,8 @@ fun PadModeView(
     onPadModeChange: (PadMode) -> Unit
 ) {
     FlowRow(
-        modifier = Modifier.fillMaxWidth().padding(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        modifier = Modifier.fillMaxWidth().padding(Spacing.xxl),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.xl)
     ) {
         ButtonRowCompact(
             label = "Template",
@@ -40,7 +40,7 @@ fun PadModeView(
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.xl),
             verticalAlignment = Alignment.CenterVertically
         ) {
 

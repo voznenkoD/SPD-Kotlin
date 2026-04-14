@@ -5,7 +5,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import org.xebia.spdmanager.ui.theme.*
+import org.xebia.spdmanager.ui.theme.Typography
 import org.xebia.spdmanager.model.system.fx.common.*
 import org.xebia.spdmanager.model.system.fx.subtypes.Flanger
 import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
@@ -19,8 +20,8 @@ fun FlangerView(
     fx: Flanger,
     onFxChange: (FxEffect) -> Unit
 ) {
-    Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
-        Text("Flanger", fontSize = 18.sp)
+    Column(modifier = Modifier.padding(Spacing.xxl).fillMaxWidth()) {
+        Text("Flanger", fontSize = Typography.titleSize)
 
         ToggleSwitchWithLabel(
             label = "Rate Sync",
@@ -32,7 +33,7 @@ fun FlangerView(
             }
         )
 
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.xl)) {
             SliderWithLabel(
                 label = "Manual",
                 value = fx.manual.toFloat(),

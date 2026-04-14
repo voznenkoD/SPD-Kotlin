@@ -6,31 +6,32 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import org.xebia.spdmanager.ui.theme.*
 
 @Composable
 fun <T> GenericListItemView(
     item: T,
     onItemClicked: (T) -> Unit,
-    backgroundColor: Color = Color.White,
+    backgroundColor: Color = ColorSurface,
     content: @Composable (T) -> Unit
 ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 4.dp)
-            .border(BorderStroke(1.dp, Color.Gray), shape = RoundedCornerShape(4.dp))
+            .padding(bottom = Spacing.s)
+            .border(BorderStroke(0.5.dp, ColorDivider), shape = ShapeDefault)
             .clickable { onItemClicked(item) },
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(backgroundColor)
-                .padding(8.dp),
+                .height(Heights.listItem)
+                .background(backgroundColor, shape = ShapeDefault)
+                .padding(horizontal = Spacing.l),
             verticalAlignment = Alignment.CenterVertically
         ) {
             content(item)

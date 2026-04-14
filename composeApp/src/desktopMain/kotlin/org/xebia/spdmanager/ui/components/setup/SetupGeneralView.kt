@@ -3,7 +3,7 @@ package org.xebia.spdmanager.ui.components.setup
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import org.xebia.spdmanager.ui.theme.*
 import org.xebia.spdmanager.model.setup.SetupConfig
 import org.xebia.spdmanager.model.setup.PadIndication
 import org.xebia.spdmanager.model.setup.DispMode
@@ -17,8 +17,8 @@ import org.xebia.spdmanager.ui.components.common.SwitchWithLabel
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SetupGeneralView(setupConfig: SetupConfig, onUpdate: (SetupConfig) -> Unit) {
-    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(modifier = Modifier.fillMaxWidth().padding(Spacing.xxl)) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.xl)) {
             SliderWithLabel(
                 label = "LCD Contrast",
                 value = setupConfig.lcdContrast.toFloat(),
@@ -48,7 +48,7 @@ fun SetupGeneralView(setupConfig: SetupConfig, onUpdate: (SetupConfig) -> Unit) 
             onItemSelected = { onUpdate(setupConfig.copy(dispMode = it)) }
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(Spacing.xxl))
 
         SwitchWithLabel(
             label = "Tempo Indication",

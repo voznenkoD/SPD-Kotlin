@@ -11,18 +11,16 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import org.xebia.spdmanager.model.kit.Kit
+import org.xebia.spdmanager.ui.theme.*
 
 @Composable
 fun KitListView(
@@ -74,9 +72,9 @@ fun KitListView(
                         .border(
                             BorderStroke(
                                 if (isDropTarget) 2.dp else 1.dp,
-                                if (isDropTarget) Color.Blue else Color.Gray
+                                if (isDropTarget) ColorAccentOrange else ColorDivider
                             ),
-                            shape = RoundedCornerShape(4.dp)
+                            shape = ShapeCard
                         )
                         .pointerInput(kits) {
                             detectDragGesturesAfterLongPress(
@@ -119,15 +117,15 @@ fun KitListView(
                             .fillMaxWidth()
                             .background(
                                 when {
-                                    isDragged -> Color(0xFFE3F2FD)
-                                    isDropTarget -> Color(0xFFBBDEFB)
-                                    else -> Color.White
+                                    isDragged -> ColorSurfaceHover
+                                    isDropTarget -> ColorAccentYellow
+                                    else -> ColorSurface
                                 }
                             )
-                            .padding(8.dp),
+                            .padding(Spacing.xl),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(text = kit.name, fontSize = 18.sp)
+                        Text(text = kit.name, fontSize = Typography.bodySize)
                     }
                 }
             }

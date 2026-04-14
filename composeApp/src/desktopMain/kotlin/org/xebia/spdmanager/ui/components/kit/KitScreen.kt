@@ -1,12 +1,16 @@
 package org.xebia.spdmanager.ui.components.kit
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.*
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import org.xebia.spdmanager.ui.theme.*
+import org.xebia.spdmanager.ui.theme.Typography
 import org.xebia.spdmanager.model.kit.Kit
 import org.xebia.spdmanager.model.kit.fx.KitFX
 import org.xebia.spdmanager.model.kit.pad.Pad
@@ -46,19 +50,31 @@ fun KitScreen(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+            horizontalArrangement = Arrangement.spacedBy(Spacing.s)
         ) {
-            Text("Name: ", fontSize = 14.sp, modifier = Modifier.weight(0.5f))
-            TextField(
+            Text("Name:", style = Typography.caption, color = ColorTextSecondary)
+            BasicTextField(
                 value = kit.name,
                 onValueChange = viewModel::updateName,
-                modifier = Modifier.weight(1f)
+                singleLine = true,
+                textStyle = Typography.body.copy(color = ColorTextPrimary),
+                modifier = Modifier
+                    .weight(1f)
+                    .height(Heights.button)
+                    .border(1.dp, ColorDivider, ShapeDefault)
+                    .padding(horizontal = Spacing.l, vertical = Spacing.m)
             )
-            Text("Sub Name: ", fontSize = 14.sp, modifier = Modifier.weight(0.5f))
-            TextField(
+            Text("Sub:", style = Typography.caption, color = ColorTextSecondary)
+            BasicTextField(
                 value = kit.subName,
                 onValueChange = viewModel::updateSubName,
-                modifier = Modifier.weight(1f)
+                singleLine = true,
+                textStyle = Typography.body.copy(color = ColorTextPrimary),
+                modifier = Modifier
+                    .weight(1f)
+                    .height(Heights.button)
+                    .border(1.dp, ColorDivider, ShapeDefault)
+                    .padding(horizontal = Spacing.l, vertical = Spacing.m)
             )
         }
 
@@ -104,13 +120,21 @@ fun KitScreen(
 
         TabRow(
             selectedTabIndex = selectedTabIndex,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            containerColor = ColorSurface,
+            contentColor = ColorTextPrimary,
+            indicator = { tabPositions ->
+                TabRowDefaults.SecondaryIndicator(
+                    Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]),
+                    color = ColorAccentOrange
+                )
+            }
         ) {
             Tab(selected = selectedTabIndex == 0, onClick = { selectedTabIndex = 0 }) {
-                Text("FX1", modifier = Modifier.padding(8.dp))
+                Text("FX1", modifier = Modifier.padding(8.dp), color = if (selectedTabIndex == 0) ColorTextPrimary else ColorTextSecondary)
             }
             Tab(selected = selectedTabIndex == 1, onClick = { selectedTabIndex = 1 }) {
-                Text("FX2", modifier = Modifier.padding(8.dp))
+                Text("FX2", modifier = Modifier.padding(8.dp), color = if (selectedTabIndex == 1) ColorTextPrimary else ColorTextSecondary)
             }
         }
 
@@ -138,12 +162,22 @@ fun DetailsTabs(
     var selectedTab by remember { mutableStateOf(0) }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        TabRow(selectedTabIndex = selectedTab) {
+        TabRow(
+            selectedTabIndex = selectedTab,
+            containerColor = ColorSurface,
+            contentColor = ColorTextPrimary,
+            indicator = { tabPositions ->
+                TabRowDefaults.SecondaryIndicator(
+                    Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
+                    color = ColorAccentOrange
+                )
+            }
+        ) {
             Tab(selected = selectedTab == 0, onClick = { selectedTab = 0 }) {
-                Text("Kit", modifier = Modifier.padding(8.dp))
+                Text("Kit", modifier = Modifier.padding(8.dp), color = if (selectedTab == 0) ColorTextPrimary else ColorTextSecondary)
             }
             Tab(selected = selectedTab == 1, onClick = { selectedTab = 1 }) {
-                Text("Pad", modifier = Modifier.padding(8.dp))
+                Text("Pad", modifier = Modifier.padding(8.dp), color = if (selectedTab == 1) ColorTextPrimary else ColorTextSecondary)
             }
         }
 

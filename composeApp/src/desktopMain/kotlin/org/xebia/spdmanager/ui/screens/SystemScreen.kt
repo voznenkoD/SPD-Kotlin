@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import org.xebia.spdmanager.ui.theme.*
 import org.xebia.spdmanager.LocalDeviceManager
 import org.xebia.spdmanager.ui.components.common.SelectFolderButton
 import org.xebia.spdmanager.ui.components.system.AudioView
@@ -47,14 +47,14 @@ fun SystemScreen() {
                 .fillMaxHeight(),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Box(modifier = Modifier.weight(0.6f).border(width = 2.dp, color = Color.DarkGray)) {
+            Box(modifier = Modifier.weight(0.6f).border(width = Spacing.s, color = ColorDivider)) {
                 ClickView(
                     clickConfig = config.clickConfig,
                     waves = waves,
                     onUpdate = systemViewModel::updateClickConfig
                 )
             }
-            Box(modifier = Modifier.weight(0.4f).border(width = 2.dp, color = Color.DarkGray)) {
+            Box(modifier = Modifier.weight(0.4f).border(width = Spacing.s, color = ColorDivider)) {
                 VisualControlView(
                     visualControl = config.visualControl,
                     onUpdate = systemViewModel::updateVisualControl
@@ -62,13 +62,13 @@ fun SystemScreen() {
             }
         }
         Column(modifier = Modifier.weight(0.65f)) {
-            Row(modifier = Modifier.weight(0.65f).border(width = 2.dp, color = Color.DarkGray)) {
+            Row(modifier = Modifier.weight(0.75f).border(width = Spacing.s, color = ColorDivider)) {
                 MasterEffectView(
                     masterEffectConfig = config.masterEffectConfig,
                     onUpdate = systemViewModel::updateMasterEffectConfig
                 )
             }
-            Row(modifier = Modifier.weight(0.35f).border(width = 2.dp, color = Color.DarkGray)) {
+            Row(modifier = Modifier.weight(0.25f).border(width = Spacing.s, color = ColorDivider)) {
                 AudioView(
                     audioConfig = config.systemAudioConfig,
                     onUpdate = systemViewModel::updateSystemAudioConfig
@@ -79,7 +79,7 @@ fun SystemScreen() {
             modifier = Modifier
                 .weight(0.20f)
                 .fillMaxHeight()
-                .border(width = 2.dp, color = Color.DarkGray)
+                .border(width = Spacing.s, color = ColorDivider)
         ) {
             KitChainView(
                 kitChains = config.kitChains,

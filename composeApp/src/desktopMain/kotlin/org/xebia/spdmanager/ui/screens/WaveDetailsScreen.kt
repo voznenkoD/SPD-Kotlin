@@ -4,8 +4,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import org.xebia.spdmanager.ui.theme.*
+import org.xebia.spdmanager.ui.theme.Typography as AppTypography
 import org.xebia.spdmanager.audioplayer.SingleFilePlayer
 import org.xebia.spdmanager.audioplayer.readWavFile
 import org.xebia.spdmanager.model.Device
@@ -35,8 +35,8 @@ fun WaveDetailsScreen(wave: Wave?, device: Device?) {
     }
 
     if (wave == null || waveformData == null) {
-        Column(modifier = Modifier.fillMaxSize().padding(8.dp)) {
-            Text("No wave selected", fontSize = 18.sp)
+        Column(modifier = Modifier.fillMaxSize().padding(Spacing.xl)) {
+            Text("No wave selected", style = AppTypography.title, color = ColorTextSecondary)
         }
         return
     }
@@ -59,7 +59,7 @@ fun WaveDetailsScreen(wave: Wave?, device: Device?) {
 
     Column(modifier = Modifier
         .fillMaxSize()
-        .padding(8.dp)) {
+        .padding(Spacing.xl)) {
 
         DisplayWaveformWithGrid(
             waveformData = waveformData,
@@ -81,31 +81,39 @@ fun WaveDetailsScreen(wave: Wave?, device: Device?) {
         )
 
         // Row with play, stop, and zoom controls
-        Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
-            Text(text = "Start:", fontSize = 16.sp, modifier = Modifier.weight(1f))
-            Text(text = wave.start.toString(), fontSize = 16.sp, modifier = Modifier.weight(2f))
+        Row(modifier = Modifier.fillMaxWidth().padding(vertical = Spacing.m)) {
+            Text(text = "Start:", style = AppTypography.body, color = ColorTextSecondary, modifier = Modifier.weight(1f))
+            Text(text = wave.start.toString(), style = AppTypography.body, color = ColorTextPrimary, modifier = Modifier.weight(2f))
 
-            Text(text = "End:", fontSize = 16.sp, modifier = Modifier.weight(1f))
-            Text(text = wave.end.toString(), fontSize = 16.sp, modifier = Modifier.weight(2f))
+            Text(text = "End:", style = AppTypography.body, color = ColorTextSecondary, modifier = Modifier.weight(1f))
+            Text(text = wave.end.toString(), style = AppTypography.body, color = ColorTextPrimary, modifier = Modifier.weight(2f))
 
             // Play button
-            Button(onClick = {
-                SingleFilePlayer.play(File(filePath))
-                isPlaying = true
-            }) {
+            Button(
+                onClick = {
+                    SingleFilePlayer.play(File(filePath))
+                    isPlaying = true
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = ColorAccentOrange, contentColor = ColorTextOnAccent),
+                shape = ShapeDefault
+            ) {
                 Text("Play")
             }
 
             // Stop button
-            Button(onClick = {
-                SingleFilePlayer.stop()
-                isPlaying = false
-            }) {
+            Button(
+                onClick = {
+                    SingleFilePlayer.stop()
+                    isPlaying = false
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = ColorAccentOrange, contentColor = ColorTextOnAccent),
+                shape = ShapeDefault
+            ) {
                 Text("Stop")
             }
 
-            Button(onClick = { zoomLevel *= 1.25f }) { Text("+") }
-            Button(onClick = { zoomLevel /= 1.25f }) { Text("-") }
+            Button(onClick = { zoomLevel *= 1.25f }, colors = ButtonDefaults.buttonColors(containerColor = ColorAccentOrange, contentColor = ColorTextOnAccent), shape = ShapeDefault) { Text("+") }
+            Button(onClick = { zoomLevel /= 1.25f }, colors = ButtonDefaults.buttonColors(containerColor = ColorAccentOrange, contentColor = ColorTextOnAccent), shape = ShapeDefault) { Text("-") }
 
         }
     }

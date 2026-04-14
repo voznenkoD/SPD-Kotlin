@@ -6,7 +6,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import org.xebia.spdmanager.ui.theme.*
+import org.xebia.spdmanager.ui.theme.Typography
 import org.xebia.spdmanager.model.system.fx.common.*
 import org.xebia.spdmanager.model.system.fx.subtypes.Compressor
 import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
@@ -20,8 +21,8 @@ fun CompressorView(
     fx: Compressor,
     onFxChange: (FxEffect) -> Unit
 ) {
-    Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
-        Text("Compressor Settings", fontSize = 18.sp)
+    Column(modifier = Modifier.padding(Spacing.xxl).fillMaxWidth()) {
+        Text("Compressor Settings", fontSize = Typography.titleSize)
 
         ToggleSwitchWithLabel(
             label = "Knee",
@@ -35,7 +36,7 @@ fun CompressorView(
             onLabel = "Hard"
         )
 
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.m)) {
             SliderWithLabel(
                 label = "Threshold",
                 value = fx.threshold,

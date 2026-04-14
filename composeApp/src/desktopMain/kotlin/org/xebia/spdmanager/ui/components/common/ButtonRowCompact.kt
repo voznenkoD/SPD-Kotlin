@@ -7,10 +7,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import org.xebia.spdmanager.ui.theme.*
 
 @Composable
 fun <T : Enum<T>> ButtonRowCompact(
@@ -20,23 +18,24 @@ fun <T : Enum<T>> ButtonRowCompact(
     onItemSelected: (T) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        Text(label, fontSize = 14.sp, modifier = Modifier.padding(bottom = 4.dp))
+        Text(label, style = Typography.label, color = ColorTextSecondary, modifier = Modifier.padding(bottom = Spacing.m))
 
-        Row(horizontalArrangement = Arrangement.spacedBy(2.dp), modifier = Modifier.fillMaxWidth()) {
+        Row(horizontalArrangement = Arrangement.spacedBy(Spacing.s), modifier = Modifier.fillMaxWidth()) {
             items.forEach { item ->
                 Button(
                     onClick = { onItemSelected(item) },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (selectedItem == item) Color.Gray else Color.LightGray
+                        containerColor = if (selectedItem == item) ColorAccentOrange else ColorSurface,
+                        contentColor = if (selectedItem == item) ColorTextOnAccent else ColorTextPrimary
                     ),
                     contentPadding = PaddingValues(0.dp),
-                    shape = RectangleShape,
+                    shape = ShapeDefault,
                     modifier = Modifier
                         .weight(1f)
-                        .height(32.dp)
+                        .height(Heights.button)
                 ) {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text(item.toString(), fontSize = 10.sp)
+                        Text(item.toString(), style = Typography.caption)
                     }
                 }
             }

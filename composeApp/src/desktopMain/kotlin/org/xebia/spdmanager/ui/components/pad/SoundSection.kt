@@ -5,6 +5,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import org.xebia.spdmanager.ui.theme.*
 import org.xebia.spdmanager.LocalDeviceManager
 import org.xebia.spdmanager.model.Wave
 import org.xebia.spdmanager.model.kit.pad.Sound
@@ -18,7 +19,7 @@ fun SoundSection(
     sound: Sound,
     onSoundChange: (Sound) -> Unit
 ) {
-    Column(modifier = Modifier.padding(vertical = 3.dp)) {
+    Column(modifier = Modifier.padding(vertical = Spacing.s)) {
         val waves = LocalDeviceManager.current.device?.waves?.sortedBy { wave: Wave -> wave.number } ?: emptyList()
 
         val selectedWave = waves.firstOrNull { it.number == sound.wave }
@@ -40,7 +41,7 @@ fun SoundSection(
             Text("$title: No waves available")
         }
 
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.xl)) {
             SliderWithLabel(
                 label = "Volume",
                 value = sound.volume.toFloat(),

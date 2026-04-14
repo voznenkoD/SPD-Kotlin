@@ -1,19 +1,19 @@
 package org.xebia.spdmanager.ui.components.common
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import org.xebia.spdmanager.ui.theme.*
 
 @Composable
 fun <T> DropdownSelector(
@@ -21,32 +21,36 @@ fun <T> DropdownSelector(
     selectedItem: T,
     onItemSelected: (T) -> Unit,
     items: List<T>,
-    content: @Composable (T) -> Unit = { item -> Text(item.toString()) },
+    content: @Composable (T) -> Unit = { item -> Text(item.toString(), style = Typography.body, color = ColorTextPrimary) },
     width: Dp = 150.dp
 ) {
     var expanded by remember { mutableStateOf(false) }
 
     Column(Modifier.width(width)) {
-        Text(label, fontSize = 14.sp, modifier = Modifier.padding(bottom = 4.dp))
+        Text(label, style = Typography.label, color = ColorTextSecondary, modifier = Modifier.padding(bottom = Spacing.s))
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .border(BorderStroke(1.dp, Color.DarkGray), shape = RoundedCornerShape(4.dp))
-                .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(4.dp))
+                .height(Heights.control)
+                .border(BorderStroke(1.dp, ColorDivider), shape = ShapeDefault)
+                .background(ColorSurface, shape = ShapeDefault)
                 .clickable { expanded = true }
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(horizontal = Spacing.l, vertical = Spacing.s),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(modifier = Modifier.weight(1f)) {
                 content(selectedItem)
             }
-            Text("▼", fontSize = 10.sp, color = Color.DarkGray)
+            Text("▼", style = Typography.caption, color = ColorTextSecondary)
         }
 
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            modifier = Modifier.border(BorderStroke(1.dp, Color.DarkGray)).width(width)
+            modifier = Modifier
+                .border(BorderStroke(1.dp, ColorDivider))
+                .background(ColorSurface)
+                .width(width)
         ) {
             items.forEach { item ->
                 DropdownMenuItem(
@@ -60,4 +64,3 @@ fun <T> DropdownSelector(
         }
     }
 }
-

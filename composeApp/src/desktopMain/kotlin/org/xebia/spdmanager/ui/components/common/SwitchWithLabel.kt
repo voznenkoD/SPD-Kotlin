@@ -1,7 +1,6 @@
 package org.xebia.spdmanager.ui.components.common
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -10,8 +9,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import org.xebia.spdmanager.model.system.fx.common.SyncSwitch
+import org.xebia.spdmanager.ui.theme.*
 
 @Composable
 fun SwitchWithLabel(label: String, syncSwitch: SyncSwitch, onValueChange: (Boolean) -> Unit) {
@@ -38,25 +37,33 @@ fun <T : Enum<T>> ToggleSwitchWithLabel(
 ) {
     val isOn = selectedItem == onItem
     val defaults = SwitchDefaults.colors()
-    val switchColors = if (colored) defaults else {
+    val switchColors = if (colored) {
+        SwitchDefaults.colors(
+            checkedTrackColor = ColorAccentOrange,
+            uncheckedTrackColor = ColorDivider,
+            checkedThumbColor = ColorBackground
+        )
+    } else {
         SwitchDefaults.colors(
             checkedTrackColor = defaults.uncheckedTrackColor,
             checkedThumbColor = defaults.uncheckedThumbColor,
-            checkedBorderColor = defaults.uncheckedBorderColor
+            checkedBorderColor = defaults.uncheckedBorderColor,
+            uncheckedTrackColor = ColorDivider
         )
     }
-    Column(modifier = Modifier.width(180.dp).padding(vertical = 4.dp)) {
+    Column(modifier = Modifier.width(180.dp).padding(vertical = Spacing.m)) {
         Text(
             text = "$label: ${selectedItem.name}",
-            fontSize = 12.sp,
-            modifier = Modifier.padding(bottom = 2.dp)
+            style = Typography.label,
+            color = ColorTextSecondary,
+            modifier = Modifier.padding(bottom = Spacing.s)
         )
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = offLabel,
-                fontSize = 12.sp,
+                style = Typography.label,
                 fontWeight = if (!isOn) FontWeight.Bold else FontWeight.Normal,
-                color = if (!isOn) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                color = if (!isOn) ColorAccentOrange else ColorTextDisabled
             )
             Switch(
                 checked = isOn,
@@ -64,13 +71,13 @@ fun <T : Enum<T>> ToggleSwitchWithLabel(
                     onItemSelected(if (checked) onItem else offItem)
                 },
                 colors = switchColors,
-                modifier = Modifier.padding(horizontal = 4.dp)
+                modifier = Modifier.padding(horizontal = Spacing.m)
             )
             Text(
                 text = onLabel,
-                fontSize = 12.sp,
+                style = Typography.label,
                 fontWeight = if (isOn) FontWeight.Bold else FontWeight.Normal,
-                color = if (isOn) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                color = if (isOn) ColorAccentOrange else ColorTextDisabled
             )
         }
     }

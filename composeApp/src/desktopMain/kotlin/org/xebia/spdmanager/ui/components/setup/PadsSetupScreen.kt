@@ -12,13 +12,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.xebia.spdmanager.model.kit.pad.PadNumber
+import org.xebia.spdmanager.ui.theme.*
 
 @Composable
 fun PadsSetupScreen(
@@ -28,7 +28,7 @@ fun PadsSetupScreen(
     val pads = PadNumber.entries
 
     Surface(
-        color = Color.Gray,
+        color = ColorBackground,
         modifier = Modifier.height(500.dp)
     ) {
         Column(
@@ -96,9 +96,9 @@ fun PadItem(
     isFS: Boolean = false
 ) {
     Surface(
-        color = if (isSelected) Color.Yellow else Color.DarkGray,
+        color = if (isSelected) ColorAccentYellow else ColorSurface,
         shape = RoundedCornerShape(8.dp),
-        border = if (isSelected) BorderStroke(2.dp, Color.White) else null,
+        border = if (isSelected) BorderStroke(2.dp, ColorAccentOrange) else null,
         modifier = Modifier
             .height(if (isFS) 50.dp else 100.dp)
             .then(if (isFS) Modifier.width(30.dp) else Modifier.width(20.dp))
@@ -112,7 +112,7 @@ fun PadItem(
         ) {
             Text(
                 text = padNumber.name.replace("_", " "),
-                color = if (isSelected) Color.Black else Color.Yellow,
+                color = if (isSelected) ColorTextPrimary else ColorAccentYellow,
                 fontSize = 20.sp,
                 textAlign = TextAlign.End,
                 modifier = Modifier.padding(4.dp)

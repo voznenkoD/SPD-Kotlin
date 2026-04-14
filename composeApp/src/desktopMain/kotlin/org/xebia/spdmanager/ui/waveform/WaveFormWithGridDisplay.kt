@@ -17,6 +17,7 @@ import org.jetbrains.skia.Paint
 import org.jetbrains.skia.Font
 import org.jetbrains.skia.TextLine
 import org.xebia.spdmanager.audioplayer.WaveformData
+import org.xebia.spdmanager.ui.theme.ColorTextPrimary
 import kotlin.math.roundToInt
 
 @Composable
@@ -46,7 +47,7 @@ fun DisplayWaveformWithGrid(
             val canvasHeight = size.height
             val midY = canvasHeight / 2f
             val skiaFont = Font(null, 20f)
-            val skiaPaint = Paint().apply { color = 0xFF000000.toInt() }
+            val skiaPaint = Paint().apply { color = 0xFF1A1A1A.toInt() }
 
             val step = samples.size / canvasWidth
 
@@ -65,7 +66,7 @@ fun DisplayWaveformWithGrid(
 
                     // Grid line
                     drawLine(
-                        color = Color.Black,
+                        color = ColorTextPrimary,
                         start = Offset(x, 0f),
                         end = Offset(x, canvasHeight),
                         strokeWidth = 1f
@@ -106,7 +107,7 @@ fun DisplayWaveformWithGrid(
                 val sample = samples[sampleIndex]
                 val y = midY - sample * midY
                 drawLine(
-                    color = Color.Black,
+                    color = ColorTextPrimary,
                     start = Offset(lastX, lastY),
                     end = Offset(xPixel.toFloat(), y),
                     strokeWidth = 1f

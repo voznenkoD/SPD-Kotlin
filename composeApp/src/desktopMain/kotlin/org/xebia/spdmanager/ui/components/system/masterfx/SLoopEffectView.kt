@@ -6,12 +6,12 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import org.xebia.spdmanager.ui.theme.*
 import org.xebia.spdmanager.model.system.fx.common.SyncSwitch
 import org.xebia.spdmanager.model.system.fx.mainTypes.*
 import org.xebia.spdmanager.ui.components.common.ButtonRowCompact
@@ -23,8 +23,8 @@ fun SLoopEffectView(
     sLoopEffect: SLoopEffect,
     onSLoopChange: (SLoopEffect) -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-        Text("S.Loop Effect", style = MaterialTheme.typography.titleMedium)
+    Column(modifier = Modifier.fillMaxWidth().padding(Spacing.xxl)) {
+        Text("S.Loop Effect", style = Typography.title, color = ColorTextPrimary)
 
         ButtonRowCompact(
             label = "Preset",
@@ -35,7 +35,7 @@ fun SLoopEffectView(
             }
         )
 
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(Spacing.xl)) {
             ToggleSwitchWithLabel(
                 label = "Mode",
                 selectedItem = sLoopEffect.mode,
@@ -78,7 +78,12 @@ fun SLoopEffectView(
                         rate = newRate
                     )
                 )
-            }
+            },
+            colors = SwitchDefaults.colors(
+                checkedTrackColor = ColorAccentOrange,
+                uncheckedTrackColor = ColorDivider,
+                checkedThumbColor = ColorBackground
+            )
         )
 
         if (sLoopEffect.rateSync == SyncSwitch.ON) {

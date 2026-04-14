@@ -3,12 +3,12 @@ package org.xebia.spdmanager.ui.components.system.masterfx
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import org.xebia.spdmanager.ui.theme.*
 import org.xebia.spdmanager.model.system.fx.common.*
 import org.xebia.spdmanager.model.system.fx.mainTypes.FilterEffect
 import org.xebia.spdmanager.model.system.fx.mainTypes.FilterPreset
@@ -21,8 +21,8 @@ fun FilterEffectView(
     filterEffect: FilterEffect,
     onFilterChange: (FilterEffect) -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-        Text("Filter Effect", style = MaterialTheme.typography.titleMedium)
+    Column(modifier = Modifier.fillMaxWidth().padding(Spacing.xxl)) {
+        Text("Filter Effect", style = Typography.title, color = ColorTextPrimary)
 
         ButtonRowCompact(
             label = "Preset",
@@ -68,7 +68,12 @@ fun FilterEffectView(
                         modRate = newModRate
                     )
                 )
-            }
+            },
+            colors = SwitchDefaults.colors(
+                checkedTrackColor = ColorAccentOrange,
+                uncheckedTrackColor = ColorDivider,
+                checkedThumbColor = ColorBackground
+            )
         )
 
         if (filterEffect.rateSync == SyncSwitch.ON) {
