@@ -3,9 +3,7 @@ package org.xebia.spdmanager.ui.components.fx
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import org.xebia.spdmanager.ui.theme.*
 import org.xebia.spdmanager.ui.theme.Typography
 import org.xebia.spdmanager.model.system.fx.common.*
@@ -21,7 +19,7 @@ fun CompressorView(
     fx: Compressor,
     onFxChange: (FxEffect) -> Unit
 ) {
-    Column(modifier = Modifier.padding(Spacing.xxl).fillMaxWidth()) {
+    Column(modifier = Modifier.padding(Spacing.m).fillMaxWidth()) {
         Text("Compressor Settings", fontSize = Typography.titleSize)
 
         ToggleSwitchWithLabel(

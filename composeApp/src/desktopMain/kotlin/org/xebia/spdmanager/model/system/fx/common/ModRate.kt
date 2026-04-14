@@ -26,6 +26,8 @@ enum class ModRateEnum(val index: Int, val value: String) {
     EIGHTH_TRIPLET(5, "1/8^3"),
     SIXTEENTH(6, "1/16");
 
+    override fun toString() = value
+
     companion object {
         fun fromIndex(index: Int): ModRateEnum {
             return entries.find { it.index == index } ?: WHOLE

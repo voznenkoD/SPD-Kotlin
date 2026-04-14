@@ -37,7 +37,7 @@ fun PadLinkSelector(
             )
         }
 
-        Text("---->", style = Typography.title, color = ColorTextPrimary, modifier = Modifier.padding(horizontal = Spacing.xl))
+        Text("-->", style = Typography.title, color = ColorTextPrimary, modifier = Modifier.padding(horizontal = Spacing.xl))
 
         Box(
             modifier = Modifier

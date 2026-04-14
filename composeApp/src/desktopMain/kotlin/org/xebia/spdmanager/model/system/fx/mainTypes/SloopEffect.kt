@@ -66,6 +66,8 @@ enum class SLoopRateEnum(val index: Int, val value: String) {
     EIGHTH_TRIPLET(7, "1/8^3"),
     SIXTEENTH(8, "1/16");
 
+    override fun toString() = value
+
     companion object {
         fun fromIndex(index: Int): SLoopRateEnum {
             return entries.find { it.index == index } ?: QUARTER_TRIPLET

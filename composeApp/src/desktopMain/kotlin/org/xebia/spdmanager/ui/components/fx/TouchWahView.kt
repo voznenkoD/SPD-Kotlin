@@ -5,7 +5,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import org.xebia.spdmanager.ui.theme.*
 import org.xebia.spdmanager.ui.theme.Typography
 import org.xebia.spdmanager.model.system.fx.common.*
@@ -20,7 +19,7 @@ fun TouchWahView(
     touchWah: TouchWah,
     onFxChange: (FxEffect) -> Unit
 ) {
-    Column(modifier = Modifier.padding(Spacing.xxl).fillMaxWidth()) {
+    Column(modifier = Modifier.padding(Spacing.m).fillMaxWidth()) {
         Text("Touch Wah", fontSize = Typography.titleSize)
 
         Row(

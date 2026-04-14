@@ -79,16 +79,17 @@ fun PadDetailsScreen(
                 onItemSelected = viewModel::updateOutput,
                 items = PadOutput.entries
             )
-            SwitchWithLabel(
-                label = "Tempo Sync",
-                syncSwitch = pad.tempoSync,
-                onValueChange = { isOn ->
-                    viewModel.updateTempoSync(SyncSwitch.fromBoolean(isOn))
-                }
-            )
         }
 
-        Spacer(modifier = Modifier.height(10.dp))
+        SwitchWithLabel(
+            label = "Tempo Sync",
+            syncSwitch = pad.tempoSync,
+            onValueChange = { isOn ->
+                viewModel.updateTempoSync(SyncSwitch.fromBoolean(isOn))
+            }
+        )
+
+        Spacer(modifier = Modifier.height(Spacing.l))
 
         TabRow(
             selectedTabIndex = selectedTab,

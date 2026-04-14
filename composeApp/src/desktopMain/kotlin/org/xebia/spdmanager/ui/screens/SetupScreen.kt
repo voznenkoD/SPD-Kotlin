@@ -29,7 +29,7 @@ fun SetupScreen() {
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        Row(modifier = Modifier.weight(0.6f).fillMaxWidth()) {
+        Row(modifier = Modifier.weight(0.7f).fillMaxWidth()) {
             Column(
                 modifier = Modifier.weight(0.2f).fillMaxHeight().border(width = Spacing.s, color = ColorDivider)
             ) {
@@ -39,7 +39,7 @@ fun SetupScreen() {
                 )
             }
             Column(
-                modifier = Modifier.weight(0.5f).fillMaxHeight().border(width = Spacing.s, color = ColorDivider)
+                modifier = Modifier.weight(0.6f).fillMaxHeight().border(width = Spacing.s, color = ColorDivider)
             ) {
                 PadsSetupScreen(
                     selectedPadNumber = selectedPadNumber,
@@ -47,7 +47,7 @@ fun SetupScreen() {
                 )
             }
             Column(
-                modifier = Modifier.weight(0.3f).fillMaxHeight().border(width = Spacing.s, color = ColorDivider)
+                modifier = Modifier.weight(0.2f).fillMaxHeight().border(width = Spacing.s, color = ColorDivider)
             ) {
                 SetupMidiView(
                     setupConfig = setupConfig!!,
@@ -55,7 +55,7 @@ fun SetupScreen() {
                 )
             }
         }
-        Row(modifier = Modifier.weight(0.4f).fillMaxWidth().border(width = Spacing.s, color = ColorDivider)) {
+        Row(modifier = Modifier.weight(0.3f).fillMaxWidth().border(width = Spacing.s, color = ColorDivider)) {
             val currentPadControl = padFsControl!![selectedPadNumber] ?: return@Row
 
             PadSetupView(

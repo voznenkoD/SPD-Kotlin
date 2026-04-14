@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import org.xebia.spdmanager.ui.theme.*
 import org.xebia.spdmanager.LocalDeviceManager
 import org.xebia.spdmanager.ui.components.common.SelectFolderButton
@@ -43,7 +42,7 @@ fun SystemScreen() {
     Row(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
-                .weight(0.15f)
+                .weight(0.2f)
                 .fillMaxHeight(),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
@@ -61,7 +60,7 @@ fun SystemScreen() {
                 )
             }
         }
-        Column(modifier = Modifier.weight(0.65f)) {
+        Column(modifier = Modifier.weight(0.6f)) {
             Row(modifier = Modifier.weight(0.75f).border(width = Spacing.s, color = ColorDivider)) {
                 MasterEffectView(
                     masterEffectConfig = config.masterEffectConfig,
@@ -77,7 +76,7 @@ fun SystemScreen() {
         }
         Box(
             modifier = Modifier
-                .weight(0.20f)
+                .weight(0.2f)
                 .fillMaxHeight()
                 .border(width = Spacing.s, color = ColorDivider)
         ) {

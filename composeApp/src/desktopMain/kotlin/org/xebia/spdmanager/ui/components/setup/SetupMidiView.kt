@@ -1,7 +1,6 @@
 package org.xebia.spdmanager.ui.components.setup
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import org.xebia.spdmanager.ui.theme.*
@@ -46,32 +45,37 @@ fun SetupMidiView(setupConfig: SetupConfig, onUpdate: (SetupConfig) -> Unit) {
                 .height(Heights.listItem)
         ) {
                 SwitchWithLabel("Local Control", localCtrl) {
-                    localCtrl = SyncSwitch.fromBoolean(it);
+                    localCtrl = SyncSwitch.fromBoolean(it)
                     onUpdate(setupConfig.copy(localCtrl = SyncSwitch.fromBoolean(it)))
                 }
 
                 SwitchWithLabel("Soft Thru", softThru) {
-                    softThru = SyncSwitch.fromBoolean(it);
+                    softThru = SyncSwitch.fromBoolean(it)
                     onUpdate(setupConfig.copy(softThru = SyncSwitch.fromBoolean(it)))
                 }
-
-                SwitchWithLabel("USB MIDI Thru", usbMIDIThru) {
-                    usbMIDIThru = SyncSwitch.fromBoolean(it);
-                    onUpdate(setupConfig.copy(usbMIDIThru = SyncSwitch.fromBoolean(it)))
-                }
-
             }
+        Row (
+            modifier = Modifier
+                .weight(1f)
+                .height(Heights.listItem)
+        ) {
+
+            SwitchWithLabel("USB MIDI Thru", usbMIDIThru) {
+                usbMIDIThru = SyncSwitch.fromBoolean(it)
+                onUpdate(setupConfig.copy(usbMIDIThru = SyncSwitch.fromBoolean(it)))
+            }
+        }
         Row(
             modifier = Modifier
                 .weight(1f)
                 .height(Heights.listItem)
         ) {
             SwitchWithLabel("MIDI PC Control", midiPCCtrl) {
-                midiPCCtrl = SyncSwitch.fromBoolean(it);
+                midiPCCtrl = SyncSwitch.fromBoolean(it)
                 onUpdate(setupConfig.copy(midiPCCtrl = SyncSwitch.fromBoolean(it)))
             }
             SwitchWithLabel("MIDI CC Control", midiCCCtrl) {
-                midiCCCtrl = SyncSwitch.fromBoolean(it);
+                midiCCCtrl = SyncSwitch.fromBoolean(it)
                 onUpdate(setupConfig.copy(midiCCCtrl = SyncSwitch.fromBoolean(it)))
             }
         }
@@ -82,7 +86,7 @@ fun SetupMidiView(setupConfig: SetupConfig, onUpdate: (SetupConfig) -> Unit) {
                 label = "MIDI FX Select CC",
                 value = midiFxSelCc,
                 range = 0..95,
-                onValueChange = { midiFxSelCc = it.toInt(); onUpdate(setupConfig.copy(midiFxSelCc = it)) }
+                onValueChange = { midiFxSelCc = it; onUpdate(setupConfig.copy(midiFxSelCc = it)) }
             )
 
             IntStepSliderWithLabel(

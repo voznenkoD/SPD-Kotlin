@@ -15,6 +15,8 @@ enum class DelayTimeEnum(val index: Int, val value: String) {
     HALF_DOTTED(11, "1/2."),
     WHOLE(12, "1");
 
+    override fun toString() = value
+
     companion object {
         fun fromIndex(index: Int): DelayTimeEnum {
             return entries.find { it.index == index } ?: EIGHTH

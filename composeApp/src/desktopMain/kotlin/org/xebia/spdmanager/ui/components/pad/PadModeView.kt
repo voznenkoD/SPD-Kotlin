@@ -65,18 +65,17 @@ fun PadModeView(
                     onPadModeChange(padMode.copy(dynamics = newDynamics))
                 }
             )
-
-            ToggleSwitchWithLabel(
-                label = "PolyMono",
-                selectedItem = padMode.polyMono,
-                offItem = PolyMono.MONO,
-                onItem = PolyMono.POLY,
-                onItemSelected = { newPolyMono ->
-                    onPadModeChange(padMode.copy(polyMono = newPolyMono))
-                },
-                offLabel = "Mono",
-                onLabel = "Poly"
-            )
         }
+        ToggleSwitchWithLabel(
+            label = "PolyMono",
+            selectedItem = padMode.polyMono,
+            offItem = PolyMono.MONO,
+            onItem = PolyMono.POLY,
+            onItemSelected = { newPolyMono ->
+                onPadModeChange(padMode.copy(polyMono = newPolyMono))
+            },
+            offLabel = "Mono",
+            onLabel = "Poly"
+        )
     }
 }

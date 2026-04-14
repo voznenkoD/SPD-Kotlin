@@ -11,12 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.xebia.spdmanager.ui.theme.*
 import org.xebia.spdmanager.ui.theme.Typography
-import org.xebia.spdmanager.model.kit.Kit
-import org.xebia.spdmanager.model.kit.fx.KitFX
 import org.xebia.spdmanager.model.kit.pad.Pad
 import org.xebia.spdmanager.model.kit.pad.PadNumber
-import org.xebia.spdmanager.model.system.fx.common.SyncSwitch
-import org.xebia.spdmanager.model.system.fx.subtypes.FxEffect
 import org.xebia.spdmanager.service.DeviceManager
 import org.xebia.spdmanager.ui.components.common.IntStepSliderWithLabel
 import org.xebia.spdmanager.ui.components.common.SliderWithLabel
@@ -100,17 +96,17 @@ fun KitScreen(
 
             Box(modifier = Modifier.weight(1f)) {
                 PadLinkSelector(
-                    padLink1 = kit.padLink?.first ?: PadNumber.PAD_1,
+                    padLink1 = kit.padLink.first ?: PadNumber.PAD_1,
                     onPadLink1Selected = { pad1 ->
                         viewModel.updatePadLink(
                             pad1,
-                            kit.padLink?.second ?: PadNumber.PAD_2
+                            kit.padLink.second ?: PadNumber.PAD_2
                         )
                     },
-                    padLink2 = kit.padLink?.second ?: PadNumber.PAD_2,
+                    padLink2 = kit.padLink.second ?: PadNumber.PAD_2,
                     onPadLink2Selected = { pad2 ->
                         viewModel.updatePadLink(
-                            kit.padLink?.first ?: PadNumber.PAD_1,
+                            kit.padLink.first ?: PadNumber.PAD_1,
                             pad2
                         )
                     }
@@ -131,20 +127,20 @@ fun KitScreen(
             }
         ) {
             Tab(selected = selectedTabIndex == 0, onClick = { selectedTabIndex = 0 }) {
-                Text("FX1", modifier = Modifier.padding(8.dp), color = if (selectedTabIndex == 0) ColorTextPrimary else ColorTextSecondary)
+                Text("FX1", modifier = Modifier.padding(6.dp), color = if (selectedTabIndex == 0) ColorTextPrimary else ColorTextSecondary)
             }
             Tab(selected = selectedTabIndex == 1, onClick = { selectedTabIndex = 1 }) {
-                Text("FX2", modifier = Modifier.padding(8.dp), color = if (selectedTabIndex == 1) ColorTextPrimary else ColorTextSecondary)
+                Text("FX2", modifier = Modifier.padding(6.dp), color = if (selectedTabIndex == 1) ColorTextPrimary else ColorTextSecondary)
             }
         }
 
         when (selectedTabIndex) {
             0 -> KitFXView(
-                kitFX = kit.fx1 ?: KitFX(SyncSwitch.OFF, FxEffect.fromValues(0, listOf(0))),
+                kitFX = kit.fx1,
                 onFxChange = viewModel::updateFx1
             )
             1 -> KitFXView(
-                kitFX = kit.fx2 ?: KitFX(SyncSwitch.OFF, FxEffect.fromValues(0, listOf(0))),
+                kitFX = kit.fx2,
                 onFxChange = viewModel::updateFx2
             )
         }
@@ -154,9 +150,8 @@ fun KitScreen(
 @Composable
 fun DetailsTabs(
     kitIndex: Int?,
-    kit: Kit?,
     pad: Pad?,
-    padNumber: PadNumber?,  // Add this parameter
+    padNumber: PadNumber?,
     deviceManager: DeviceManager
 ) {
     var selectedTab by remember { mutableStateOf(0) }

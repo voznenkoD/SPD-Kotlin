@@ -7,7 +7,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import org.xebia.spdmanager.ui.theme.*
@@ -66,10 +65,9 @@ fun MainScreen() {
 
     Box(modifier = Modifier.fillMaxSize()) {
     Row {
-        Column(Modifier.weight(0.3f).fillMaxHeight()) {
+        Column(Modifier.weight(0.25f).fillMaxHeight()) {
             DetailsTabs(
                 kitIndex = selectedKitIndex,
-                kit = selectedKit,
                 pad = selectedPad,
                 padNumber = selectedPadNumber,
                 deviceManager = deviceManager
@@ -78,7 +76,7 @@ fun MainScreen() {
 
         Column(
             Modifier
-                .weight(0.5f)
+                .weight(0.6f)
                 .fillMaxHeight()
                 .border(width = 2.dp, color = ColorDivider)
         ) {
@@ -108,7 +106,7 @@ fun MainScreen() {
             )
         }
 
-        Column(Modifier.weight(0.2f).fillMaxHeight()) {
+        Column(Modifier.weight(0.15f).fillMaxHeight()) {
             val clipboardKit by mainViewModel.clipboardKit.collectAsState()
             ListsScreen(
                 kits = kits,
@@ -149,7 +147,6 @@ fun MainScreen() {
     val currentDragInfo = dragInfo
     val currentDragPos = dragPosition
     if (currentDragInfo != null && currentDragPos != null) {
-        val density = LocalDensity.current
         Box(
             modifier = Modifier
                 .offset { IntOffset(currentDragPos.x.toInt() + 16, currentDragPos.y.toInt() - 16) }

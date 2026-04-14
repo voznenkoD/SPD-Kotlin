@@ -19,7 +19,7 @@ fun KitFXView(
     kitFX: KitFX,
     onFxChange: (KitFX) -> Unit
 ) {
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(modifier = Modifier.padding(2.dp)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -43,7 +43,7 @@ fun KitFXView(
             )
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(2.dp))
 
         if (kitFX.sw == SyncSwitch.OFF) {
             Text(
@@ -60,10 +60,10 @@ fun KitFXView(
                     onFxChange(kitFX.copy(fx = newFx))
                 },
                 items = FXType.entries.toList(),
-                width = 200.dp
+                width = 150.dp
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(2.dp))
 
             kitFX.fx.renderEditableParameters { updatedFx ->
                 onFxChange(kitFX.copy(fx = updatedFx))

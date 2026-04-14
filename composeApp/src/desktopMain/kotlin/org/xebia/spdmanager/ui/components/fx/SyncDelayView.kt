@@ -5,7 +5,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import org.xebia.spdmanager.ui.theme.*
 import org.xebia.spdmanager.ui.theme.Typography
 import org.xebia.spdmanager.model.system.fx.common.*
@@ -22,7 +21,7 @@ fun SyncDelayView(
     syncDelay: SyncDelay,
     onFxChange: (FxEffect) -> Unit
 ) {
-    Column(modifier = Modifier.padding(Spacing.xxl).fillMaxWidth()) {
+    Column(modifier = Modifier.padding(Spacing.m).fillMaxWidth()) {
         Text("Sync Delay", fontSize = Typography.titleSize)
 
         Row(
@@ -41,6 +40,13 @@ fun SyncDelayView(
                 offLabel = "Normal",
                 onLabel = "Pan"
             )
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.xl),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             SliderWithLabel(
                 label = "Direct Level",
                 value = syncDelay.directLevel.toFloat(),
@@ -60,15 +66,6 @@ fun SyncDelayView(
             )
         }
 
-        DropdownSelector(
-            label = "Delay Time",
-            selectedItem = (syncDelay.delayTime as? DelayTime.EnumTime) ?: DelayTimeEnum.QUARTER,
-            items = DelayTimeEnum.entries.toList(),
-            onItemSelected = { newDelayTime ->
-                onFxChange(syncDelay.copy(delayTime = DelayTime.EnumTime(newDelayTime as DelayTimeEnum)))
-            }
-        )
-
         ButtonRowCompact(
             label = "Low Cut (Hz)",
             selectedItem = syncDelay.lowCut,
@@ -83,6 +80,15 @@ fun SyncDelayView(
             items = HighCut.entries.toTypedArray(),
             onItemSelected = { newHighCut ->
                 onFxChange(syncDelay.copy(highCut = newHighCut))
+            }
+        )
+
+        DropdownSelector(
+            label = "Delay Time",
+            selectedItem = (syncDelay.delayTime as? DelayTime.EnumTime)?.delayTimeEnum ?: DelayTimeEnum.QUARTER,
+            items = DelayTimeEnum.entries.toList(),
+            onItemSelected = { newDelayTime ->
+                onFxChange(syncDelay.copy(delayTime = DelayTime.EnumTime(newDelayTime)))
             }
         )
     }

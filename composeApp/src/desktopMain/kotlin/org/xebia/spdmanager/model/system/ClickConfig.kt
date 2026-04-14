@@ -59,10 +59,12 @@ enum class ClickSound(val value: Int) {
     }
 }
 
-enum class Interval(val value: Int) {
-    ONE_FOURTH(0),
-    ONE_EIGHTH(1),
-    ONE_TWELFTH(2);
+enum class Interval(val value: Int, val displayName: String) {
+    ONE_FOURTH(0, "1/4"),
+    ONE_EIGHTH(1, "1/8"),
+    ONE_TWELFTH(2, "1/12");
+
+    override fun toString() = displayName
 
     companion object {
         fun fromValue(value: Int): Interval = entries.find { it.value == value } ?: ONE_FOURTH

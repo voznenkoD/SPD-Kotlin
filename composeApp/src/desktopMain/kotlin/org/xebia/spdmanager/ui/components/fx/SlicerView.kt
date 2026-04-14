@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import org.xebia.spdmanager.ui.theme.*
 import org.xebia.spdmanager.ui.theme.Typography
 import org.xebia.spdmanager.model.system.fx.common.*
@@ -19,7 +18,7 @@ fun SlicerView(
     slicer: Slicer,
     onFxChange: (FxEffect) -> Unit
 ) {
-    Column(modifier = Modifier.padding(Spacing.xxl).fillMaxWidth()) {
+    Column(modifier = Modifier.padding(Spacing.m).fillMaxWidth()) {
         Text("Slicer", fontSize = Typography.titleSize)
 
         FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.xl)) {
