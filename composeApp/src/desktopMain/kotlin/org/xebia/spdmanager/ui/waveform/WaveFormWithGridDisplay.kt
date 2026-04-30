@@ -49,22 +49,18 @@ fun DisplayWaveformWithGrid(
             val skiaFont = Font(null, 20f)
             val skiaPaint = Paint().apply { color = 0xFF1A1A1A.toInt() }
 
-            val step = samples.size / canvasWidth
-
             drawIntoCanvas { canvas ->
                 val nativeCanvas = canvas.nativeCanvas
 
-                // Vertical grid lines and labels (time)
-                val totalDurationSec = durationMs / 1000f
-                val pixelsPerSecond = canvasWidth / totalDurationSec
-                val timeStepSec = 0.5f // every 500 ms
-                val timeSteps = (totalDurationSec / timeStepSec).roundToInt()
+                // Vertical grid lines — 10 always visible in the viewport
+                val viewportWidth = canvasWidth / zoomLevel
+                val gridSpacingPx = viewportWidth / 10f
+                val totalLines = (canvasWidth / gridSpacingPx).roundToInt()
 
-                for (i in 0..timeSteps) {
-                    val ms = (i * timeStepSec * 1000).toInt()
-                    val x = i * timeStepSec * pixelsPerSecond
+                for (i in 0..totalLines) {
+                    val x = i * gridSpacingPx
+                    val ms = ((x / canvasWidth) * durationMs).roundToInt()
 
-                    // Grid line
                     drawLine(
                         color = ColorTextPrimary,
                         start = Offset(x, 0f),
@@ -72,13 +68,12 @@ fun DisplayWaveformWithGrid(
                         strokeWidth = 1f
                     )
 
-                    // Only draw label every second step and skip last edge
-                    if (i % 2 == 0 && i != timeSteps) {
-                        val timeLabel = "$ms ms"
+                    if (i < totalLines) {
+                        val timeLabel = "${ms}ms"
                         val textLine = TextLine.make(timeLabel, skiaFont)
                         nativeCanvas.drawTextLine(
                             textLine,
-                            x + 10f,
+                            x + 4f,
                             canvasHeight - 5f,
                             skiaPaint
                         )
