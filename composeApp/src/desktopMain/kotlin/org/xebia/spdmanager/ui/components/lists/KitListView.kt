@@ -29,7 +29,8 @@ fun KitListView(
     onCopyKit: (Kit) -> Unit,
     onPasteKit: (Kit) -> Unit,
     hasCopiedKit: Boolean,
-    onMoveKit: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> }
+    onMoveKit: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> },
+    selectedKitIndex: Int? = null
 ) {
     val listState = rememberLazyListState()
 
@@ -44,6 +45,7 @@ fun KitListView(
         itemsIndexed(kits) { index, kit ->
             val isDragged = draggedIndex == index
             val isDropTarget = targetIndex == index && draggedIndex != null && draggedIndex != index
+            val isSelected = index == selectedKitIndex
 
             val currentOnMoveKit by rememberUpdatedState(onMoveKit)
             val currentKitsSize by rememberUpdatedState(kits.size)
@@ -119,13 +121,18 @@ fun KitListView(
                                 when {
                                     isDragged -> ColorSurfaceHover
                                     isDropTarget -> ColorAccentYellow
+                                    isSelected -> ColorSurfaceSelected
                                     else -> ColorSurface
                                 }
                             )
                             .padding(Spacing.xl),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(text = kit.name, fontSize = Typography.bodySize)
+                        Text(
+                            text = kit.name,
+                            fontSize = Typography.bodySize,
+                            color = if (isSelected) ColorTextOnDark else ColorTextPrimary
+                        )
                     }
                 }
             }

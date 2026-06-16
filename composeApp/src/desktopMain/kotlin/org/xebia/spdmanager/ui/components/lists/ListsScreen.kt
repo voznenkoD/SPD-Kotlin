@@ -56,6 +56,7 @@ fun ListsScreen(
     selectedTab: Int = 0,
     onSelectedTabChange: (Int) -> Unit = {},
     selectedWaveNumber: Int? = null,
+    selectedKitIndex: Int? = null,
     onStartWaveDrag: (waveNumber: Int, waveName: String) -> Unit = { _, _ -> },
     onUpdateDragPosition: (Offset) -> Unit = {},
     onEndWaveDrag: () -> Unit = {},
@@ -114,7 +115,8 @@ fun ListsScreen(
                         onCopyKit = onCopyKit,
                         onPasteKit = onPasteKit,
                         hasCopiedKit = hasCopiedKit,
-                        onMoveKit = onMoveKit
+                        onMoveKit = onMoveKit,
+                        selectedKitIndex = selectedKitIndex
                     )
                 }
             }
@@ -607,7 +609,11 @@ private fun WaveListItem(
                         color = ColorAccentOrange
                     )
                 }
-                Text(text = "${wave.number}. ${wave.name}", fontSize = Typography.bodySize)
+                Text(
+                    text = "${wave.number}. ${wave.name}",
+                    fontSize = Typography.bodySize,
+                    color = if (isHighlighted) ColorTextOnDark else ColorTextPrimary
+                )
             }
         }
     }

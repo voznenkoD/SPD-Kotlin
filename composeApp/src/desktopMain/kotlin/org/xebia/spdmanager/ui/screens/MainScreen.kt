@@ -136,6 +136,7 @@ fun MainScreen() {
                 selectedTab = listsSelectedTab,
                 onSelectedTabChange = mainViewModel::selectListsTab,
                 selectedWaveNumber = selectedWave?.number,
+                selectedKitIndex = selectedKitIndex,
                 onStartWaveDrag = mainViewModel::startWaveDrag,
                 onUpdateDragPosition = mainViewModel::updateDragPosition,
                 onEndWaveDrag = mainViewModel::endWaveDrag,
