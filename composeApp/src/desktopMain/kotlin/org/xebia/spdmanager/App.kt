@@ -34,9 +34,24 @@ fun main() = application {
                     })
                 }
                 Menu("View", mnemonic = 'V') {
-                    Item("Main", onClick = { AppState.currentScreen = Screen.Main })
-                    Item("Setup", onClick = { AppState.currentScreen = Screen.Setup })
-                    Item("System", onClick = { AppState.currentScreen = Screen.System })
+                    // Reserved for later use.
+                }
+                Menu("Window", mnemonic = 'W') {
+                    RadioButtonItem(
+                        "Main",
+                        selected = AppState.currentScreen == Screen.Main,
+                        onClick = { AppState.currentScreen = Screen.Main }
+                    )
+                    RadioButtonItem(
+                        "Setup",
+                        selected = AppState.currentScreen == Screen.Setup,
+                        onClick = { AppState.currentScreen = Screen.Setup }
+                    )
+                    RadioButtonItem(
+                        "System",
+                        selected = AppState.currentScreen == Screen.System,
+                        onClick = { AppState.currentScreen = Screen.System }
+                    )
                 }
             }
             CompositionLocalProvider(LocalScale provides scaleFactor) {
