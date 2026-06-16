@@ -1,10 +1,13 @@
 package org.xebia.spdmanager
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.window.*
 import org.xebia.spdmanager.service.DeviceManager
 import org.xebia.spdmanager.service.openFolderDialog
@@ -68,12 +71,16 @@ private fun runApp() = application {
 
 @Composable
 fun App(onMeasured: (Float) -> Unit = {}) {
+    val focusManager = LocalFocusManager.current
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(ColorBackground)
             .onGloballyPositioned { coords ->
                 onMeasured(coords.size.width.toFloat())
+            }
+            .pointerInput(Unit) {
+                detectTapGestures { focusManager.clearFocus() }
             }
     ) {
         when (AppState.currentScreen) {

@@ -44,6 +44,7 @@ fun KnobControl(
     mode: KnobMode = KnobMode.Unipolar,
     steps: Int? = null,
     valueDisplay: String? = null,
+    parseInput: (String) -> Float? = { it.toFloatOrNull() },
     modifier: Modifier = Modifier
 ) {
     val accentColor = ColorAccentOrange
@@ -184,15 +185,15 @@ fun KnobControl(
                         if (state.isFocused) {
                             hasBeenFocused = true
                         } else if (hasBeenFocused && isEditing) {
-                            commitEdit(editText, valueRange, steps, onValueChange)
+                            commitEdit(editText, valueRange, steps, parseInput, onValueChange)
                             isEditing = false
                         }
                     }
-                    .onKeyEvent { event ->
+                    .onPreviewKeyEvent { event ->
                         if (event.type == KeyEventType.KeyDown) {
                             when (event.key) {
                                 Key.Enter, Key.NumPadEnter -> {
-                                    commitEdit(editText, valueRange, steps, onValueChange)
+                                    commitEdit(editText, valueRange, steps, parseInput, onValueChange)
                                     isEditing = false
                                     focusManager.clearFocus()
                                     true
@@ -231,9 +232,10 @@ private fun commitEdit(
     text: String,
     valueRange: ClosedFloatingPointRange<Float>,
     steps: Int?,
+    parseInput: (String) -> Float?,
     onValueChange: (Float) -> Unit
 ) {
-    val parsed = text.toFloatOrNull() ?: return
+    val parsed = parseInput(text) ?: return
     var clamped = parsed.coerceIn(valueRange.start, valueRange.endInclusive)
     if (steps != null && steps > 0) {
         val range = valueRange.endInclusive - valueRange.start
