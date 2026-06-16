@@ -15,7 +15,13 @@ import org.xebia.spdmanager.ui.theme.BASE_WIDTH
 import org.xebia.spdmanager.ui.theme.ColorBackground
 import org.xebia.spdmanager.ui.theme.LocalScale
 
-fun main() = application {
+fun main() {
+    // macOS shows this as the application menu name (next to the Apple logo) when run.
+    System.setProperty("apple.awt.application.name", "SPD-SX")
+    runApp()
+}
+
+private fun runApp() = application {
     val deviceManager = remember { DeviceManager() }
 
     CompositionLocalProvider(LocalDeviceManager provides deviceManager) {
