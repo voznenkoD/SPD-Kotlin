@@ -33,7 +33,7 @@ private fun runApp() = application {
     val deviceManager = remember { DeviceManager() }
 
     CompositionLocalProvider(LocalDeviceManager provides deviceManager) {
-        Window(title = "SPD Manager", onCloseRequest = ::exitApplication) {
+        Window(title = "SPD Manager", onCloseRequest = ::exitApplication, state = rememberWindowState(placement = WindowPlacement.Maximized)) {
             var scaleFactor by remember { mutableFloatStateOf(1f) }
             MenuBar {
                 Menu("File", mnemonic = 'F') {
