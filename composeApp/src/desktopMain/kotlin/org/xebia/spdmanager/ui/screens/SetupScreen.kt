@@ -10,6 +10,10 @@ import org.xebia.spdmanager.ui.components.setup.PadSetupView
 import org.xebia.spdmanager.ui.components.setup.PadsSetupScreen
 import org.xebia.spdmanager.ui.components.setup.SetupGeneralView
 import org.xebia.spdmanager.ui.components.setup.SetupMidiView
+import org.xebia.spdmanager.ui.panels.DetachablePanelWindow
+import org.xebia.spdmanager.ui.panels.PanelLayoutState
+import org.xebia.spdmanager.ui.panels.PanelRegion
+import org.xebia.spdmanager.ui.panels.ScreenId
 import org.xebia.spdmanager.viewmodel.SetupViewModel
 
 @Composable
@@ -28,36 +32,23 @@ fun SetupScreen() {
         return
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        Row(modifier = Modifier.weight(0.75f).fillMaxWidth()) {
-            Column(
-                modifier = Modifier.weight(0.2f).fillMaxHeight().border(width = Spacing.s, color = ColorDivider)
-            ) {
-                SetupGeneralView(
-                    setupConfig = setupConfig!!,
-                    onUpdate = setupViewModel::updateSetupConfig
-                )
-            }
-            Column(
-                modifier = Modifier.weight(0.6f).fillMaxHeight().border(width = Spacing.s, color = ColorDivider)
-            ) {
-                PadsSetupScreen(
-                    selectedPadNumber = selectedPadNumber,
-                    onSelect = setupViewModel::selectPad
-                )
-            }
-            Column(
-                modifier = Modifier.weight(0.2f).fillMaxHeight().border(width = Spacing.s, color = ColorDivider)
-            ) {
-                SetupMidiView(
-                    setupConfig = setupConfig!!,
-                    onUpdate = setupViewModel::updateSetupConfig
-                )
-            }
-        }
-        Row(modifier = Modifier.weight(0.25f).fillMaxWidth().border(width = Spacing.s, color = ColorDivider)) {
-            val currentPadControl = padFsControl!![selectedPadNumber] ?: return@Row
+    val leftContent: @Composable () -> Unit = {
+        SetupGeneralView(
+            setupConfig = setupConfig!!,
+            onUpdate = setupViewModel::updateSetupConfig
+        )
+    }
 
+    val rightContent: @Composable () -> Unit = {
+        SetupMidiView(
+            setupConfig = setupConfig!!,
+            onUpdate = setupViewModel::updateSetupConfig
+        )
+    }
+
+    val bottomContent: @Composable () -> Unit = {
+        val currentPadControl = padFsControl!![selectedPadNumber]
+        if (currentPadControl != null) {
             PadSetupView(
                 setupConfig = setupConfig!!,
                 padNumber = selectedPadNumber,
@@ -69,4 +60,44 @@ fun SetupScreen() {
             )
         }
     }
+
+    val leftEntry = PanelLayoutState.entry(ScreenId.Setup, PanelRegion.Left)
+    val rightEntry = PanelLayoutState.entry(ScreenId.Setup, PanelRegion.Right)
+    val bottomEntry = PanelLayoutState.entry(ScreenId.Setup, PanelRegion.Bottom)
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        Row(modifier = Modifier.weight(0.75f).fillMaxWidth()) {
+            if (leftEntry.docked) {
+                Column(
+                    modifier = Modifier.weight(0.2f).fillMaxHeight().border(width = Spacing.s, color = ColorDivider)
+                ) {
+                    leftContent()
+                }
+            }
+            Column(
+                modifier = Modifier.weight(0.6f).fillMaxHeight().border(width = Spacing.s, color = ColorDivider)
+            ) {
+                PadsSetupScreen(
+                    selectedPadNumber = selectedPadNumber,
+                    onSelect = setupViewModel::selectPad
+                )
+            }
+            if (rightEntry.docked) {
+                Column(
+                    modifier = Modifier.weight(0.2f).fillMaxHeight().border(width = Spacing.s, color = ColorDivider)
+                ) {
+                    rightContent()
+                }
+            }
+        }
+        if (bottomEntry.docked) {
+            Row(modifier = Modifier.weight(0.25f).fillMaxWidth().border(width = Spacing.s, color = ColorDivider)) {
+                bottomContent()
+            }
+        }
+    }
+
+    DetachablePanelWindow(leftEntry, PanelRegion.Left, leftContent)
+    DetachablePanelWindow(rightEntry, PanelRegion.Right, rightContent)
+    DetachablePanelWindow(bottomEntry, PanelRegion.Bottom, bottomContent)
 }

@@ -11,6 +11,11 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.window.*
 import org.xebia.spdmanager.service.DeviceManager
 import org.xebia.spdmanager.service.openFolderDialog
+import org.xebia.spdmanager.ui.panels.PanelIconStrip
+import org.xebia.spdmanager.ui.panels.PanelLayoutState
+import org.xebia.spdmanager.ui.panels.PanelRegion
+import org.xebia.spdmanager.ui.panels.ScreenId
+import org.xebia.spdmanager.ui.panels.regionTitle
 import org.xebia.spdmanager.ui.screens.MainScreen
 import org.xebia.spdmanager.ui.screens.SetupScreen
 import org.xebia.spdmanager.ui.screens.SystemScreen
@@ -42,7 +47,14 @@ private fun runApp() = application {
                     })
                 }
                 Menu("View", mnemonic = 'V') {
-                    // Reserved for later use.
+                    val screenId = AppState.currentScreen.toScreenId()
+                    PanelRegion.entries.forEach { region ->
+                        CheckboxItem(
+                            regionTitle(region),
+                            checked = PanelLayoutState.entry(screenId, region).docked,
+                            onCheckedChange = { PanelLayoutState.setDocked(screenId, region, it) }
+                        )
+                    }
                 }
                 Menu("Window", mnemonic = 'W') {
                     RadioButtonItem(
@@ -72,6 +84,7 @@ private fun runApp() = application {
 @Composable
 fun App(onMeasured: (Float) -> Unit = {}) {
     val focusManager = LocalFocusManager.current
+    val screenId = AppState.currentScreen.toScreenId()
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -83,10 +96,18 @@ fun App(onMeasured: (Float) -> Unit = {}) {
                 detectTapGestures { focusManager.clearFocus() }
             }
     ) {
-        when (AppState.currentScreen) {
-            Screen.Main -> MainScreen()
-            Screen.Setup -> SetupScreen()
-            Screen.System -> SystemScreen()
+        Row(modifier = Modifier.fillMaxSize()) {
+            // Far-left strip with icons for any undocked region (opens it as a pop-out window).
+            if (PanelLayoutState.anyUndocked(screenId)) {
+                PanelIconStrip(screenId)
+            }
+            Box(modifier = Modifier.weight(1f).fillMaxSize()) {
+                when (AppState.currentScreen) {
+                    Screen.Main -> MainScreen()
+                    Screen.Setup -> SetupScreen()
+                    Screen.System -> SystemScreen()
+                }
+            }
         }
     }
 }
@@ -99,4 +120,10 @@ sealed class Screen {
     object Main : Screen()
     object Setup : Screen()
     object System : Screen()
+}
+
+fun Screen.toScreenId(): ScreenId = when (this) {
+    Screen.Main -> ScreenId.Main
+    Screen.Setup -> ScreenId.Setup
+    Screen.System -> ScreenId.System
 }

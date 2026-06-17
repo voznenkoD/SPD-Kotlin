@@ -17,6 +17,10 @@ import org.xebia.spdmanager.ui.components.common.SelectFolderButton
 import org.xebia.spdmanager.ui.components.kit.DetailsTabs
 import org.xebia.spdmanager.ui.components.lists.ListsScreen
 import org.xebia.spdmanager.ui.components.pad.PadScreen
+import org.xebia.spdmanager.ui.panels.DetachablePanelWindow
+import org.xebia.spdmanager.ui.panels.PanelLayoutState
+import org.xebia.spdmanager.ui.panels.PanelRegion
+import org.xebia.spdmanager.ui.panels.ScreenId
 import org.xebia.spdmanager.viewmodel.MainViewModel
 
 @Composable
@@ -63,15 +67,72 @@ fun MainScreen() {
         return
     }
 
+    val clipboardPad by mainViewModel.clipboardPad.collectAsState()
+    val clipboardKit by mainViewModel.clipboardKit.collectAsState()
+
+    val leftContent: @Composable () -> Unit = {
+        DetailsTabs(
+            kitIndex = selectedKitIndex,
+            pad = selectedPad,
+            padNumber = selectedPadNumber,
+            deviceManager = deviceManager
+        )
+    }
+
+    val bottomContent: @Composable () -> Unit = {
+        WaveDetailsScreen(
+            wave = selectedWave,
+            device = device
+        )
+    }
+
+    val rightContent: @Composable () -> Unit = {
+        ListsScreen(
+            kits = kits,
+            waveListsHolder = waveListsHolder,
+            onKitSelected = mainViewModel::selectKit,
+            onWaveSelected = { listedWave ->
+                mainViewModel.selectWave(waves, listedWave)
+            },
+            onCopyKit = mainViewModel::copyKit,
+            onPasteKit = mainViewModel::pasteKit,
+            hasCopiedKit = clipboardKit != null,
+            onMoveKit = mainViewModel::moveKit,
+            waveUsageMap = waveUsageMap,
+            onSelectKitByName = mainViewModel::selectKitByName,
+            onRenameCategory = mainViewModel::renameCategory,
+            onImportWave = mainViewModel::importWave,
+            importError = importError,
+            onClearImportError = mainViewModel::clearImportError,
+            onRequestDeleteWave = mainViewModel::requestDeleteWave,
+            onConfirmDeleteWave = mainViewModel::confirmDeleteWave,
+            deleteConfirm = deleteConfirm,
+            deleteBlocked = deleteBlocked,
+            deleteError = deleteError,
+            onClearDeleteConfirm = mainViewModel::clearDeleteConfirm,
+            onClearDeleteBlocked = mainViewModel::clearDeleteBlocked,
+            onClearDeleteError = mainViewModel::clearDeleteError,
+            selectedTab = listsSelectedTab,
+            onSelectedTabChange = mainViewModel::selectListsTab,
+            selectedWaveNumber = selectedWave?.number,
+            selectedKitIndex = selectedKitIndex,
+            onStartWaveDrag = mainViewModel::startWaveDrag,
+            onUpdateDragPosition = mainViewModel::updateDragPosition,
+            onEndWaveDrag = mainViewModel::endWaveDrag,
+            onCancelWaveDrag = mainViewModel::cancelWaveDrag
+        )
+    }
+
+    val leftEntry = PanelLayoutState.entry(ScreenId.Main, PanelRegion.Left)
+    val rightEntry = PanelLayoutState.entry(ScreenId.Main, PanelRegion.Right)
+    val bottomEntry = PanelLayoutState.entry(ScreenId.Main, PanelRegion.Bottom)
+
     Box(modifier = Modifier.fillMaxSize()) {
     Row {
-        Column(Modifier.weight(0.25f).fillMaxHeight()) {
-            DetailsTabs(
-                kitIndex = selectedKitIndex,
-                pad = selectedPad,
-                padNumber = selectedPadNumber,
-                deviceManager = deviceManager
-            )
+        if (leftEntry.docked) {
+            Column(Modifier.weight(0.25f).fillMaxHeight()) {
+                leftContent()
+            }
         }
 
         Column(
@@ -80,7 +141,6 @@ fun MainScreen() {
                 .fillMaxHeight()
                 .border(width = 2.dp, color = ColorDivider)
         ) {
-            val clipboardPad by mainViewModel.clipboardPad.collectAsState()
             PadScreen(
                 onSelect = { padNumber, isMain ->
                     mainViewModel.selectPad(padNumber, selectedKit, isMain)
@@ -100,48 +160,15 @@ fun MainScreen() {
                 onUnregisterPadBounds = mainViewModel::unregisterPadBounds
             )
 
-            WaveDetailsScreen(
-                wave = selectedWave,
-                device = device
-            )
+            if (bottomEntry.docked) {
+                bottomContent()
+            }
         }
 
-        Column(Modifier.weight(0.15f).fillMaxHeight()) {
-            val clipboardKit by mainViewModel.clipboardKit.collectAsState()
-            ListsScreen(
-                kits = kits,
-                waveListsHolder = waveListsHolder,
-                onKitSelected = mainViewModel::selectKit,
-                onWaveSelected = { listedWave ->
-                    mainViewModel.selectWave(waves, listedWave)
-                },
-                onCopyKit = mainViewModel::copyKit,
-                onPasteKit = mainViewModel::pasteKit,
-                hasCopiedKit = clipboardKit != null,
-                onMoveKit = mainViewModel::moveKit,
-                waveUsageMap = waveUsageMap,
-                onSelectKitByName = mainViewModel::selectKitByName,
-                onRenameCategory = mainViewModel::renameCategory,
-                onImportWave = mainViewModel::importWave,
-                importError = importError,
-                onClearImportError = mainViewModel::clearImportError,
-                onRequestDeleteWave = mainViewModel::requestDeleteWave,
-                onConfirmDeleteWave = mainViewModel::confirmDeleteWave,
-                deleteConfirm = deleteConfirm,
-                deleteBlocked = deleteBlocked,
-                deleteError = deleteError,
-                onClearDeleteConfirm = mainViewModel::clearDeleteConfirm,
-                onClearDeleteBlocked = mainViewModel::clearDeleteBlocked,
-                onClearDeleteError = mainViewModel::clearDeleteError,
-                selectedTab = listsSelectedTab,
-                onSelectedTabChange = mainViewModel::selectListsTab,
-                selectedWaveNumber = selectedWave?.number,
-                selectedKitIndex = selectedKitIndex,
-                onStartWaveDrag = mainViewModel::startWaveDrag,
-                onUpdateDragPosition = mainViewModel::updateDragPosition,
-                onEndWaveDrag = mainViewModel::endWaveDrag,
-                onCancelWaveDrag = mainViewModel::cancelWaveDrag
-            )
+        if (rightEntry.docked) {
+            Column(Modifier.weight(0.15f).fillMaxHeight()) {
+                rightContent()
+            }
         }
     }
 
@@ -162,4 +189,8 @@ fun MainScreen() {
         }
     }
     }
+
+    DetachablePanelWindow(leftEntry, PanelRegion.Left, leftContent)
+    DetachablePanelWindow(rightEntry, PanelRegion.Right, rightContent)
+    DetachablePanelWindow(bottomEntry, PanelRegion.Bottom, bottomContent)
 }

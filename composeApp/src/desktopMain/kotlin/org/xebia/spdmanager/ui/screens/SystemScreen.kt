@@ -13,6 +13,10 @@ import org.xebia.spdmanager.ui.components.system.ClickView
 import org.xebia.spdmanager.ui.components.system.KitChainView
 import org.xebia.spdmanager.ui.components.system.VisualControlView
 import org.xebia.spdmanager.ui.components.system.masterfx.MasterEffectView
+import org.xebia.spdmanager.ui.panels.DetachablePanelWindow
+import org.xebia.spdmanager.ui.panels.PanelLayoutState
+import org.xebia.spdmanager.ui.panels.PanelRegion
+import org.xebia.spdmanager.ui.panels.ScreenId
 import org.xebia.spdmanager.viewmodel.SystemViewModel
 
 @Composable
@@ -39,11 +43,9 @@ fun SystemScreen() {
         return
     }
 
-    Row(modifier = Modifier.fillMaxSize()) {
+    val leftContent: @Composable () -> Unit = {
         Column(
-            modifier = Modifier
-                .weight(0.2f)
-                .fillMaxHeight(),
+            modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Box(modifier = Modifier.weight(0.6f).border(width = Spacing.s, color = ColorDivider)) {
@@ -60,6 +62,38 @@ fun SystemScreen() {
                 )
             }
         }
+    }
+
+    val bottomContent: @Composable () -> Unit = {
+        AudioView(
+            audioConfig = config.systemAudioConfig,
+            onUpdate = systemViewModel::updateSystemAudioConfig
+        )
+    }
+
+    val rightContent: @Composable () -> Unit = {
+        KitChainView(
+            kitChains = config.kitChains,
+            kits = kits,
+            onMoveInChain = systemViewModel::moveKitInChain,
+            onReplaceInChain = systemViewModel::setKitInChain
+        )
+    }
+
+    val leftEntry = PanelLayoutState.entry(ScreenId.System, PanelRegion.Left)
+    val rightEntry = PanelLayoutState.entry(ScreenId.System, PanelRegion.Right)
+    val bottomEntry = PanelLayoutState.entry(ScreenId.System, PanelRegion.Bottom)
+
+    Row(modifier = Modifier.fillMaxSize()) {
+        if (leftEntry.docked) {
+            Column(
+                modifier = Modifier
+                    .weight(0.2f)
+                    .fillMaxHeight()
+            ) {
+                leftContent()
+            }
+        }
         Column(modifier = Modifier.weight(0.6f)) {
             Row(modifier = Modifier.weight(0.75f).border(width = Spacing.s, color = ColorDivider)) {
                 MasterEffectView(
@@ -67,25 +101,25 @@ fun SystemScreen() {
                     onUpdate = systemViewModel::updateMasterEffectConfig
                 )
             }
-            Row(modifier = Modifier.weight(0.25f).border(width = Spacing.s, color = ColorDivider)) {
-                AudioView(
-                    audioConfig = config.systemAudioConfig,
-                    onUpdate = systemViewModel::updateSystemAudioConfig
-                )
+            if (bottomEntry.docked) {
+                Row(modifier = Modifier.weight(0.25f).border(width = Spacing.s, color = ColorDivider)) {
+                    bottomContent()
+                }
             }
         }
-        Box(
-            modifier = Modifier
-                .weight(0.2f)
-                .fillMaxHeight()
-                .border(width = Spacing.s, color = ColorDivider)
-        ) {
-            KitChainView(
-                kitChains = config.kitChains,
-                kits = kits,
-                onMoveInChain = systemViewModel::moveKitInChain,
-                onReplaceInChain = systemViewModel::setKitInChain
-            )
+        if (rightEntry.docked) {
+            Box(
+                modifier = Modifier
+                    .weight(0.2f)
+                    .fillMaxHeight()
+                    .border(width = Spacing.s, color = ColorDivider)
+            ) {
+                rightContent()
+            }
         }
     }
+
+    DetachablePanelWindow(leftEntry, PanelRegion.Left, leftContent)
+    DetachablePanelWindow(rightEntry, PanelRegion.Right, rightContent)
+    DetachablePanelWindow(bottomEntry, PanelRegion.Bottom, bottomContent)
 }
