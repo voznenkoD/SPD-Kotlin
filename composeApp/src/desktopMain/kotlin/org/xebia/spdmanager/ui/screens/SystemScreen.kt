@@ -83,7 +83,8 @@ fun SystemScreen() {
             KitChainView(
                 kitChains = config.kitChains,
                 kits = kits,
-                onUpdate = systemViewModel::updateKitChains
+                onMoveInChain = systemViewModel::moveKitInChain,
+                onReplaceInChain = systemViewModel::setKitInChain
             )
         }
     }

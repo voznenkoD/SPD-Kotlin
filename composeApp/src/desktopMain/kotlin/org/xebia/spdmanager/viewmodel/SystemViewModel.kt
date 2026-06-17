@@ -59,4 +59,29 @@ class SystemViewModel(private val deviceManager: DeviceManager) {
             deviceManager.updateSystemConfig(_systemConfig.value!!)
         }
     }
+
+    fun setKitInChain(chainKey: Char, index: Int, newRef: Int) {
+        _systemConfig.value?.let { config ->
+            val chain = config.kitChains[chainKey] ?: return
+            if (index !in chain.kitRefs.indices) return
+            val refs = chain.kitRefs.toMutableList()
+            refs[index] = newRef
+            val newChains = config.kitChains.toMutableMap()
+            newChains[chainKey] = chain.copy(kitRefs = refs)
+            updateKitChains(newChains)
+        }
+    }
+
+    fun moveKitInChain(chainKey: Char, from: Int, to: Int) {
+        _systemConfig.value?.let { config ->
+            val chain = config.kitChains[chainKey] ?: return
+            if (from !in chain.kitRefs.indices || to !in chain.kitRefs.indices || from == to) return
+            val refs = chain.kitRefs.toMutableList()
+            val ref = refs.removeAt(from)
+            refs.add(to, ref)
+            val newChains = config.kitChains.toMutableMap()
+            newChains[chainKey] = chain.copy(kitRefs = refs)
+            updateKitChains(newChains)
+        }
+    }
 }

@@ -17,17 +17,21 @@ import org.xebia.spdmanager.ui.theme.*
 
 @Composable
 fun <T> DropdownSelector(
-    label: String,
+    label: String? = null,
     selectedItem: T,
     onItemSelected: (T) -> Unit,
     items: List<T>,
     content: @Composable (T) -> Unit = { item -> Text(item.toString(), style = Typography.body, color = ColorTextPrimary) },
-    width: Dp = 150.dp
+    width: Dp? = 150.dp,
+    modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    Column(Modifier.width(width)) {
-        Text(label, style = Typography.label, color = ColorTextSecondary, modifier = Modifier.padding(bottom = Spacing.s))
+    val widthModifier = if (width != null) Modifier.width(width) else Modifier.fillMaxWidth()
+    Column(modifier.then(widthModifier)) {
+        if (label != null) {
+            Text(label, style = Typography.label, color = ColorTextSecondary, modifier = Modifier.padding(bottom = Spacing.s))
+        }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -50,7 +54,7 @@ fun <T> DropdownSelector(
             modifier = Modifier
                 .border(BorderStroke(1.dp, ColorDivider))
                 .background(ColorSurface)
-                .width(width)
+                .then(if (width != null) Modifier.width(width) else Modifier)
         ) {
             items.forEach { item ->
                 DropdownMenuItem(
