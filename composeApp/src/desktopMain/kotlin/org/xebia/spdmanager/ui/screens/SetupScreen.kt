@@ -29,7 +29,7 @@ fun SetupScreen() {
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        Row(modifier = Modifier.weight(0.7f).fillMaxWidth()) {
+        Row(modifier = Modifier.weight(0.75f).fillMaxWidth()) {
             Column(
                 modifier = Modifier.weight(0.2f).fillMaxHeight().border(width = Spacing.s, color = ColorDivider)
             ) {
@@ -55,7 +55,7 @@ fun SetupScreen() {
                 )
             }
         }
-        Row(modifier = Modifier.weight(0.3f).fillMaxWidth().border(width = Spacing.s, color = ColorDivider)) {
+        Row(modifier = Modifier.weight(0.25f).fillMaxWidth().border(width = Spacing.s, color = ColorDivider)) {
             val currentPadControl = padFsControl!![selectedPadNumber] ?: return@Row
 
             PadSetupView(
