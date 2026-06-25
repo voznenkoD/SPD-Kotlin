@@ -8,11 +8,14 @@ import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.*
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
@@ -64,6 +67,11 @@ fun ListsScreen(
 ) {
     var sortingMode by remember { mutableStateOf(SortingMode.BY_CATEGORY_NAME) }
     var showImportCategoryDialog by remember { mutableStateOf(false) }
+    var searchQuery by remember { mutableStateOf("") }
+
+    // Search applies only to the Waves tab; clear it whenever the tab changes (no persistence).
+    LaunchedEffect(selectedTab) { searchQuery = "" }
+    val query = searchQuery.trim()
 
     val categoryNames = waveListsHolder.wavesByNamePerCategory.keys.map { it.name }
     val onRequestImport: () -> Unit = { showImportCategoryDialog = true }
@@ -121,54 +129,92 @@ fun ListsScreen(
                 }
             }
             1 -> {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    when (sortingMode) {
-                        SortingMode.BY_NAME -> WaveListByName(
-                            waveListsHolder.wavesByName,
-                            onWaveSelected,
-                            waveUsageMap,
-                            onSelectKitByName,
-                            sortingMenuItems,
-                            onRequestImport,
-                            onRequestDeleteWave,
-                            selectedWaveNumber,
-                            onStartWaveDrag,
-                            onUpdateDragPosition,
-                            onEndWaveDrag,
-                            onCancelWaveDrag
-                        )
+                Column(modifier = Modifier.fillMaxSize()) {
+                    WaveSearchField(
+                        query = searchQuery,
+                        onQueryChange = { searchQuery = it },
+                        onClear = { searchQuery = "" }
+                    )
+                    Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                        when (sortingMode) {
+                            SortingMode.BY_NAME -> {
+                                val filtered = remember(query, waveListsHolder) {
+                                    waveListsHolder.wavesByName.filteredByName(query)
+                                }
+                                if (query.isNotBlank() && filtered.isEmpty()) {
+                                    NoWavesFound(sortingMenuItems, onRequestImport)
+                                } else {
+                                    WaveListByName(
+                                        filtered,
+                                        onWaveSelected,
+                                        waveUsageMap,
+                                        onSelectKitByName,
+                                        sortingMenuItems,
+                                        onRequestImport,
+                                        onRequestDeleteWave,
+                                        selectedWaveNumber,
+                                        onStartWaveDrag,
+                                        onUpdateDragPosition,
+                                        onEndWaveDrag,
+                                        onCancelWaveDrag
+                                    )
+                                }
+                            }
 
-                        SortingMode.BY_CATEGORY_NAME -> WaveListByCategory(
-                            waveListsHolder.wavesByNamePerCategory.sortedForNameView(),
-                            onWaveSelected,
-                            waveUsageMap,
-                            onSelectKitByName,
-                            sortingMenuItems,
-                            onRenameCategory,
-                            onRequestImport,
-                            onRequestDeleteWave,
-                            selectedWaveNumber,
-                            onStartWaveDrag,
-                            onUpdateDragPosition,
-                            onEndWaveDrag,
-                            onCancelWaveDrag
-                        )
+                            SortingMode.BY_CATEGORY_NAME -> {
+                                val filtered = remember(query, waveListsHolder) {
+                                    waveListsHolder.wavesByNamePerCategory
+                                        .sortedForNameView()
+                                        .filteredByName(query)
+                                }
+                                if (query.isNotBlank() && filtered.values.all { it.isEmpty() }) {
+                                    NoWavesFound(sortingMenuItems, onRequestImport)
+                                } else {
+                                    WaveListByCategory(
+                                        filtered,
+                                        onWaveSelected,
+                                        waveUsageMap,
+                                        onSelectKitByName,
+                                        sortingMenuItems,
+                                        onRenameCategory,
+                                        onRequestImport,
+                                        onRequestDeleteWave,
+                                        selectedWaveNumber,
+                                        onStartWaveDrag,
+                                        onUpdateDragPosition,
+                                        onEndWaveDrag,
+                                        onCancelWaveDrag,
+                                        searchQuery = query
+                                    )
+                                }
+                            }
 
-                        SortingMode.BY_CATEGORY_NUM -> WaveListByCategory(
-                            waveListsHolder.wavesByNumPerCategory,
-                            onWaveSelected,
-                            waveUsageMap,
-                            onSelectKitByName,
-                            sortingMenuItems,
-                            onRenameCategory,
-                            onRequestImport,
-                            onRequestDeleteWave,
-                            selectedWaveNumber,
-                            onStartWaveDrag,
-                            onUpdateDragPosition,
-                            onEndWaveDrag,
-                            onCancelWaveDrag
-                        )
+                            SortingMode.BY_CATEGORY_NUM -> {
+                                val filtered = remember(query, waveListsHolder) {
+                                    waveListsHolder.wavesByNumPerCategory.filteredByName(query)
+                                }
+                                if (query.isNotBlank() && filtered.values.all { it.isEmpty() }) {
+                                    NoWavesFound(sortingMenuItems, onRequestImport)
+                                } else {
+                                    WaveListByCategory(
+                                        filtered,
+                                        onWaveSelected,
+                                        waveUsageMap,
+                                        onSelectKitByName,
+                                        sortingMenuItems,
+                                        onRenameCategory,
+                                        onRequestImport,
+                                        onRequestDeleteWave,
+                                        selectedWaveNumber,
+                                        onStartWaveDrag,
+                                        onUpdateDragPosition,
+                                        onEndWaveDrag,
+                                        onCancelWaveDrag,
+                                        searchQuery = query
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -255,6 +301,90 @@ private fun Map<Category, List<ListedWave>>.sortedForNameView(): Map<Category, L
         .sortedWith(compareBy({ it.key.name != "Default" }, { it.key.name.lowercase() }))
         .associateTo(LinkedHashMap()) { it.key to it.value }
 
+// Case-insensitive substring match anywhere in the wave name (not prefix-based). Blank query = no filtering.
+private fun List<ListedWave>.filteredByName(query: String): List<ListedWave> =
+    if (query.isBlank()) this else filter { it.name.contains(query, ignoreCase = true) }
+
+// Filters each category's waves while preserving every category key and its order, so categories
+// with zero matches remain shown (empty) rather than being dropped.
+private fun Map<Category, List<ListedWave>>.filteredByName(query: String): Map<Category, List<ListedWave>> =
+    if (query.isBlank()) this
+    else mapValues { (_, waves) -> waves.filteredByName(query) }
+
+// Built on BasicTextField to match the app's other editable fields (e.g. KitScreen), rather than
+// introducing a second Material3 TextField styling system.
+@Composable
+private fun WaveSearchField(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    onClear: () -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(Spacing.s),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        BasicTextField(
+            value = query,
+            onValueChange = onQueryChange,
+            singleLine = true,
+            textStyle = Typography.body.copy(color = ColorTextPrimary),
+            cursorBrush = SolidColor(ColorAccentOrange),
+            modifier = Modifier
+                .weight(1f)
+                .height(Heights.button)
+                .border(1.dp, ColorDivider, ShapeDefault)
+                .padding(horizontal = Spacing.l, vertical = Spacing.m),
+            decorationBox = { innerTextField ->
+                Box(contentAlignment = Alignment.CenterStart) {
+                    if (query.isEmpty()) {
+                        Text(
+                            text = "Search waves by name",
+                            style = Typography.body,
+                            color = ColorTextSecondary
+                        )
+                    }
+                    innerTextField()
+                }
+            }
+        )
+        if (query.isNotEmpty()) {
+            Text(
+                text = "✕",
+                style = Typography.body,
+                color = ColorAccentOrange,
+                modifier = Modifier
+                    .clickable { onClear() }
+                    .padding(horizontal = Spacing.l)
+            )
+        }
+    }
+}
+
+@Composable
+private fun NoWavesFound(
+    sortingMenuItems: () -> List<ContextMenuItem>,
+    onRequestImport: () -> Unit
+) {
+    // Keep the right-click affordances (view modes, Import Wave…) available on the empty-results
+    // screen so a search-then-import flow isn't blocked.
+    ContextMenuArea(
+        items = {
+            buildList {
+                addAll(sortingMenuItems())
+                add(ContextMenuItem("Import Wave…") { onRequestImport() })
+            }
+        }
+    ) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text(
+                text = "No waves found",
+                style = Typography.body,
+                color = ColorTextSecondary
+            )
+        }
+    }
+}
+
 @Composable
 fun WaveListByName(
     waves: List<ListedWave>,
@@ -272,7 +402,9 @@ fun WaveListByName(
 ) {
     val listState = rememberLazyListState()
 
-    LaunchedEffect(selectedWaveNumber, waves) {
+    // Key only on the selection: the `waves` list identity changes on every search keystroke, and
+    // keying on it would re-fire this effect per character, scrolling the list mid-typing.
+    LaunchedEffect(selectedWaveNumber) {
         val target = selectedWaveNumber ?: return@LaunchedEffect
         val index = waves.indexOfFirst { it.number == target }
         if (index >= 0 && listState.layoutInfo.visibleItemsInfo.none { it.index == index }) {
@@ -315,27 +447,52 @@ fun WaveListByCategory(
     onStartWaveDrag: (Int, String) -> Unit = { _, _ -> },
     onUpdateDragPosition: (Offset) -> Unit = {},
     onEndWaveDrag: () -> Unit = {},
-    onCancelWaveDrag: () -> Unit = {}
+    onCancelWaveDrag: () -> Unit = {},
+    searchQuery: String = ""
 ) {
     val expandedCategories = remember { mutableStateMapOf<String, Boolean>().apply { put("Default", true) } }
+    // Transient collapse overrides (true = collapsed) used only while a search is active, so the
+    // persisted manual state in expandedCategories is never touched and is restored verbatim once
+    // the query is cleared.
+    val searchExpandOverride = remember { mutableStateMapOf<String, Boolean>() }
     var renameDialogFor by remember { mutableStateOf<String?>(null) }
     val listState = rememberLazyListState()
+    val queryActive = searchQuery.isNotBlank()
+
+    // Reset the transient overrides whenever the query text changes (including when it is cleared),
+    // so a collapse chosen for one search term doesn't leak into a different term within the same
+    // active session.
+    LaunchedEffect(searchQuery) { searchExpandOverride.clear() }
+
+    // Display-only collapse state. During a search a category is auto-expanded when it has matches,
+    // unless the user explicitly toggled it this search session; otherwise the persisted manual
+    // state drives it. Reading/writing this never mutates expandedCategories while searching.
+    fun isCategoryCollapsed(name: String, waves: List<ListedWave>): Boolean =
+        if (queryActive) searchExpandOverride[name] ?: waves.isEmpty()
+        else expandedCategories[name] != true
 
     val existingNames = wavesByCategory.keys.map { it.name }
 
-    LaunchedEffect(selectedWaveNumber, wavesByCategory) {
+    // Key only on the selection: wavesByCategory is rebuilt on every search keystroke, and keying
+    // on it would re-fire this effect per character — reverting in-session collapses and (after the
+    // query is cleared) re-expanding categories in the persisted manual state.
+    LaunchedEffect(selectedWaveNumber) {
         val target = selectedWaveNumber ?: return@LaunchedEffect
         val containing = wavesByCategory.entries.firstOrNull { (_, waves) ->
             waves.any { it.number == target }
         } ?: return@LaunchedEffect
-        if (expandedCategories[containing.key.name] != true) {
+        // Reveal the containing category, writing to the transient override during search so the
+        // persisted manual state stays intact.
+        if (queryActive) {
+            searchExpandOverride[containing.key.name] = false
+        } else if (expandedCategories[containing.key.name] != true) {
             expandedCategories[containing.key.name] = true
         }
         var idx = 0
         var found = -1
         for ((cat, waves) in wavesByCategory) {
             idx++
-            val expanded = expandedCategories[cat.name] == true
+            val expanded = !isCategoryCollapsed(cat.name, waves)
             if (expanded) {
                 val waveIdx = waves.indexOfFirst { it.number == target }
                 if (waveIdx >= 0) {
@@ -352,7 +509,7 @@ fun WaveListByCategory(
 
     LazyColumn(modifier = Modifier.fillMaxSize(), state = listState) {
         wavesByCategory.forEach { (category, waves) ->
-            val isCollapsed = expandedCategories[category.name] != true
+            val isCollapsed = isCategoryCollapsed(category.name, waves)
             item {
                 ContextMenuArea(
                     items = {
@@ -365,7 +522,15 @@ fun WaveListByCategory(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { expandedCategories[category.name] = isCollapsed }
+                            .clickable {
+                                // While searching, toggle only the transient override so manual
+                                // expand/collapse state survives the search untouched.
+                                if (queryActive) {
+                                    searchExpandOverride[category.name] = !isCollapsed
+                                } else {
+                                    expandedCategories[category.name] = isCollapsed
+                                }
+                            }
                             .padding(8.dp),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
@@ -412,6 +577,8 @@ fun WaveListByCategory(
                 val wasExpanded = expandedCategories[oldName] == true
                 expandedCategories.remove(oldName)
                 if (wasExpanded) expandedCategories[newName] = true
+                // Carry any in-session search collapse override to the new name too.
+                searchExpandOverride.remove(oldName)?.let { searchExpandOverride[newName] = it }
                 onRenameCategory(oldName, newName)
                 renameDialogFor = null
             }
