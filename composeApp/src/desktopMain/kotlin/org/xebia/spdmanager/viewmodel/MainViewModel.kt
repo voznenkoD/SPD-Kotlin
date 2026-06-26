@@ -109,6 +109,17 @@ class MainViewModel(
         _listsSelectedTab.value = index
     }
 
+    /**
+     * Apply an edit to the currently selected wave: update it in the device (in memory) and refresh
+     * the selection so the UI reflects the change immediately. Persistence to disk happens only when
+     * the user explicitly saves (DeviceManager.saveDevice()) — this never writes to disk.
+     */
+    fun updateSelectedWave(transform: (Wave) -> Wave) {
+        val current = _selectedWave.value ?: return
+        deviceManager.updateWave(current.number, transform)
+        _selectedWave.value = deviceManager.device?.waves?.find { it.number == current.number }
+    }
+
     fun renameCategory(oldName: String, newName: String) {
         deviceManager.renameCategory(oldName, newName)
     }
@@ -282,23 +293,5 @@ class MainViewModel(
     fun cancelWaveDrag() {
         _dragInfo.value = null
         _dragPosition.value = null
-    }
-
-    fun toggleMainSub() {
-        _selectedPad.value?.let { pad ->
-            val newIsMain = !_isMainSelected.value
-            _isMainSelected.value = newIsMain
-
-            val waveNumber = if (newIsMain) {
-                pad.main.wave
-            } else {
-                pad.sub.wave
-            }
-
-            waveNumber?.let { number ->
-                val waves = deviceManager.device?.waves ?: emptyList()
-                _selectedWave.value = waves.find { it.number == number }
-            }
-        }
     }
 }

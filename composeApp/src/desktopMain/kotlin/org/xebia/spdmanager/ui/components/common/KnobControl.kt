@@ -88,17 +88,26 @@ fun KnobControl(
             modifier = Modifier
                 .size(knobSize)
                 .pointerInput(valueRange, steps) {
-                    detectVerticalDragGestures { _, dragAmount ->
-                        val range = valueRange.endInclusive - valueRange.start
-                        val delta = -(dragAmount / DRAG_PIXELS_FOR_FULL_RANGE) * range
-                        var newValue = (currentValue + delta).coerceIn(valueRange.start, valueRange.endInclusive)
-                        if (steps != null && steps > 0) {
-                            val stepSize = range / steps
-                            newValue = (((newValue - valueRange.start) / stepSize).toInt() * stepSize + valueRange.start)
+                    // Accumulate the raw (unsnapped) value across the gesture so small drag deltas
+                    // aren't repeatedly rounded back to the same step — otherwise stepped knobs with
+                    // small ranges (e.g. Beat 1..16, Measure 1..10) feel unresponsive.
+                    var dragAccumulator = currentValue
+                    detectVerticalDragGestures(
+                        onDragStart = { dragAccumulator = currentValue },
+                        onVerticalDrag = { _, dragAmount ->
+                            val range = valueRange.endInclusive - valueRange.start
+                            val delta = -(dragAmount / DRAG_PIXELS_FOR_FULL_RANGE) * range
+                            dragAccumulator = (dragAccumulator + delta)
                                 .coerceIn(valueRange.start, valueRange.endInclusive)
+                            var newValue = dragAccumulator
+                            if (steps != null && steps > 0) {
+                                val stepSize = range / steps
+                                newValue = (((newValue - valueRange.start) / stepSize).toInt() * stepSize + valueRange.start)
+                                    .coerceIn(valueRange.start, valueRange.endInclusive)
+                            }
+                            currentOnValueChange(newValue)
                         }
-                        currentOnValueChange(newValue)
-                    }
+                    )
                 }
         ) {
             Canvas(modifier = Modifier.fillMaxSize().padding((6 * scale).dp)) {

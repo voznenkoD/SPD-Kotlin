@@ -82,7 +82,8 @@ fun MainScreen() {
     val bottomContent: @Composable () -> Unit = {
         WaveDetailsScreen(
             wave = selectedWave,
-            device = device
+            device = device,
+            onWaveChange = { updated -> mainViewModel.updateSelectedWave { updated } }
         )
     }
 

@@ -46,7 +46,7 @@ fun DisplayWaveformWithGrid(
             val canvasWidth = size.width
             val canvasHeight = size.height
             val midY = canvasHeight / 2f
-            val skiaFont = Font(null, 20f)
+            val skiaFont = Font(null, 11f)
             val skiaPaint = Paint().apply { color = 0xFF1A1A1A.toInt() }
 
             drawIntoCanvas { canvas ->
