@@ -9,8 +9,10 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.window.*
+import java.io.File
 import org.xebia.spdmanager.service.DeviceManager
 import org.xebia.spdmanager.service.openFolderDialog
+import org.xebia.spdmanager.ui.components.common.SaveAsDialog
 import org.xebia.spdmanager.ui.panels.PanelIconStrip
 import org.xebia.spdmanager.ui.panels.PanelLayoutState
 import org.xebia.spdmanager.ui.panels.PanelRegion
@@ -35,15 +37,25 @@ private fun runApp() = application {
     CompositionLocalProvider(LocalDeviceManager provides deviceManager) {
         Window(title = "SPD Manager", onCloseRequest = ::exitApplication, state = rememberWindowState(placement = WindowPlacement.Maximized)) {
             var scaleFactor by remember { mutableFloatStateOf(1f) }
+            // Non-null while the Save As dialog is open; holds the chosen destination parent folder.
+            var saveAsParent by remember { mutableStateOf<String?>(null) }
+            // True while a Save As copy is running; blocks other File actions so they can't write/read
+            // the source folder concurrently with the copy.
+            var saveAsInProgress by remember { mutableStateOf(false) }
             MenuBar {
                 Menu("File", mnemonic = 'F') {
-                    Item("Choose folder", onClick = {
+                    Item("Choose folder", enabled = !saveAsInProgress, onClick = {
                         openFolderDialog { folderPath ->
                             deviceManager.readDevice(folderPath)
                         }
                     })
-                    Item("Save", onClick = {
+                    Item("Save", enabled = !saveAsInProgress, onClick = {
                         deviceManager.saveDevice()
+                    })
+                    Item("Save As…", enabled = deviceManager.device != null && !saveAsInProgress, onClick = {
+                        openFolderDialog { folderPath ->
+                            saveAsParent = folderPath
+                        }
                     })
                 }
                 Menu("View", mnemonic = 'V') {
@@ -76,6 +88,16 @@ private fun runApp() = application {
             }
             CompositionLocalProvider(LocalScale provides scaleFactor) {
                 App(onMeasured = { widthPx -> scaleFactor = (widthPx / BASE_WIDTH).coerceIn(0.75f, 1.5f) })
+
+                saveAsParent?.let { parent ->
+                    SaveAsDialog(
+                        parentPath = parent,
+                        defaultName = File(deviceManager.device?.rootPath ?: "").name,
+                        deviceManager = deviceManager,
+                        onDismiss = { saveAsParent = null },
+                        onCopyingChange = { saveAsInProgress = it }
+                    )
+                }
             }
         }
     }

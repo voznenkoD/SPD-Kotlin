@@ -17,6 +17,8 @@ import org.xebia.spdmanager.model.setup.SetupConfig
 import org.xebia.spdmanager.model.setup.fromRaw
 import org.xebia.spdmanager.model.setup.toRaw
 import org.xebia.spdmanager.model.system.SystemConfig
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.File
 
 class DeviceManager {
@@ -197,13 +199,16 @@ class DeviceManager {
             WavValidationResult.Valid -> Unit
         }
 
+        // Trim to the device's 12-char limit FIRST, then run the duplicate check against the trimmed
+        // name so two differently-named sources that collapse to the same 12-char name are rejected.
         val sanitizedName = sanitizeWaveName(sourceFile.nameWithoutExtension).take(12)
         if (sanitizedName.isBlank()) {
             return ImportResult.Error("Unable to derive a valid wave name from filename")
         }
         if (currentDevice.waves.any { it.name == sanitizedName }) {
             return ImportResult.Error(
-                "A wave named '$sanitizedName' already exists. Please rename the source file and try again."
+                "A wave named '$sanitizedName' already exists (names are limited to 12 characters). " +
+                    "Please rename the source file and try again."
             )
         }
 
@@ -217,7 +222,9 @@ class DeviceManager {
         val tag = currentDevice.waveLists.wavesByNamePerCategory.keys
             .firstOrNull { it.name == categoryName }?.order ?: 0
 
-        val sanitizedFilename = sanitizeWaveName(sourceFile.nameWithoutExtension).ifBlank { "wave" } + ".wav"
+        // Use the already-sanitized, 12-char-trimmed name (the device limit) for the on-disk file too,
+        // so the audio filename and the metadata name match and both respect the 12-char limit.
+        val sanitizedFilename = "$sanitizedName.wav"
         val relativePath = "$folderStr/$sanitizedFilename"
 
         return try {
@@ -339,9 +346,12 @@ class DeviceManager {
 
     fun saveDevice() {
         val dev = device ?: return
-        val rootPath = dev.rootPath
-        if (rootPath.isBlank()) return
+        if (dev.rootPath.isBlank()) return
+        saveDeviceTo(dev, dev.rootPath)
+    }
 
+    /** Writes the given device's in-memory metadata (.spd/system files) into [rootPath]. */
+    private fun saveDeviceTo(dev: Device, rootPath: String) {
         // Convert domain → raw
         val setupPrm = dev.setupConfig.toRaw()
         val sysPrm = dev.systemConfig.toRawSysPrm()
@@ -372,6 +382,72 @@ class DeviceManager {
             val file = (wave.number - 1) % 100
             val waveFile = File("$rootPath/WAVE/PRM/%02d/%02d.spd".format(folder, file))
             xmlParser.writeWaveFile(wave.toRaw(), waveFile)
+        }
+    }
+
+    sealed class SaveAsResult {
+        object Success : SaveAsResult()
+        data class Error(val message: String) : SaveAsResult()
+    }
+
+    /**
+     * Copies the full current device (all .wav audio + every metadata file) to [targetRootPath],
+     * writes the current in-memory metadata into the copy (capturing unsaved edits), then rebases
+     * the current device to the new location. The original location is left untouched.
+     *
+     * Refuses if the target already exists and is non-empty. [onProgress] reports 0f..1f by bytes.
+     */
+    suspend fun saveDeviceAs(targetRootPath: String, onProgress: (Float) -> Unit): SaveAsResult {
+        val currentDevice = device ?: return SaveAsResult.Error("No device loaded")
+        val sourceRoot = currentDevice.rootPath
+        if (sourceRoot.isBlank()) return SaveAsResult.Error("No device loaded")
+
+        // canonicalFile can throw IOException (e.g. unmounted/broken path); resolve safely and return
+        // an Error rather than letting it escape this suspend fun (which would leave the UI stuck).
+        val source = runCatching { File(sourceRoot).canonicalFile }.getOrNull()
+            ?: return SaveAsResult.Error("Cannot resolve the current device folder.")
+        val target = runCatching { File(targetRootPath).canonicalFile }.getOrNull()
+            ?: return SaveAsResult.Error("Cannot resolve the target folder:\n$targetRootPath")
+
+        // Never copy into the source itself or a folder nested under it — that would alter the
+        // original device (violating "original untouched") and make walkTopDown duplicate endlessly.
+        if (target == source || target.path.startsWith(source.path + File.separator)) {
+            return SaveAsResult.Error("Target must be outside the current device folder.")
+        }
+        // Refuse a target that already exists as a file or as a non-empty directory.
+        if (target.exists() && (target.isFile || target.listFiles()?.isNotEmpty() == true)) {
+            return SaveAsResult.Error("Target already exists and is not empty:\n${target.path}")
+        }
+
+        // Only roll back (delete) a target folder we actually created, never pre-existing user data.
+        val createdTarget = !target.exists()
+
+        return try {
+            withContext(Dispatchers.IO) {
+                val files = source.walkTopDown().filter { it.isFile }.toList()
+                val totalBytes = files.sumOf { it.length() }.coerceAtLeast(1L)
+                var copiedBytes = 0L
+                onProgress(0f)
+                for (file in files) {
+                    val relative = file.relativeTo(source).path
+                    val destFile = File(target, relative)
+                    destFile.parentFile?.mkdirs()
+                    file.copyTo(destFile, overwrite = true)
+                    copiedBytes += file.length()
+                    onProgress((copiedBytes.toFloat() / totalBytes).coerceIn(0f, 1f))
+                }
+                // Overwrite the copied metadata with the captured device model (captures unsaved edits).
+                saveDeviceTo(currentDevice, target.path)
+            }
+            withContext(Dispatchers.Main) {
+                device = currentDevice.copy(rootPath = target.path)
+            }
+            onProgress(1f)
+            SaveAsResult.Success
+        } catch (e: Exception) {
+            // Don't leave a half-copied, corrupt device behind.
+            if (createdTarget) runCatching { target.deleteRecursively() }
+            SaveAsResult.Error("Save As failed: ${e.message}")
         }
     }
 }

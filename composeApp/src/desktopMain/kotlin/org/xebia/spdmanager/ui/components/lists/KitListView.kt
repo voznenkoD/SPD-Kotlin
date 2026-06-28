@@ -129,6 +129,11 @@ fun KitListView(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
+                            text = "${index + 1}. ",
+                            fontSize = Typography.bodySize,
+                            color = ColorAccentOrange
+                        )
+                        Text(
                             text = kit.name,
                             fontSize = Typography.bodySize,
                             color = if (isSelected) ColorTextOnDark else ColorTextPrimary
