@@ -2,17 +2,22 @@ package org.xebia.spdmanager.ui.components.pad
 
 import androidx.compose.foundation.ContextMenuArea
 import androidx.compose.foundation.ContextMenuItem
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.draganddrop.dragAndDropTarget
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draganddrop.DragAndDropEvent
+import androidx.compose.ui.draganddrop.DragAndDropTarget
+import androidx.compose.ui.draganddrop.awtTransferable
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.input.pointer.PointerIcon
@@ -26,6 +31,8 @@ import org.xebia.spdmanager.ui.theme.*
 import org.xebia.spdmanager.model.kit.Kit
 import org.xebia.spdmanager.model.kit.pad.Pad
 import org.xebia.spdmanager.model.kit.pad.PadNumber
+import java.awt.datatransfer.DataFlavor
+import java.io.File
 
 @Composable
 fun PadScreen(
@@ -42,7 +49,8 @@ fun PadScreen(
     isDragActive: Boolean = false,
     dragPosition: Offset? = null,
     onRegisterPadBounds: (PadNumber, Rect, Rect) -> Unit = { _, _, _ -> },
-    onUnregisterPadBounds: (PadNumber) -> Unit = {}
+    onUnregisterPadBounds: (PadNumber) -> Unit = {},
+    onExternalWaveDrop: (PadNumber, Boolean, File) -> Unit = { _, _, _ -> }
 ) {
     if (kit != null) {
         val padEntries = kit.pads.entries.sortedBy { it.key.value }
@@ -67,7 +75,8 @@ fun PadScreen(
                                 onRemoveWave = onRemoveWave, onRemoveSubWave = onRemoveSubWave,
                                 hasCopiedPad = hasCopiedPad, waveNameLookup = waveNameLookup,
                                 isDragActive = isDragActive, dragPosition = dragPosition,
-                                onRegisterPadBounds = onRegisterPadBounds, onUnregisterPadBounds = onUnregisterPadBounds)
+                                onRegisterPadBounds = onRegisterPadBounds, onUnregisterPadBounds = onUnregisterPadBounds,
+                            onExternalWaveDrop = onExternalWaveDrop)
                         }
                     }
                 }
@@ -82,7 +91,8 @@ fun PadScreen(
                             onRemoveWave = onRemoveWave, onRemoveSubWave = onRemoveSubWave,
                             hasCopiedPad = hasCopiedPad, waveNameLookup = waveNameLookup,
                             isDragActive = isDragActive, dragPosition = dragPosition,
-                            onRegisterPadBounds = onRegisterPadBounds, onUnregisterPadBounds = onUnregisterPadBounds)
+                            onRegisterPadBounds = onRegisterPadBounds, onUnregisterPadBounds = onUnregisterPadBounds,
+                            onExternalWaveDrop = onExternalWaveDrop)
                     }
                 }
             }
@@ -96,7 +106,8 @@ fun PadScreen(
                             onRemoveWave = onRemoveWave, onRemoveSubWave = onRemoveSubWave,
                             hasCopiedPad = hasCopiedPad, waveNameLookup = waveNameLookup,
                             isDragActive = isDragActive, dragPosition = dragPosition,
-                            onRegisterPadBounds = onRegisterPadBounds, onUnregisterPadBounds = onUnregisterPadBounds)
+                            onRegisterPadBounds = onRegisterPadBounds, onUnregisterPadBounds = onUnregisterPadBounds,
+                            onExternalWaveDrop = onExternalWaveDrop)
                     }
                 }
             }
@@ -104,6 +115,7 @@ fun PadScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PadItem(
     pad: Pad,
@@ -121,7 +133,8 @@ fun PadItem(
     isDragActive: Boolean = false,
     dragPosition: Offset? = null,
     onRegisterPadBounds: (PadNumber, Rect, Rect) -> Unit = { _, _, _ -> },
-    onUnregisterPadBounds: (PadNumber) -> Unit = {}
+    onUnregisterPadBounds: (PadNumber) -> Unit = {},
+    onExternalWaveDrop: (PadNumber, Boolean, File) -> Unit = { _, _, _ -> }
 ) {
     val backgroundColor = if (isSelected) {
         ColorSurfaceSelected
@@ -132,8 +145,29 @@ fun PadItem(
     var mainBounds by remember { mutableStateOf(Rect.Zero) }
     var subBounds by remember { mutableStateOf(Rect.Zero) }
 
-    val mainHovered = isDragActive && dragPosition != null && mainBounds != Rect.Zero && mainBounds.contains(dragPosition)
-    val subHovered = isDragActive && dragPosition != null && subBounds != Rect.Zero && subBounds.contains(dragPosition)
+    // Hover state for OS file drags (the framework routes external drops to the zone under the
+    // cursor, so we track entry/exit per zone instead of hit-testing a position).
+    var mainExternalHover by remember { mutableStateOf(false) }
+    var subExternalHover by remember { mutableStateOf(false) }
+    val currentOnExternalWaveDrop by rememberUpdatedState(onExternalWaveDrop)
+
+    val mainHovered = (isDragActive && dragPosition != null && mainBounds != Rect.Zero && mainBounds.contains(dragPosition)) || mainExternalHover
+    val subHovered = (isDragActive && dragPosition != null && subBounds != Rect.Zero && subBounds.contains(dragPosition)) || subExternalHover
+
+    val mainDropTarget = remember(padNumber) {
+        padWaveDropTarget(
+            // Clear the sibling zone on enter so a stuck highlight can't linger when the drag moves
+            // directly between the adjacent main/sub zones.
+            onHoverChange = { hovering -> mainExternalHover = hovering; if (hovering) subExternalHover = false },
+            onWavDropped = { file -> currentOnExternalWaveDrop(padNumber, true, file) }
+        )
+    }
+    val subDropTarget = remember(padNumber) {
+        padWaveDropTarget(
+            onHoverChange = { hovering -> subExternalHover = hovering; if (hovering) mainExternalHover = false },
+            onWavDropped = { file -> currentOnExternalWaveDrop(padNumber, false, file) }
+        )
+    }
 
     DisposableEffect(padNumber) {
         onDispose { onUnregisterPadBounds(padNumber) }
@@ -172,6 +206,10 @@ fun PadItem(
                         mainBounds = coords.boundsInWindow()
                         onRegisterPadBounds(padNumber, mainBounds, subBounds)
                     }
+                    .dragAndDropTarget(
+                        shouldStartDragAndDrop = ::eventHasFileList,
+                        target = mainDropTarget
+                    )
                     .clickable { onSelect(padNumber, true) }
                     .then(if (mainHovered) Modifier.background(ColorAccentYellow.copy(alpha = 0.3f)) else Modifier)
                     .then(
@@ -211,6 +249,10 @@ fun PadItem(
                         subBounds = coords.boundsInWindow()
                         onRegisterPadBounds(padNumber, mainBounds, subBounds)
                     }
+                    .dragAndDropTarget(
+                        shouldStartDragAndDrop = ::eventHasFileList,
+                        target = subDropTarget
+                    )
                     .clickable { onSelect(padNumber, false) }
                     .then(if (subHovered) Modifier.background(ColorAccentYellow.copy(alpha = 0.3f)) else Modifier)
                     .then(
@@ -251,5 +293,38 @@ fun PadItem(
             }
         }
     }
+    }
+}
+
+// Gate on the FLAVOR only — during a drag the transferable's *data* is generally not readable on
+// desktop (only at drop), so we must NOT call getTransferData here or shouldStartDragAndDrop would
+// return false and onDrop would never fire. The actual .wav check happens at drop time.
+@OptIn(ExperimentalComposeUiApi::class)
+private fun eventHasFileList(event: DragAndDropEvent): Boolean =
+    runCatching { event.awtTransferable.isDataFlavorSupported(DataFlavor.javaFileListFlavor) }.getOrDefault(false)
+
+// Extracts the first .wav among dropped files, guarded against any transferable access throwing
+// (getTransferData may raise if the OS revokes/locks the file between accept and read).
+@OptIn(ExperimentalComposeUiApi::class)
+private fun firstWavFromEvent(event: DragAndDropEvent): File? = runCatching {
+    val transferable = event.awtTransferable
+    if (!transferable.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) return@runCatching null
+    @Suppress("UNCHECKED_CAST")
+    val files = (transferable.getTransferData(DataFlavor.javaFileListFlavor) as? List<File>).orEmpty()
+    files.firstOrNull { it.name.lowercase().endsWith(".wav") }
+}.getOrNull()
+
+private fun padWaveDropTarget(
+    onHoverChange: (Boolean) -> Unit,
+    onWavDropped: (File) -> Unit
+): DragAndDropTarget = object : DragAndDropTarget {
+    override fun onEntered(event: DragAndDropEvent) = onHoverChange(true)
+    override fun onExited(event: DragAndDropEvent) = onHoverChange(false)
+    override fun onEnded(event: DragAndDropEvent) = onHoverChange(false)
+    override fun onDrop(event: DragAndDropEvent): Boolean {
+        onHoverChange(false)
+        val file = firstWavFromEvent(event) ?: return false
+        onWavDropped(file)
+        return true
     }
 }

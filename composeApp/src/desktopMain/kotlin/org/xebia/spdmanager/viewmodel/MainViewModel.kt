@@ -273,25 +273,45 @@ class MainViewModel(
 
         if (info == null || pos == null) return
         val kitIndex = _selectedKitIndex.value ?: return
-
-        for ((_, target) in padDropTargets) {
-            if (target.mainBounds.contains(pos)) {
-                deviceManager.updatePad(kitIndex, target.padNumber) { pad ->
-                    pad.copy(main = pad.main.copy(wave = info.waveNumber))
-                }
-                return
-            }
-            if (target.subBounds.contains(pos)) {
-                deviceManager.updatePad(kitIndex, target.padNumber) { pad ->
-                    pad.copy(sub = pad.sub.copy(wave = info.waveNumber))
-                }
-                return
-            }
-        }
+        val (padNumber, isMain) = hitTestPad(pos) ?: return
+        assignWaveToPad(kitIndex, padNumber, isMain, info.waveNumber)
     }
 
     fun cancelWaveDrag() {
         _dragInfo.value = null
         _dragPosition.value = null
+    }
+
+    // --- External (OS filesystem) wave-file drop ---
+
+    /**
+     * Handle a .wav file dropped from the OS onto a specific pad zone: import it into the Default
+     * category (last in the list, like importWave) and assign the new wave to that pad's main or sub
+     * zone. Does nothing if no kit is selected (import is skipped entirely).
+     */
+    fun dropExternalWaveFileOnPad(padNumber: PadNumber, isMain: Boolean, file: File) {
+        val kitIndex = _selectedKitIndex.value ?: return
+        when (val result = deviceManager.importWave(file, "Default")) {
+            is DeviceManager.ImportResult.Success ->
+                assignWaveToPad(kitIndex, padNumber, isMain, result.wave.number)
+            is DeviceManager.ImportResult.Error ->
+                _importError.value = result.message
+        }
+    }
+
+    /** Hit-test a window-coordinate position against registered pad zones; main is checked first. */
+    private fun hitTestPad(pos: Offset): Pair<PadNumber, Boolean>? {
+        for ((_, target) in padDropTargets) {
+            if (target.mainBounds.contains(pos)) return target.padNumber to true
+            if (target.subBounds.contains(pos)) return target.padNumber to false
+        }
+        return null
+    }
+
+    private fun assignWaveToPad(kitIndex: Int, padNumber: PadNumber, isMain: Boolean, waveNumber: Int) {
+        deviceManager.updatePad(kitIndex, padNumber) { pad ->
+            if (isMain) pad.copy(main = pad.main.copy(wave = waveNumber))
+            else pad.copy(sub = pad.sub.copy(wave = waveNumber))
+        }
     }
 }

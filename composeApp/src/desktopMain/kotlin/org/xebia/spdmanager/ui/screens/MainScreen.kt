@@ -158,7 +158,8 @@ fun MainScreen() {
                 isDragActive = dragInfo != null,
                 dragPosition = dragPosition,
                 onRegisterPadBounds = mainViewModel::registerPadBounds,
-                onUnregisterPadBounds = mainViewModel::unregisterPadBounds
+                onUnregisterPadBounds = mainViewModel::unregisterPadBounds,
+                onExternalWaveDrop = mainViewModel::dropExternalWaveFileOnPad
             )
 
             if (bottomEntry.docked) {
