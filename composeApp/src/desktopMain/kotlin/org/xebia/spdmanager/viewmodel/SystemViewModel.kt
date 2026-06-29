@@ -60,28 +60,40 @@ class SystemViewModel(private val deviceManager: DeviceManager) {
         }
     }
 
+    /**
+     * Applies [transform] to the chain [chainKey] and persists the result. Returning the same chain
+     * (or null guards in the caller) makes it a no-op. Centralizes the lookup/copy/persist boilerplate
+     * shared by the chain mutators.
+     */
+    private inline fun updateChain(chainKey: Char, transform: (KitChain) -> KitChain) {
+        val config = _systemConfig.value ?: return
+        val chain = config.kitChains[chainKey] ?: return
+        val newChains = config.kitChains.toMutableMap()
+        newChains[chainKey] = transform(chain)
+        updateKitChains(newChains)
+    }
+
     fun setKitInChain(chainKey: Char, index: Int, newRef: Int) {
-        _systemConfig.value?.let { config ->
-            val chain = config.kitChains[chainKey] ?: return
-            if (index !in chain.kitRefs.indices) return
-            val refs = chain.kitRefs.toMutableList()
-            refs[index] = newRef
-            val newChains = config.kitChains.toMutableMap()
-            newChains[chainKey] = chain.copy(kitRefs = refs)
-            updateKitChains(newChains)
+        updateChain(chainKey) { chain ->
+            if (index !in chain.kitRefs.indices) return@setKitInChain
+            chain.copy(kitRefs = chain.kitRefs.toMutableList().apply { this[index] = newRef })
         }
     }
 
+    /**
+     * Resets every slot of the chain [chainKey] to "No Kit", preserving the chain's name and leaving
+     * all other chains untouched. The slot count is preserved.
+     */
+    fun initializeKitChain(chainKey: Char) {
+        updateChain(chainKey) { chain -> chain.copy(kitRefs = chain.kitRefs.map { KitChain.NO_KIT }) }
+    }
+
     fun moveKitInChain(chainKey: Char, from: Int, to: Int) {
-        _systemConfig.value?.let { config ->
-            val chain = config.kitChains[chainKey] ?: return
-            if (from !in chain.kitRefs.indices || to !in chain.kitRefs.indices || from == to) return
+        updateChain(chainKey) { chain ->
+            if (from !in chain.kitRefs.indices || to !in chain.kitRefs.indices || from == to) return@moveKitInChain
             val refs = chain.kitRefs.toMutableList()
-            val ref = refs.removeAt(from)
-            refs.add(to, ref)
-            val newChains = config.kitChains.toMutableMap()
-            newChains[chainKey] = chain.copy(kitRefs = refs)
-            updateKitChains(newChains)
+            refs.add(to, refs.removeAt(from))
+            chain.copy(kitRefs = refs)
         }
     }
 }

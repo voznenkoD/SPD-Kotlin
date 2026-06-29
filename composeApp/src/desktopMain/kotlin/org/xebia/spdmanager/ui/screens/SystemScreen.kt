@@ -76,7 +76,8 @@ fun SystemScreen() {
             kitChains = config.kitChains,
             kits = kits,
             onMoveInChain = systemViewModel::moveKitInChain,
-            onReplaceInChain = systemViewModel::setKitInChain
+            onReplaceInChain = systemViewModel::setKitInChain,
+            onInitChain = systemViewModel::initializeKitChain
         )
     }
 

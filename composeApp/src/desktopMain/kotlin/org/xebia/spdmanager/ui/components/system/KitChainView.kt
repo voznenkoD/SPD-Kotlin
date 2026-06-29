@@ -24,18 +24,18 @@ import org.xebia.spdmanager.model.KitChain
 import org.xebia.spdmanager.model.kit.Kit
 import org.xebia.spdmanager.model.kit.Kit.Companion.formatKitNumber
 import org.xebia.spdmanager.ui.components.common.DropdownSelector
-
-// Negative kit-ref convention meaning "no kit assigned" to this chain slot.
-private const val NO_KIT = -1
+import org.xebia.spdmanager.model.KitChain.Companion.NO_KIT
 
 @Composable
 fun KitChainView(
     kitChains: Map<Char, KitChain>,
     kits: List<Kit>,
     onMoveInChain: (chainKey: Char, from: Int, to: Int) -> Unit = { _, _, _ -> },
-    onReplaceInChain: (chainKey: Char, index: Int, newRef: Int) -> Unit = { _, _, _ -> }
+    onReplaceInChain: (chainKey: Char, index: Int, newRef: Int) -> Unit = { _, _, _ -> },
+    onInitChain: (chainKey: Char) -> Unit = {}
 ) {
     var selectedTab by remember { mutableStateOf(kitChains.keys.firstOrNull() ?: 'A') }
+    var showInitConfirm by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxSize().padding(Spacing.xl)) {
         TabRow(
@@ -59,12 +59,29 @@ fun KitChainView(
         }
 
         kitChains[selectedTab]?.let { kitChain ->
-            Text(
-                text = kitChain.name,
-                style = AppTypography.title,
-                color = ColorTextPrimary,
-                modifier = Modifier.padding(vertical = Spacing.xl)
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(vertical = Spacing.xl),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = kitChain.name,
+                    style = AppTypography.title,
+                    color = ColorTextPrimary
+                )
+                Button(
+                    onClick = { showInitConfirm = true },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = ColorAccentOrange,
+                        contentColor = ColorTextOnAccent
+                    ),
+                    contentPadding = PaddingValues(horizontal = Spacing.xl),
+                    shape = ShapeDefault,
+                    modifier = Modifier.height(Heights.button)
+                ) {
+                    Text("Init", color = ColorTextOnAccent, style = AppTypography.body)
+                }
+            }
 
             Box(Modifier.fillMaxSize()) {
                 KitChainList(
@@ -77,6 +94,54 @@ fun KitChainView(
             }
         }
     }
+
+    if (showInitConfirm) {
+        InitKitChainConfirmDialog(
+            chainKey = selectedTab,
+            chainName = kitChains[selectedTab]?.name.orEmpty(),
+            onDismiss = { showInitConfirm = false },
+            onConfirm = {
+                onInitChain(selectedTab)
+                showInitConfirm = false
+            }
+        )
+    }
+}
+
+@Composable
+private fun InitKitChainConfirmDialog(
+    chainKey: Char,
+    chainName: String,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = ColorSurface,
+        titleContentColor = ColorTextPrimary,
+        textContentColor = ColorTextPrimary,
+        title = { Text("Initialize kit chain?") },
+        text = {
+            Column {
+                Text(
+                    text = "Every slot of chain $chainKey${if (chainName.isNotBlank()) " \"$chainName\"" else ""} will be set to \"No Kit\".",
+                    fontSize = AppTypography.bodySize
+                )
+                Spacer(Modifier.height(Spacing.xl))
+                Text(
+                    text = "The chain name is kept and other chains are unaffected.",
+                    fontSize = AppTypography.captionSize,
+                    color = ColorAccentOrange
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onConfirm) { Text("Initialize", color = ColorAccentOrange) }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Cancel", color = ColorTextSecondary) }
+        }
+    )
 }
 
 @Composable
