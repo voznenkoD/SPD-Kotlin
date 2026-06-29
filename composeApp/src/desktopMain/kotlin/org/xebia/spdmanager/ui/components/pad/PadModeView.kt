@@ -25,7 +25,8 @@ fun PadModeView(
             items = PadTemplate.entries.toTypedArray(),
             selectedItem = padMode.template,
             onItemSelected = { newTemplate ->
-                onPadModeChange(padMode.copy(template = newTemplate))
+                // Switching the template also applies that pad type's preset for the other params.
+                onPadModeChange(padMode.withTemplate(newTemplate))
             }
         )
 
@@ -34,7 +35,7 @@ fun PadModeView(
             items = PadLoop.entries.toTypedArray(),
             selectedItem = padMode.loop,
             onItemSelected = { newLoop ->
-                onPadModeChange(padMode.copy(loop = newLoop))
+                onPadModeChange(padMode.copy(loop = newLoop).normalized())
             }
         )
 
@@ -50,7 +51,7 @@ fun PadModeView(
                 offItem = TrigType.SHOT,
                 onItem = TrigType.ALT,
                 onItemSelected = { newTrigType ->
-                    onPadModeChange(padMode.copy(trigType = newTrigType))
+                    onPadModeChange(padMode.copy(trigType = newTrigType).normalized())
                 },
                 offLabel = "Shot",
                 onLabel = "Alt"
@@ -62,7 +63,7 @@ fun PadModeView(
                 offItem = SyncSwitch.OFF,
                 onItem = SyncSwitch.ON,
                 onItemSelected = { newDynamics ->
-                    onPadModeChange(padMode.copy(dynamics = newDynamics))
+                    onPadModeChange(padMode.copy(dynamics = newDynamics).normalized())
                 }
             )
         }
@@ -72,7 +73,7 @@ fun PadModeView(
             offItem = PolyMono.MONO,
             onItem = PolyMono.POLY,
             onItemSelected = { newPolyMono ->
-                onPadModeChange(padMode.copy(polyMono = newPolyMono))
+                onPadModeChange(padMode.copy(polyMono = newPolyMono).normalized())
             },
             offLabel = "Mono",
             onLabel = "Poly"
