@@ -22,11 +22,11 @@ fun AudioView(
     audioConfig: SystemAudioConfig,
     onUpdate: (SystemAudioConfig) -> Unit
 ) {
-    Row(modifier = Modifier.fillMaxWidth().padding(Spacing.xxl)) {
-        Column(modifier = Modifier.weight(1f).padding(Spacing.xl)) {
+    Row(modifier = Modifier.fillMaxWidth().padding(Spacing.xl)) {
+        Column(modifier = Modifier.weight(1f).padding(Spacing.l)) {
             Text("Audio Settings", style = AppTypography.title, color = ColorTextPrimary)
 
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.xl)) {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.l)) {
                 IntStepSliderWithLabel(
                     label = "Audio In Volume",
                     value = audioConfig.audioInVolume,

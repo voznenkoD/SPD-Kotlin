@@ -97,7 +97,7 @@ fun IntPadView(
     onUpdatePadControl: (PadFsControl) -> Unit
 ) {
     Row(modifier = Modifier.fillMaxSize()) {
-        Column(modifier = Modifier.weight(0.4f).padding(Spacing.xxl)) {
+        Column(modifier = Modifier.weight(0.2f).padding(Spacing.xxl)) {
             FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.xl)) {
                 IntStepSliderWithLabel(
                     label = "Sensitivity",
@@ -117,8 +117,9 @@ fun IntPadView(
                     }
                 )
             }
+        }
 
-            Column(modifier = Modifier.width(200.dp)) {
+        Column(modifier = Modifier.weight(0.2f).padding(Spacing.xxl)) {
                 DropdownSelector(
                     label = "Curve",
                     selectedItem = intPad.curve,
@@ -136,7 +137,6 @@ fun IntPadView(
                         onUpdatePadControl(newControl)
                     }
                 )
-            }
         }
         Column(modifier = Modifier.weight(0.6f).padding(Spacing.xxl)) {
             // Additional controls can be added here if needed
@@ -153,7 +153,7 @@ fun ExtPadView(
     onUpdatePadControl: (PadFsControl) -> Unit
 ) {
     Row(modifier = Modifier.fillMaxSize()) {
-        Column(modifier = Modifier.weight(0.55f).padding(Spacing.xxl)) {
+        Column(modifier = Modifier.weight(0.2f).padding(Spacing.xxl)) {
             FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.xl)) {
                 IntStepSliderWithLabel(
                     label = "Sensitivity",
@@ -173,26 +173,26 @@ fun ExtPadView(
                     }
                 )
             }
+        }
 
-            Column(modifier = Modifier.width(200.dp)) {
-                DropdownSelector(
-                    label = "Curve",
-                    selectedItem = extPad.curve,
-                    items = VeloCurve.entries,
-                    onItemSelected = { newCurve ->
-                        onUpdateExtPad(extPad.copy(curve = newCurve))
-                    }
-                )
+        Column(modifier = Modifier.weight(0.35f).padding(Spacing.xxl)) {
+            DropdownSelector(
+                label = "Curve",
+                selectedItem = extPad.curve,
+                items = VeloCurve.entries,
+                onItemSelected = { newCurve ->
+                    onUpdateExtPad(extPad.copy(curve = newCurve))
+                }
+            )
 
-                DropdownSelector(
-                    label = "Control",
-                    selectedItem = padControl,
-                    items = PadFsControl.entries,
-                    onItemSelected = { newControl ->
-                        onUpdatePadControl(newControl)
-                    }
-                )
-            }
+            DropdownSelector(
+                label = "Control",
+                selectedItem = padControl,
+                items = PadFsControl.entries,
+                onItemSelected = { newControl ->
+                    onUpdatePadControl(newControl)
+                }
+            )
         }
 
         Column(modifier = Modifier.weight(0.10f).padding(Spacing.xxl)) {
