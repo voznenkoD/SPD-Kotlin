@@ -402,7 +402,25 @@ class DeviceManager {
         }
     }
 
+    /**
+     * Appends a copy of the kit at [sourceIndex] (renamed to [newName]) to the end of the kit list
+     * and returns the new kit's index, or null if [sourceIndex] is invalid or the list already holds
+     * [MAX_KITS] kits. Append-only insertion keeps existing indices stable, so KitChain references
+     * stay valid.
+     */
+    fun duplicateKit(sourceIndex: Int, newName: String): Int? {
+        val currentDevice = device ?: return null
+        val source = currentDevice.kits.getOrNull(sourceIndex) ?: return null
+        if (currentDevice.kits.size >= MAX_KITS) return null
+        val kits = currentDevice.kits.toMutableList().apply { add(source.copy(name = newName)) }
+        device = currentDevice.copy(kits = kits)
+        return kits.lastIndex
+    }
+
     companion object {
+        /** Maximum number of kits the device can hold (kit numbers 1..99). */
+        const val MAX_KITS = 99
+
         fun buildWaveUsageMap(kits: List<Kit>): Map<Int, List<String>> {
             val usage = mutableMapOf<Int, MutableList<String>>()
             for (kit in kits) {

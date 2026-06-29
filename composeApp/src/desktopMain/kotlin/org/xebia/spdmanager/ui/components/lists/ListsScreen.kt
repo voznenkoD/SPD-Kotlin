@@ -36,11 +36,14 @@ import java.io.File
 fun ListsScreen(
     kits: List<Kit>,
     waveListsHolder: WaveListsHolder,
-    onKitSelected: (Kit) -> Unit,
+    onKitSelected: (index: Int) -> Unit,
     onWaveSelected: (ListedWave) -> Unit,
     onCopyKit: (Kit) -> Unit = {},
-    onPasteKit: (Kit) -> Unit = {},
+    onPasteKit: (index: Int) -> Unit = {},
     hasCopiedKit: Boolean = false,
+    onDuplicateKit: (index: Int) -> Unit = {},
+    kitLimitReached: Boolean = false,
+    onClearKitLimitReached: () -> Unit = {},
     onMoveKit: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> },
     waveUsageMap: Map<Int, List<String>> = emptyMap(),
     onSelectKitByName: (String) -> Unit = {},
@@ -137,6 +140,7 @@ fun ListsScreen(
                         onCopyKit = onCopyKit,
                         onPasteKit = onPasteKit,
                         hasCopiedKit = hasCopiedKit,
+                        onDuplicateKit = onDuplicateKit,
                         onMoveKit = onMoveKit,
                         selectedKitIndex = selectedKitIndex
                     )
@@ -253,17 +257,7 @@ fun ListsScreen(
     }
 
     if (importError != null) {
-        AlertDialog(
-            onDismissRequest = onClearImportError,
-            containerColor = ColorSurface,
-            titleContentColor = ColorTextPrimary,
-            textContentColor = ColorTextPrimary,
-            title = { Text("Import failed") },
-            text = { Text(importError) },
-            confirmButton = {
-                TextButton(onClick = onClearImportError) { Text("OK", color = ColorAccentOrange) }
-            }
-        )
+        SimpleInfoDialog("Import failed", importError, onClearImportError)
     }
 
     deleteConfirm?.let { info ->
@@ -282,17 +276,7 @@ fun ListsScreen(
     }
 
     if (deleteError != null) {
-        AlertDialog(
-            onDismissRequest = onClearDeleteError,
-            containerColor = ColorSurface,
-            titleContentColor = ColorTextPrimary,
-            textContentColor = ColorTextPrimary,
-            title = { Text("Delete failed") },
-            text = { Text(deleteError) },
-            confirmButton = {
-                TextButton(onClick = onClearDeleteError) { Text("OK", color = ColorAccentOrange) }
-            }
-        )
+        SimpleInfoDialog("Delete failed", deleteError, onClearDeleteError)
     }
 
     renameWaveTarget?.let { target ->
@@ -309,18 +293,44 @@ fun ListsScreen(
     }
 
     if (waveOpError != null) {
-        AlertDialog(
-            onDismissRequest = onClearWaveOpError,
-            containerColor = ColorSurface,
-            titleContentColor = ColorTextPrimary,
-            textContentColor = ColorTextPrimary,
-            title = { Text("Operation failed") },
-            text = { Text(waveOpError) },
-            confirmButton = {
-                TextButton(onClick = onClearWaveOpError) { Text("OK", color = ColorAccentOrange) }
-            }
-        )
+        SimpleInfoDialog("Operation failed", waveOpError, onClearWaveOpError)
     }
+
+    if (kitLimitReached) {
+        KitLimitReachedDialog(onDismiss = onClearKitLimitReached)
+    }
+}
+
+/**
+ * Reusable single-message dialog with one OK button, styled like the app's other info dialogs.
+ * Shared by the import/delete/wave-op error dialogs and the kit-limit dialog.
+ */
+@Composable
+fun SimpleInfoDialog(title: String, message: String, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = ColorSurface,
+        titleContentColor = ColorTextPrimary,
+        textContentColor = ColorTextPrimary,
+        title = { Text(title) },
+        text = { Text(message) },
+        confirmButton = {
+            TextButton(onClick = onDismiss) { Text("OK", color = ColorAccentOrange) }
+        }
+    )
+}
+
+/**
+ * Reusable dialog shown when an operation would exceed the device's kit limit (e.g. duplicating a
+ * kit when the list is full). Kept generic so other kit-limit cases can reuse it.
+ */
+@Composable
+fun KitLimitReachedDialog(onDismiss: () -> Unit) {
+    SimpleInfoDialog(
+        title = "Maximum of kit numbers has been reached",
+        message = "You cannot add another kit.",
+        onDismiss = onDismiss
+    )
 }
 
 private fun pickWavFile(): File? {
@@ -464,9 +474,7 @@ fun WaveListByName(
     LaunchedEffect(selectedWaveNumber) {
         val target = selectedWaveNumber ?: return@LaunchedEffect
         val index = waves.indexOfFirst { it.number == target }
-        if (index >= 0 && listState.layoutInfo.visibleItemsInfo.none { it.index == index }) {
-            listState.animateScrollToItem(index)
-        }
+        if (index >= 0) listState.scrollIntoView(index)
     }
 
     LazyColumn(modifier = Modifier.fillMaxSize(), state = listState) {
@@ -561,9 +569,7 @@ fun WaveListByCategory(
                 idx += waves.size
             }
         }
-        if (found >= 0 && listState.layoutInfo.visibleItemsInfo.none { it.index == found }) {
-            listState.animateScrollToItem(found)
-        }
+        if (found >= 0) listState.scrollIntoView(found)
     }
 
     LazyColumn(modifier = Modifier.fillMaxSize(), state = listState) {

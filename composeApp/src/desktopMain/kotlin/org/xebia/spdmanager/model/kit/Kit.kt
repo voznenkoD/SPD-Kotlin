@@ -20,7 +20,7 @@ data class Kit(
     val pads: Map<PadNumber, Pad>
 ){
     fun toRaw(): KitPrm {
-        val nm = encodeNamePadded(name, 8)
+        val nm = encodeNamePadded(name, NAME_MAX_LENGTH)
         val snm = encodeNamePadded(subName, 16)
         val fx1p = fx1.toRawParams()
         val fx2p = fx2.toRawParams()
@@ -54,6 +54,9 @@ data class Kit(
     }
 
     companion object {
+        /** Max length of a kit name, as encoded into the raw device format by [toRaw]. */
+        const val NAME_MAX_LENGTH = 8
+
         fun fromValues(rawKit: KitPrm): Kit {
             val name = decodeName(rawKit.kitName())
             val subName = decodeName(rawKit.kitSubName())

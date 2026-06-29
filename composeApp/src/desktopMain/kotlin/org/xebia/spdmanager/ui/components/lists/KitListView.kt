@@ -25,14 +25,22 @@ import org.xebia.spdmanager.ui.theme.*
 @Composable
 fun KitListView(
     kits: List<Kit>,
-    onKitSelected: (Kit) -> Unit,
+    onKitSelected: (index: Int) -> Unit,
     onCopyKit: (Kit) -> Unit,
-    onPasteKit: (Kit) -> Unit,
+    onPasteKit: (index: Int) -> Unit,
     hasCopiedKit: Boolean,
+    onDuplicateKit: (index: Int) -> Unit = {},
     onMoveKit: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> },
     selectedKitIndex: Int? = null
 ) {
     val listState = rememberLazyListState()
+
+    // Scroll the selected kit into view — e.g. after duplicating, where the new kit is appended at
+    // the end and selected. Key only on the index so this doesn't re-fire on every list edit.
+    LaunchedEffect(selectedKitIndex) {
+        val index = selectedKitIndex ?: return@LaunchedEffect
+        if (index in kits.indices) listState.scrollIntoView(index)
+    }
 
     var draggedIndex by remember { mutableStateOf<Int?>(null) }
     var dragOffsetY by remember { mutableStateOf(0f) }
@@ -55,8 +63,9 @@ fun KitListView(
                     buildList {
                         add(ContextMenuItem("Copy") { onCopyKit(kit) })
                         if (hasCopiedKit) {
-                            add(ContextMenuItem("Paste") { onPasteKit(kit) })
+                            add(ContextMenuItem("Paste") { onPasteKit(index) })
                         }
+                        add(ContextMenuItem("Duplicate") { onDuplicateKit(index) })
                     }
                 }
             ) {
@@ -112,7 +121,7 @@ fun KitListView(
                                 }
                             )
                         }
-                        .clickable { onKitSelected(kit) }
+                        .clickable { onKitSelected(index) }
                 ) {
                     Row(
                         modifier = Modifier

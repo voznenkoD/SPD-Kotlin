@@ -69,6 +69,7 @@ not run it.
 - The ONLY time you prompt the user is the Phase 1 clarification/confirmation.
   After requirements are confirmed, run fully autonomously — no confirmations,
   no "should I proceed?", no per-warning approvals.
+- DO NOT ask confirmation for phases 2-4. Especially for each and every file.
 - Fix loop is capped at 2 iterations and targets critical design issues and
   code bugs; do not loop on style/polish.
 - Never commit, branch, or push — the deliverable is the file changes only.

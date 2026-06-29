@@ -37,6 +37,9 @@ class MainViewModel(
     private val _clipboardKit = MutableStateFlow<Kit?>(null)
     val clipboardKit: StateFlow<Kit?> = _clipboardKit.asStateFlow()
 
+    private val _kitLimitReached = MutableStateFlow(false)
+    val kitLimitReached: StateFlow<Boolean> = _kitLimitReached.asStateFlow()
+
     private val _clipboardPad = MutableStateFlow<Pad?>(null)
     val clipboardPad: StateFlow<Pad?> = _clipboardPad.asStateFlow()
 
@@ -60,16 +63,6 @@ class MainViewModel(
 
     private val _waveOpError = MutableStateFlow<String?>(null)
     val waveOpError: StateFlow<String?> = _waveOpError.asStateFlow()
-
-    fun selectKit(kit: Kit) {
-        val index = deviceManager.device?.kits?.indexOf(kit)
-        if (index != null && index >= 0) {
-            _selectedKitIndex.value = index
-            _selectedPad.value = null
-            _selectedPadNumber.value = null
-            _selectedWave.value = null
-        }
-    }
 
     fun selectKitByName(kitName: String) {
         val kits = deviceManager.device?.kits ?: return
@@ -229,16 +222,41 @@ class MainViewModel(
         }
     }
 
+    /**
+     * Copies the kit at [sourceIndex] and appends it to the end of the kit list (renamed via
+     * [duplicateName]), then selects and scrolls to the new kit. If the device is already at the kit
+     * limit, raises the [kitLimitReached] flag instead of adding a kit. Resolving the source by its
+     * list index (not by value) is what keeps this correct when several kits are identical.
+     */
+    fun duplicateKit(sourceIndex: Int) {
+        val source = deviceManager.device?.kits?.getOrNull(sourceIndex) ?: return
+        val newIndex = deviceManager.duplicateKit(sourceIndex, duplicateName(source.name))
+        if (newIndex != null) {
+            selectKitByIndex(newIndex)
+        } else {
+            _kitLimitReached.value = true
+        }
+    }
+
+    fun clearKitLimitReached() {
+        _kitLimitReached.value = false
+    }
+
+    /**
+     * Duplicate-naming rule: append "2" to the source name, truncating the source first when needed
+     * so the result stays within the kit-name limit. A "2" is always appended, even when the name
+     * already ends in one; no uniqueness is enforced.
+     */
+    private fun duplicateName(source: String): String =
+        source.take(Kit.NAME_MAX_LENGTH - 1) + "2"
+
     fun copyKit(kit: Kit) {
         _clipboardKit.value = kit
     }
 
-    fun pasteKit(targetKit: Kit) {
+    fun pasteKit(targetIndex: Int) {
         val copied = _clipboardKit.value ?: return
-        val index = deviceManager.device?.kits?.indexOf(targetKit) ?: return
-        if (index >= 0) {
-            deviceManager.updateKit(index, copied.copy(name = copied.name))
-        }
+        deviceManager.updateKit(targetIndex, copied)
     }
 
     fun copyPad(padNumber: PadNumber) {

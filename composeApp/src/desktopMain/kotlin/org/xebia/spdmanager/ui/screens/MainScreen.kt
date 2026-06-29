@@ -70,6 +70,7 @@ fun MainScreen() {
 
     val clipboardPad by mainViewModel.clipboardPad.collectAsState()
     val clipboardKit by mainViewModel.clipboardKit.collectAsState()
+    val kitLimitReached by mainViewModel.kitLimitReached.collectAsState()
 
     val leftContent: @Composable () -> Unit = {
         DetailsTabs(
@@ -92,13 +93,16 @@ fun MainScreen() {
         ListsScreen(
             kits = kits,
             waveListsHolder = waveListsHolder,
-            onKitSelected = mainViewModel::selectKit,
+            onKitSelected = mainViewModel::selectKitByIndex,
             onWaveSelected = { listedWave ->
                 mainViewModel.selectWave(waves, listedWave)
             },
             onCopyKit = mainViewModel::copyKit,
             onPasteKit = mainViewModel::pasteKit,
             hasCopiedKit = clipboardKit != null,
+            onDuplicateKit = mainViewModel::duplicateKit,
+            kitLimitReached = kitLimitReached,
+            onClearKitLimitReached = mainViewModel::clearKitLimitReached,
             onMoveKit = mainViewModel::moveKit,
             waveUsageMap = waveUsageMap,
             onSelectKitByName = mainViewModel::selectKitByName,
