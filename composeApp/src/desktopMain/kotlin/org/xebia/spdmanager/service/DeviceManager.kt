@@ -25,6 +25,19 @@ class DeviceManager {
     val xmlParser = XmlParser()
     var device by mutableStateOf<Device?>(null)
 
+    /**
+     * Set when loading aborts because a required SYSTEM file could not be parsed (a high-level
+     * failure). The UI observes this to show an alert dialog naming the offending file. Cleared on
+     * the next successful load or when the user dismisses the dialog.
+     */
+    var loadError by mutableStateOf<SystemFileError?>(null)
+
+    /** Identifies a SYSTEM file that failed to parse, for the load-error alert dialog. */
+    data class SystemFileError(val fileName: String, val reason: String)
+
+    /** Thrown internally when a required SYSTEM file is missing or fails to parse. */
+    private class SystemFileException(val fileName: String, val reason: String) : Exception(reason)
+
     val classTypeToFilename = mapOf(
         Config::class.java to "sysparam.spd",
         TagList::class.java to "tag_list.spd",
@@ -33,28 +46,60 @@ class DeviceManager {
         WvListSortbyNumTag::class.java to "wavelist_tagnum.spd"
     )
 
+    /**
+     * Runs [parse] for the SYSTEM file named [fileName], converting a parse failure or a null
+     * (missing/empty file) result into a [SystemFileException] that carries the file name. This
+     * lets [readDevice] report exactly which SYSTEM file is at fault.
+     */
+    private inline fun <T> requireSystemFile(fileName: String, parse: () -> T?): T {
+        val result = try {
+            parse()
+        } catch (e: SystemFileException) {
+            throw e
+        } catch (e: Exception) {
+            throw SystemFileException(fileName, e.message ?: e.toString())
+        }
+        return result ?: throw SystemFileException(fileName, "File not found or empty")
+    }
+
     fun readDevice(rootPath: String) {
-        val systemFiles = xmlParser.readFilesInFolder("$rootPath/SYSTEM")
-        val kitFiles = xmlParser.readFilesInFolder("$rootPath/KIT")
+        try {
+            val systemFiles = xmlParser.readFilesInFolder("$rootPath/SYSTEM")
+            val kitFiles = xmlParser.readFilesInFolder("$rootPath/KIT")
 
-        val rawKits = xmlParser.parseKits(kitFiles)
-        val rawSystemConfig = xmlParser.parseSystemConfig(systemFiles)
+            // Kits and waves parse resiliently: a single corrupt file is logged and skipped by the
+            // parser rather than aborting the whole load.
+            val rawKits = xmlParser.parseKits(kitFiles)
+            val rawWaves = xmlParser.parseWaves("$rootPath/WAVE/PRM")
 
-        val rawWaves = xmlParser.parseWaves("$rootPath/WAVE/PRM")
+            // SYSTEM files are required; a failure here aborts the load and is surfaced by name.
+            val sysparamName = classTypeToFilename[Config::class.java]!!
+            val rawSystemConfig = requireSystemFile(sysparamName) { xmlParser.parseSystemConfig(systemFiles) }
+            val rawTagList = requireSystemFile(classTypeToFilename[TagList::class.java]!!) {
+                xmlParser.parseSystemFile<TagList>(classTypeToFilename[TagList::class.java]!!, systemFiles)
+            }
+            val rawWvListSortByName = requireSystemFile(classTypeToFilename[WvListSortbyName::class.java]!!) {
+                xmlParser.parseSystemFile<WvListSortbyName>(classTypeToFilename[WvListSortbyName::class.java]!!, systemFiles)
+            }
+            val rawWvListSortByNameTag = requireSystemFile(classTypeToFilename[WvListSortbyNameTag::class.java]!!) {
+                xmlParser.parseSystemFile<WvListSortbyNameTag>(classTypeToFilename[WvListSortbyNameTag::class.java]!!, systemFiles)
+            }
+            val rawWvListSortByNumTag = requireSystemFile(classTypeToFilename[WvListSortbyNumTag::class.java]!!) {
+                xmlParser.parseSystemFile<WvListSortbyNumTag>(classTypeToFilename[WvListSortbyNumTag::class.java]!!, systemFiles)
+            }
 
-        val rawTagList = xmlParser.parseSystemFile<TagList>(classTypeToFilename[TagList::class.java]!!, systemFiles)
-        val rawWvListSortByName = xmlParser.parseSystemFile<WvListSortbyName>(classTypeToFilename[WvListSortbyName::class.java]!!, systemFiles)
-        val rawWvListSortByNameTag = xmlParser.parseSystemFile<WvListSortbyNameTag>(classTypeToFilename[WvListSortbyNameTag::class.java]!!, systemFiles)
-        val rawWvListSortByNumTag = xmlParser.parseSystemFile<WvListSortbyNumTag>(classTypeToFilename[WvListSortbyNumTag::class.java]!!, systemFiles)
+            val setupConfig = SetupConfig.fromRaw(rawSystemConfig.setupPrm)
+            val systemConfig = SystemConfig.fromValue(rawSystemConfig.sysPrm, rawSystemConfig.kitChainPrm, rawSystemConfig.mEfctPrm)
 
+            val waves = toWaves(rawWaves)
+            val waveListsHolder = WaveListsHolder.fromValues(rawTagList, rawWvListSortByName, rawWvListSortByNameTag, rawWvListSortByNumTag, waves)
 
-        val setupConfig = SetupConfig.fromRaw(rawSystemConfig!!.setupPrm)
-        val systemConfig = SystemConfig.fromValue(rawSystemConfig.sysPrm, rawSystemConfig.kitChainPrm, rawSystemConfig.mEfctPrm)
-
-        val waves = toWaves(rawWaves)
-        val waveListsHolder = WaveListsHolder.fromValues(rawTagList!!, rawWvListSortByName!!, rawWvListSortByNameTag!!, rawWvListSortByNumTag!!, waves)
-
-        device = Device(setupConfig, systemConfig, toKits(rawKits), toWaves(rawWaves), waveListsHolder, rootPath)
+            device = Device(setupConfig, systemConfig, toKits(rawKits), waves, waveListsHolder, rootPath)
+            loadError = null
+        } catch (e: SystemFileException) {
+            System.err.println("Failed to parse system file '${e.fileName}': ${e.reason}")
+            loadError = SystemFileError(e.fileName, e.reason)
+        }
     }
 
     private fun toKits(rawKits: List<KitPrm>): List<Kit> {
@@ -403,16 +448,16 @@ class DeviceManager {
     }
 
     /**
-     * Appends a copy of the kit at [sourceIndex] (renamed to [newName]) to the end of the kit list
-     * and returns the new kit's index, or null if [sourceIndex] is invalid or the list already holds
-     * [MAX_KITS] kits. Append-only insertion keeps existing indices stable, so KitChain references
-     * stay valid.
+     * Appends a copy of the kit at [sourceIndex] to the end of the kit list and returns the new
+     * kit's index, or null if [sourceIndex] is invalid or the list already holds [MAX_KITS] kits.
+     * The copy's name is [newName] applied to the source kit's current name. Append-only insertion
+     * keeps existing indices stable, so KitChain references stay valid.
      */
-    fun duplicateKit(sourceIndex: Int, newName: String): Int? {
+    fun duplicateKit(sourceIndex: Int, newName: (sourceName: String) -> String): Int? {
         val currentDevice = device ?: return null
         val source = currentDevice.kits.getOrNull(sourceIndex) ?: return null
         if (currentDevice.kits.size >= MAX_KITS) return null
-        val kits = currentDevice.kits.toMutableList().apply { add(source.copy(name = newName)) }
+        val kits = currentDevice.kits.toMutableList().apply { add(source.copy(name = newName(source.name))) }
         device = currentDevice.copy(kits = kits)
         return kits.lastIndex
     }

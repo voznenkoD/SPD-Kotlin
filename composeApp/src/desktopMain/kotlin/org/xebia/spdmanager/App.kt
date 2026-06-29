@@ -12,6 +12,7 @@ import androidx.compose.ui.window.*
 import java.io.File
 import org.xebia.spdmanager.service.DeviceManager
 import org.xebia.spdmanager.service.openFolderDialog
+import org.xebia.spdmanager.ui.components.common.LoadErrorDialog
 import org.xebia.spdmanager.ui.components.common.SaveAsDialog
 import org.xebia.spdmanager.ui.panels.PanelIconStrip
 import org.xebia.spdmanager.ui.panels.PanelLayoutState
@@ -96,6 +97,14 @@ private fun runApp() = application {
                         deviceManager = deviceManager,
                         onDismiss = { saveAsParent = null },
                         onCopyingChange = { saveAsInProgress = it }
+                    )
+                }
+
+                deviceManager.loadError?.let { err ->
+                    LoadErrorDialog(
+                        fileName = err.fileName,
+                        reason = err.reason,
+                        onDismiss = { deviceManager.loadError = null }
                     )
                 }
             }

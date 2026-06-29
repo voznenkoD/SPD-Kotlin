@@ -32,7 +32,16 @@ class XmlParser {
 
     inline fun <reified T> parseFile(file:File) =  xmlMapper.readValue<T>(file)
 
-    fun parseKits(kitFiles: List<File>): List<KitPrm> = kitFiles.map(::parseFile)
+    /**
+     * Parses every kit file, skipping (rather than aborting on) any file that fails to parse.
+     * Each failure is logged to the error console naming the offending kit file, so a single
+     * corrupt kit no longer prevents the rest of the device from loading.
+     */
+    fun parseKits(kitFiles: List<File>): List<KitPrm> = kitFiles.mapNotNull { file ->
+        runCatching { parseFile<KitPrm>(file) }
+            .onFailure { e -> System.err.println("Failed to parse kit file '${file.name}': ${e.message}") }
+            .getOrNull()
+    }
 
     inline fun <reified T> parseSystemFile(filename: String, systemFiles: List<File>) =
         systemFiles.firstOrNull{ file ->
@@ -62,7 +71,18 @@ class XmlParser {
                 val parent = dir.name
                 dir.listFiles()
                     ?.filter { it.isFile }
-                    ?.map { file -> Coordinate(parent, file.name) to parseFile<WvPrm>(file) }
+                    // Skip (rather than abort on) any wave file that fails to parse, logging the
+                    // wave number of the offending file so a single corrupt wave doesn't block the load.
+                    ?.mapNotNull { file ->
+                        val coordinate = Coordinate(parent, file.name)
+                        runCatching { coordinate to parseFile<WvPrm>(file) }
+                            .onFailure { e ->
+                                val waveNumber = runCatching { coordinate.waveNumber }.getOrNull()
+                                val id = waveNumber?.let { "#$it" } ?: "'$parent/${file.name}'"
+                                System.err.println("Failed to parse wave $id: ${e.message}")
+                            }
+                            .getOrNull()
+                    }
                     ?: emptyList()
             }
             .sortedWith(compareBy(

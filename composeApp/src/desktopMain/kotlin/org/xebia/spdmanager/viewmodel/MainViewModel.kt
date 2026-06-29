@@ -229,8 +229,7 @@ class MainViewModel(
      * list index (not by value) is what keeps this correct when several kits are identical.
      */
     fun duplicateKit(sourceIndex: Int) {
-        val source = deviceManager.device?.kits?.getOrNull(sourceIndex) ?: return
-        val newIndex = deviceManager.duplicateKit(sourceIndex, duplicateName(source.name))
+        val newIndex = deviceManager.duplicateKit(sourceIndex, ::duplicateName)
         if (newIndex != null) {
             selectKitByIndex(newIndex)
         } else {
