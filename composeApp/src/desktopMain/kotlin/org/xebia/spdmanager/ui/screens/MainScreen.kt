@@ -71,6 +71,7 @@ fun MainScreen() {
     val clipboardPad by mainViewModel.clipboardPad.collectAsState()
     val clipboardKit by mainViewModel.clipboardKit.collectAsState()
     val kitLimitReached by mainViewModel.kitLimitReached.collectAsState()
+    val initKitConfirm by mainViewModel.initKitConfirm.collectAsState()
 
     val leftContent: @Composable () -> Unit = {
         DetailsTabs(
@@ -101,6 +102,10 @@ fun MainScreen() {
             onPasteKit = mainViewModel::pasteKit,
             hasCopiedKit = clipboardKit != null,
             onDuplicateKit = mainViewModel::duplicateKit,
+            onInitKit = mainViewModel::requestInitKit,
+            initKitConfirm = initKitConfirm,
+            onConfirmInitKit = mainViewModel::confirmInitKit,
+            onClearInitKitConfirm = mainViewModel::clearInitKitConfirm,
             kitLimitReached = kitLimitReached,
             onClearKitLimitReached = mainViewModel::clearKitLimitReached,
             onMoveKit = mainViewModel::moveKit,

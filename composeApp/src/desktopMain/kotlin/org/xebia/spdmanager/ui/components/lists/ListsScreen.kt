@@ -42,6 +42,10 @@ fun ListsScreen(
     onPasteKit: (index: Int) -> Unit = {},
     hasCopiedKit: Boolean = false,
     onDuplicateKit: (index: Int) -> Unit = {},
+    onInitKit: (index: Int) -> Unit = {},
+    initKitConfirm: Int? = null,
+    onConfirmInitKit: () -> Unit = {},
+    onClearInitKitConfirm: () -> Unit = {},
     kitLimitReached: Boolean = false,
     onClearKitLimitReached: () -> Unit = {},
     onMoveKit: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> },
@@ -141,6 +145,7 @@ fun ListsScreen(
                         onPasteKit = onPasteKit,
                         hasCopiedKit = hasCopiedKit,
                         onDuplicateKit = onDuplicateKit,
+                        onInitKit = onInitKit,
                         onMoveKit = onMoveKit,
                         selectedKitIndex = selectedKitIndex
                     )
@@ -299,6 +304,51 @@ fun ListsScreen(
     if (kitLimitReached) {
         KitLimitReachedDialog(onDismiss = onClearKitLimitReached)
     }
+
+    initKitConfirm?.let { index ->
+        InitKitConfirmDialog(
+            kitNumber = index + 1,
+            onDismiss = onClearInitKitConfirm,
+            onConfirm = onConfirmInitKit
+        )
+    }
+}
+
+@Composable
+private fun InitKitConfirmDialog(
+    kitNumber: Int,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = ColorSurface,
+        titleContentColor = ColorTextPrimary,
+        textContentColor = ColorTextPrimary,
+        title = { Text("Initialize kit?") },
+        text = {
+            Column {
+                Text(
+                    text = "Kit $kitNumber will be reset to default settings.",
+                    fontSize = Typography.bodySize
+                )
+                Spacer(Modifier.height(Spacing.xl))
+                Text(
+                    text = "All of its current pads, name, tempo and effects will be replaced. This cannot be undone (until you choose not to save).",
+                    fontSize = Typography.captionSize,
+                    color = ColorAccentOrange
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text("Initialize", color = ColorAccentOrange)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Cancel", color = ColorTextSecondary) }
+        }
+    )
 }
 
 /**

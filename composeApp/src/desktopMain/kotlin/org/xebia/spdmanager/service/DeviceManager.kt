@@ -10,6 +10,7 @@ import org.xebia.spdmanager.data.model.raw.system.*
 import org.xebia.spdmanager.data.model.raw.wave.WvPrm
 import org.xebia.spdmanager.model.*
 import org.xebia.spdmanager.model.kit.Kit
+import org.xebia.spdmanager.model.kit.KitInitTemplate
 import org.xebia.spdmanager.model.kit.pad.Pad
 import org.xebia.spdmanager.model.kit.pad.PadNumber
 import org.xebia.spdmanager.model.list.WaveListsHolder
@@ -434,6 +435,14 @@ class DeviceManager {
         } catch (e: Exception) {
             DeleteResult.Error("Failed to update wave list index files: ${e.message}")
         }
+    }
+
+    /**
+     * Resets the kit at [index] in place to the neutral init defaults ([KitInitTemplate]). The kit's
+     * list position — and therefore its kit number and any KitChain references to it — stays stable.
+     */
+    fun initKit(index: Int) {
+        updateKit(index, KitInitTemplate.create())
     }
 
     fun moveKit(fromIndex: Int, toIndex: Int) {

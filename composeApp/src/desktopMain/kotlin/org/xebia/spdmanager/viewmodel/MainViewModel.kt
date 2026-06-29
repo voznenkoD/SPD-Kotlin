@@ -40,6 +40,10 @@ class MainViewModel(
     private val _kitLimitReached = MutableStateFlow(false)
     val kitLimitReached: StateFlow<Boolean> = _kitLimitReached.asStateFlow()
 
+    // Holds the index of the kit pending init-confirmation, or null when no dialog is open.
+    private val _initKitConfirm = MutableStateFlow<Int?>(null)
+    val initKitConfirm: StateFlow<Int?> = _initKitConfirm.asStateFlow()
+
     private val _clipboardPad = MutableStateFlow<Pad?>(null)
     val clipboardPad: StateFlow<Pad?> = _clipboardPad.asStateFlow()
 
@@ -239,6 +243,30 @@ class MainViewModel(
 
     fun clearKitLimitReached() {
         _kitLimitReached.value = false
+    }
+
+    /**
+     * Requests initializing (resetting to defaults) the kit at [sourceIndex]. Opens a confirmation
+     * dialog rather than acting immediately, since init overwrites the kit's current settings.
+     */
+    fun requestInitKit(sourceIndex: Int) {
+        if (deviceManager.device?.kits?.getOrNull(sourceIndex) == null) return
+        _initKitConfirm.value = sourceIndex
+    }
+
+    /** Confirms the pending init: resets the kit in place and re-selects it. */
+    fun confirmInitKit() {
+        val index = _initKitConfirm.value ?: return
+        _initKitConfirm.value = null
+        // Re-validate: the kit list may have changed (e.g. a different folder loaded) between
+        // opening the dialog and confirming, in which case initKit no-ops — don't move selection.
+        if (deviceManager.device?.kits?.getOrNull(index) == null) return
+        deviceManager.initKit(index)
+        selectKitByIndex(index)
+    }
+
+    fun clearInitKitConfirm() {
+        _initKitConfirm.value = null
     }
 
     /**

@@ -30,6 +30,7 @@ fun KitListView(
     onPasteKit: (index: Int) -> Unit,
     hasCopiedKit: Boolean,
     onDuplicateKit: (index: Int) -> Unit = {},
+    onInitKit: (index: Int) -> Unit = {},
     onMoveKit: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> },
     selectedKitIndex: Int? = null
 ) {
@@ -66,6 +67,7 @@ fun KitListView(
                             add(ContextMenuItem("Paste") { onPasteKit(index) })
                         }
                         add(ContextMenuItem("Duplicate") { onDuplicateKit(index) })
+                        add(ContextMenuItem("Init kit") { onInitKit(index) })
                     }
                 }
             ) {
