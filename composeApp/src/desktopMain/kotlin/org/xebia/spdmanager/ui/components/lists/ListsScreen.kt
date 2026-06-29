@@ -63,18 +63,32 @@ fun ListsScreen(
     onStartWaveDrag: (waveNumber: Int, waveName: String) -> Unit = { _, _ -> },
     onUpdateDragPosition: (Offset) -> Unit = {},
     onEndWaveDrag: () -> Unit = {},
-    onCancelWaveDrag: () -> Unit = {}
+    onCancelWaveDrag: () -> Unit = {},
+    onRenameWave: (waveNumber: Int, newName: String) -> Unit = { _, _ -> },
+    onMoveWaveToCategory: (waveNumber: Int, categoryName: String) -> Unit = { _, _ -> },
+    categoryOfWave: (Int) -> String? = { null },
+    waveOpError: String? = null,
+    onClearWaveOpError: () -> Unit = {}
 ) {
     var sortingMode by remember { mutableStateOf(SortingMode.BY_CATEGORY_NAME) }
     var showImportCategoryDialog by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
+    var renameWaveTarget by remember { mutableStateOf<ListedWave?>(null) }
 
     // Search applies only to the Waves tab; clear it whenever the tab changes (no persistence).
     LaunchedEffect(selectedTab) { searchQuery = "" }
     val query = searchQuery.trim()
 
     val categoryNames = waveListsHolder.wavesByNamePerCategory.keys.map { it.name }
+    val allWaveNames = waveListsHolder.wavesByName.map { it.name }
     val onRequestImport: () -> Unit = { showImportCategoryDialog = true }
+
+    val waveOps = WaveOps(
+        allCategoryNames = categoryNames,
+        categoryOfWave = categoryOfWave,
+        onRequestRenameWave = { renameWaveTarget = it },
+        onMoveWaveToCategory = onMoveWaveToCategory
+    )
 
     val sortingMenuItems: () -> List<ContextMenuItem> = {
         SortingMode.entries.map { mode ->
@@ -156,7 +170,8 @@ fun ListsScreen(
                                         onStartWaveDrag,
                                         onUpdateDragPosition,
                                         onEndWaveDrag,
-                                        onCancelWaveDrag
+                                        onCancelWaveDrag,
+                                        waveOps = waveOps
                                     )
                                 }
                             }
@@ -184,7 +199,8 @@ fun ListsScreen(
                                         onUpdateDragPosition,
                                         onEndWaveDrag,
                                         onCancelWaveDrag,
-                                        searchQuery = query
+                                        searchQuery = query,
+                                        waveOps = waveOps
                                     )
                                 }
                             }
@@ -210,7 +226,8 @@ fun ListsScreen(
                                         onUpdateDragPosition,
                                         onEndWaveDrag,
                                         onCancelWaveDrag,
-                                        searchQuery = query
+                                        searchQuery = query,
+                                        waveOps = waveOps
                                     )
                                 }
                             }
@@ -277,6 +294,33 @@ fun ListsScreen(
             }
         )
     }
+
+    renameWaveTarget?.let { target ->
+        RenameWaveDialog(
+            oldName = target.name,
+            // Exclude the wave's own name so re-confirming the same name isn't flagged as a duplicate.
+            existingNames = allWaveNames.filter { it != target.name },
+            onDismiss = { renameWaveTarget = null },
+            onConfirm = { newName ->
+                onRenameWave(target.number, newName)
+                renameWaveTarget = null
+            }
+        )
+    }
+
+    if (waveOpError != null) {
+        AlertDialog(
+            onDismissRequest = onClearWaveOpError,
+            containerColor = ColorSurface,
+            titleContentColor = ColorTextPrimary,
+            textContentColor = ColorTextPrimary,
+            title = { Text("Operation failed") },
+            text = { Text(waveOpError) },
+            confirmButton = {
+                TextButton(onClick = onClearWaveOpError) { Text("OK", color = ColorAccentOrange) }
+            }
+        )
+    }
 }
 
 private fun pickWavFile(): File? {
@@ -295,6 +339,18 @@ enum class SortingMode(val displayName: String) {
     BY_CATEGORY_NUM("By Category (Number)"),
     BY_NAME("By Name");
 }
+
+/**
+ * Bundles the callbacks for the right-click wave operations (rename, move-to-category) so they can be
+ * threaded through the list composables without exploding every signature. [categoryOfWave] lets the
+ * "Move to" menu exclude the wave's current category (needed in the flat By-Name view too).
+ */
+class WaveOps(
+    val allCategoryNames: List<String>,
+    val categoryOfWave: (Int) -> String?,
+    val onRequestRenameWave: (ListedWave) -> Unit,
+    val onMoveWaveToCategory: (Int, String) -> Unit
+)
 
 private fun Map<Category, List<ListedWave>>.sortedForNameView(): Map<Category, List<ListedWave>> =
     entries
@@ -398,7 +454,8 @@ fun WaveListByName(
     onStartWaveDrag: (Int, String) -> Unit = { _, _ -> },
     onUpdateDragPosition: (Offset) -> Unit = {},
     onEndWaveDrag: () -> Unit = {},
-    onCancelWaveDrag: () -> Unit = {}
+    onCancelWaveDrag: () -> Unit = {},
+    waveOps: WaveOps
 ) {
     val listState = rememberLazyListState()
 
@@ -427,7 +484,8 @@ fun WaveListByName(
                 onStartWaveDrag = onStartWaveDrag,
                 onUpdateDragPosition = onUpdateDragPosition,
                 onEndWaveDrag = onEndWaveDrag,
-                onCancelWaveDrag = onCancelWaveDrag
+                onCancelWaveDrag = onCancelWaveDrag,
+                waveOps = waveOps
             )
         }
     }
@@ -448,7 +506,8 @@ fun WaveListByCategory(
     onUpdateDragPosition: (Offset) -> Unit = {},
     onEndWaveDrag: () -> Unit = {},
     onCancelWaveDrag: () -> Unit = {},
-    searchQuery: String = ""
+    searchQuery: String = "",
+    waveOps: WaveOps
 ) {
     val expandedCategories = remember { mutableStateMapOf<String, Boolean>().apply { put("Default", true) } }
     // Transient collapse overrides (true = collapsed) used only while a search is active, so the
@@ -561,7 +620,9 @@ fun WaveListByCategory(
                         onStartWaveDrag = onStartWaveDrag,
                         onUpdateDragPosition = onUpdateDragPosition,
                         onEndWaveDrag = onEndWaveDrag,
-                        onCancelWaveDrag = onCancelWaveDrag
+                        onCancelWaveDrag = onCancelWaveDrag,
+                        waveOps = waveOps,
+                        categoryName = category.name
                     )
                 }
             }
@@ -646,6 +707,32 @@ private fun RenameCategoryDialog(
     onDismiss: () -> Unit,
     onConfirm: (String) -> Unit
 ) {
+    RenameDialog(
+        title = "Rename Category",
+        fieldLabel = "Category name",
+        duplicateMessage = "A category with this name already exists",
+        oldName = oldName,
+        existingNames = existingNames,
+        onDismiss = onDismiss,
+        onConfirm = onConfirm
+    )
+}
+
+/**
+ * Shared rename dialog used for both categories and waves. Enforces a non-empty, ≤12-char name that
+ * differs from [oldName] and is not among [existingNames]; the only per-use differences are the
+ * [title], [fieldLabel] and [duplicateMessage].
+ */
+@Composable
+private fun RenameDialog(
+    title: String,
+    fieldLabel: String,
+    duplicateMessage: String,
+    oldName: String,
+    existingNames: List<String>,
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit
+) {
     var input by remember { mutableStateOf(oldName) }
     val trimmed = input.trim()
     val isEmpty = trimmed.isEmpty()
@@ -656,7 +743,7 @@ private fun RenameCategoryDialog(
     val errorMessage = when {
         isEmpty -> "Name cannot be empty"
         isTooLong -> "Name must be 12 characters or fewer"
-        isDuplicate -> "A category with this name already exists"
+        isDuplicate -> duplicateMessage
         else -> null
     }
 
@@ -665,7 +752,7 @@ private fun RenameCategoryDialog(
         containerColor = ColorSurface,
         titleContentColor = ColorTextPrimary,
         textContentColor = ColorTextPrimary,
-        title = { Text("Rename Category") },
+        title = { Text(title) },
         text = {
             Column {
                 TextField(
@@ -673,7 +760,7 @@ private fun RenameCategoryDialog(
                     onValueChange = { if (it.length <= 12) input = it },
                     singleLine = true,
                     isError = errorMessage != null,
-                    label = { Text("Category name") },
+                    label = { Text(fieldLabel) },
                     colors = TextFieldDefaults.colors(
                         unfocusedContainerColor = ColorSurface,
                         focusedContainerColor = ColorBackground,
@@ -705,6 +792,24 @@ private fun RenameCategoryDialog(
 }
 
 @Composable
+private fun RenameWaveDialog(
+    oldName: String,
+    existingNames: List<String>,
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit
+) {
+    RenameDialog(
+        title = "Rename Wave",
+        fieldLabel = "Wave name",
+        duplicateMessage = "A wave with this name already exists",
+        oldName = oldName,
+        existingNames = existingNames,
+        onDismiss = onDismiss,
+        onConfirm = onConfirm
+    )
+}
+
+@Composable
 private fun WaveListItem(
     wave: ListedWave,
     onItemSelected: (ListedWave) -> Unit,
@@ -717,11 +822,17 @@ private fun WaveListItem(
     onStartWaveDrag: (Int, String) -> Unit = { _, _ -> },
     onUpdateDragPosition: (Offset) -> Unit = {},
     onEndWaveDrag: () -> Unit = {},
-    onCancelWaveDrag: () -> Unit = {}
+    onCancelWaveDrag: () -> Unit = {},
+    waveOps: WaveOps,
+    categoryName: String? = null
 ) {
     val usedInKits = waveUsageMap[wave.number].orEmpty()
     val isUsed = usedInKits.isNotEmpty()
     var itemWindowPosition by remember { mutableStateOf(Offset.Zero) }
+
+    // The category currently holding this wave: known directly in the category views, otherwise
+    // looked up (flat By-Name view) so the "Move to" menu can exclude the current category.
+    val rowCategory = categoryName ?: waveOps.categoryOfWave(wave.number)
 
     ContextMenuArea(
         items = {
@@ -733,8 +844,17 @@ private fun WaveListItem(
                     add(ContextMenuItem("─────────") {})
                 }
                 addAll(sortingMenuItems())
+                add(ContextMenuItem("─────────") {})
                 add(ContextMenuItem("Import Wave…") { onRequestImport() })
+                add(ContextMenuItem("Rename Wave…") { waveOps.onRequestRenameWave(wave) })
                 add(ContextMenuItem("Delete Wave…") { onRequestDeleteWave(wave.number) })
+                val moveTargets = waveOps.allCategoryNames.filter { it != rowCategory }
+                if (moveTargets.isNotEmpty()) {
+                    add(ContextMenuItem("─────────") {})
+                    moveTargets.forEach { cat ->
+                        add(ContextMenuItem("Move to: $cat") { waveOps.onMoveWaveToCategory(wave.number, cat) })
+                    }
+                }
             }
         }
     ) {

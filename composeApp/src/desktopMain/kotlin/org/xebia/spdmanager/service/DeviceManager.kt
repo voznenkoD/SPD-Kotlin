@@ -147,41 +147,130 @@ class DeviceManager {
         }
     }
 
-    /**
-     * Updates the wave list
-     */
-    fun updateWaves(waves: List<Wave>) {
-        device?.let { currentDevice ->
-            device = currentDevice.copy(waves = waves)
-        }
-    }
-
-    /**
-     * Updates a specific wave
-     */
-    fun updateWave(waveIndex: Int, updatedWave: Wave) {
-        device?.let { currentDevice ->
-            val updatedWaves = currentDevice.waves.toMutableList()
-            if (waveIndex in updatedWaves.indices) {
-                updatedWaves[waveIndex] = updatedWave
-                device = currentDevice.copy(waves = updatedWaves)
-            }
-        }
-    }
-
-    /**
-     * Updates wave lists holder
-     */
-    fun updateWaveLists(waveListsHolder: WaveListsHolder) {
-        device?.let { currentDevice ->
-            device = currentDevice.copy(waveLists = waveListsHolder)
-        }
-    }
-
     fun renameCategory(oldName: String, newName: String) {
         device?.let { currentDevice ->
             val updatedWaveLists = currentDevice.waveLists.renameCategory(oldName, newName)
             device = currentDevice.copy(waveLists = updatedWaveLists)
+        }
+    }
+
+    /** Writes the four wave-list index files in SYSTEM/ from the given holder. */
+    private fun writeWaveListIndexFiles(rootPath: String, waveLists: WaveListsHolder) {
+        val systemDir = File("$rootPath/SYSTEM")
+        val rawWaveLists = waveLists.toRaw()
+        xmlParser.writeSystemFile(rawWaveLists.tagList, "tag_list.spd", systemDir)
+        xmlParser.writeSystemFile(rawWaveLists.wvListSortbyName, "wavelist_name.spd", systemDir)
+        xmlParser.writeSystemFile(rawWaveLists.wvListSortbyNameTag, "wavelist_tagname.spd", systemDir)
+        xmlParser.writeSystemFile(rawWaveLists.wvListSortbyNumTag, "wavelist_tagnum.spd", systemDir)
+    }
+
+    /** The PRM (.spd) parameter file for a wave [number] at its number-derived location. */
+    private fun wavePrmFile(rootPath: String, number: Int): File {
+        val folderStr = "%02d".format((number - 1) / 100)
+        val fileStr = "%02d".format((number - 1) % 100)
+        return File("$rootPath/WAVE/PRM/$folderStr/$fileStr.spd")
+    }
+
+    /** Writes the single PRM (.spd) parameter file for [wave] at its number-derived location. */
+    private fun writeWavePrmFile(rootPath: String, wave: Wave) {
+        val prmFile = wavePrmFile(rootPath, wave.number)
+        prmFile.parentFile?.mkdirs()
+        xmlParser.writeWaveFile(wave.toRaw(), prmFile)
+    }
+
+    sealed class WaveOpResult {
+        data object Success : WaveOpResult()
+        data class Error(val message: String) : WaveOpResult()
+    }
+
+    /**
+     * Renames wave [waveNumber] to [newName]. The supplied name is sanitized and trimmed to the
+     * device's 12-char limit, then checked for uniqueness against the other waves. On success the
+     * on-disk .wav audio file is renamed in place (path field updated), and the wave PRM .spd plus
+     * the four wave-list index files are rewritten — mirroring importWave/deleteWave persistence.
+     */
+    fun renameWave(waveNumber: Int, newName: String): WaveOpResult {
+        val currentDevice = device ?: return WaveOpResult.Error("No device loaded")
+        if (currentDevice.rootPath.isBlank()) return WaveOpResult.Error("No device loaded")
+
+        val wave = currentDevice.waves.find { it.number == waveNumber }
+            ?: return WaveOpResult.Error("Wave #$waveNumber not found")
+
+        val sanitized = sanitizeWaveName(newName).take(12)
+        if (sanitized.isBlank()) return WaveOpResult.Error("Unable to derive a valid wave name")
+        if (sanitized == wave.name) return WaveOpResult.Success
+        if (currentDevice.waves.any { it.number != waveNumber && it.name == sanitized }) {
+            return WaveOpResult.Error(
+                "A wave named '$sanitized' already exists (names are limited to 12 characters)."
+            )
+        }
+
+        // Rename the .wav audio in its existing DATA folder; keep the folder, swap the filename.
+        val dir = wave.path.substringBeforeLast('/', "")
+        val newFileName = "$sanitized.wav"
+        val newRelativePath = if (dir.isBlank()) newFileName else "$dir/$newFileName"
+        val oldDataFile = File("${currentDevice.rootPath}/WAVE/DATA/${wave.path}")
+        val newDataFile = File("${currentDevice.rootPath}/WAVE/DATA/$newRelativePath")
+        // Compare canonically so a case-only rename on a case-insensitive filesystem (e.g. macOS) is
+        // treated as the same file rather than a spurious "already exists" conflict.
+        val sameUnderlyingFile = runCatching { oldDataFile.canonicalFile == newDataFile.canonicalFile }.getOrDefault(false)
+        val mustRename = oldDataFile.exists() && !sameUnderlyingFile
+        if (mustRename && newDataFile.exists()) {
+            return WaveOpResult.Error("A file named '$newFileName' already exists in WAVE/DATA/$dir.")
+        }
+
+        val updatedWave = wave.copy(name = sanitized, path = newRelativePath)
+        val updatedWaves = currentDevice.waves.map { if (it.number == waveNumber) updatedWave else it }
+        val updatedWaveLists = currentDevice.waveLists.withRenamedWave(waveNumber, sanitized)
+
+        // Disk first: rename the audio, then write metadata. Roll the audio rename back if the
+        // metadata write fails, and only commit the in-memory state once every write succeeds — so a
+        // failure never leaves the UI showing a rename that did not fully persist.
+        var renamed = false
+        return try {
+            if (mustRename) {
+                if (!oldDataFile.renameTo(newDataFile)) {
+                    oldDataFile.copyTo(newDataFile, overwrite = false)
+                    oldDataFile.delete()
+                }
+                renamed = true
+            }
+            writeWavePrmFile(currentDevice.rootPath, updatedWave)
+            writeWaveListIndexFiles(currentDevice.rootPath, updatedWaveLists)
+            device = currentDevice.copy(waves = updatedWaves, waveLists = updatedWaveLists)
+            WaveOpResult.Success
+        } catch (e: Exception) {
+            if (renamed) runCatching { newDataFile.renameTo(oldDataFile) }
+            WaveOpResult.Error("Failed to rename wave: ${e.message}")
+        }
+    }
+
+    /**
+     * Moves wave [waveNumber] into the category named [categoryName] by updating its tagRef to the
+     * category's order. Rewrites the wave PRM .spd (tag changed) and the four index files.
+     */
+    fun moveWaveToCategory(waveNumber: Int, categoryName: String): WaveOpResult {
+        val currentDevice = device ?: return WaveOpResult.Error("No device loaded")
+        if (currentDevice.rootPath.isBlank()) return WaveOpResult.Error("No device loaded")
+
+        val wave = currentDevice.waves.find { it.number == waveNumber }
+            ?: return WaveOpResult.Error("Wave #$waveNumber not found")
+        val target = currentDevice.waveLists.wavesByNamePerCategory.keys.firstOrNull { it.name == categoryName }
+            ?: return WaveOpResult.Error("Category '$categoryName' not found")
+        if (wave.tagRef == target.order) return WaveOpResult.Success
+
+        val updatedWave = wave.copy(tagRef = target.order)
+        val updatedWaves = currentDevice.waves.map { if (it.number == waveNumber) updatedWave else it }
+        val updatedWaveLists = currentDevice.waveLists.withMovedWaveToCategory(waveNumber, categoryName)
+
+        // Disk first; commit the in-memory state only once the writes succeed.
+        return try {
+            writeWavePrmFile(currentDevice.rootPath, updatedWave)
+            writeWaveListIndexFiles(currentDevice.rootPath, updatedWaveLists)
+            device = currentDevice.copy(waves = updatedWaves, waveLists = updatedWaveLists)
+            WaveOpResult.Success
+        } catch (e: Exception) {
+            WaveOpResult.Error("Failed to move wave: ${e.message}")
         }
     }
 
@@ -253,12 +342,7 @@ class DeviceManager {
             val updatedWaveLists = currentDevice.waveLists.withAddedWave(newWave, categoryName)
             device = currentDevice.copy(waves = updatedWaves, waveLists = updatedWaveLists)
 
-            val systemDir = File("${currentDevice.rootPath}/SYSTEM")
-            val rawWaveLists = updatedWaveLists.toRaw()
-            xmlParser.writeSystemFile(rawWaveLists.tagList, "tag_list.spd", systemDir)
-            xmlParser.writeSystemFile(rawWaveLists.wvListSortbyName, "wavelist_name.spd", systemDir)
-            xmlParser.writeSystemFile(rawWaveLists.wvListSortbyNameTag, "wavelist_tagname.spd", systemDir)
-            xmlParser.writeSystemFile(rawWaveLists.wvListSortbyNumTag, "wavelist_tagnum.spd", systemDir)
+            writeWaveListIndexFiles(currentDevice.rootPath, updatedWaveLists)
 
             ImportResult.Success(newWave)
         } catch (e: Exception) {
@@ -300,12 +384,7 @@ class DeviceManager {
         device = currentDevice.copy(waves = updatedWaves, waveLists = updatedWaveLists)
 
         return try {
-            val systemDir = File("${currentDevice.rootPath}/SYSTEM")
-            val rawWaveLists = updatedWaveLists.toRaw()
-            xmlParser.writeSystemFile(rawWaveLists.tagList, "tag_list.spd", systemDir)
-            xmlParser.writeSystemFile(rawWaveLists.wvListSortbyName, "wavelist_name.spd", systemDir)
-            xmlParser.writeSystemFile(rawWaveLists.wvListSortbyNameTag, "wavelist_tagname.spd", systemDir)
-            xmlParser.writeSystemFile(rawWaveLists.wvListSortbyNumTag, "wavelist_tagnum.spd", systemDir)
+            writeWaveListIndexFiles(currentDevice.rootPath, updatedWaveLists)
             DeleteResult.Success
         } catch (e: Exception) {
             DeleteResult.Error("Failed to update wave list index files: ${e.message}")
@@ -364,11 +443,7 @@ class DeviceManager {
         xmlParser.writeSystemConfig(config, systemDir)
 
         // Write wave list files
-        val rawWaveLists = dev.waveLists.toRaw()
-        xmlParser.writeSystemFile(rawWaveLists.tagList, "tag_list.spd", systemDir)
-        xmlParser.writeSystemFile(rawWaveLists.wvListSortbyName, "wavelist_name.spd", systemDir)
-        xmlParser.writeSystemFile(rawWaveLists.wvListSortbyNameTag, "wavelist_tagname.spd", systemDir)
-        xmlParser.writeSystemFile(rawWaveLists.wvListSortbyNumTag, "wavelist_tagnum.spd", systemDir)
+        writeWaveListIndexFiles(rootPath, dev.waveLists)
 
         // Write kit files
         dev.kits.forEachIndexed { index, kit ->

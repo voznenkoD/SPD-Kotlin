@@ -58,6 +58,9 @@ class MainViewModel(
     private val _deleteError = MutableStateFlow<String?>(null)
     val deleteError: StateFlow<String?> = _deleteError.asStateFlow()
 
+    private val _waveOpError = MutableStateFlow<String?>(null)
+    val waveOpError: StateFlow<String?> = _waveOpError.asStateFlow()
+
     fun selectKit(kit: Kit) {
         val index = deviceManager.device?.kits?.indexOf(kit)
         if (index != null && index >= 0) {
@@ -122,6 +125,39 @@ class MainViewModel(
 
     fun renameCategory(oldName: String, newName: String) {
         deviceManager.renameCategory(oldName, newName)
+    }
+
+    /** The category name currently holding [waveNumber], or null if unknown. */
+    fun categoryOfWave(waveNumber: Int): String? {
+        val holder = deviceManager.device?.waveLists ?: return null
+        return holder.wavesByNamePerCategory.entries
+            .firstOrNull { (_, waves) -> waves.any { it.number == waveNumber } }
+            ?.key?.name
+    }
+
+    fun renameWave(waveNumber: Int, newName: String) {
+        when (val result = deviceManager.renameWave(waveNumber, newName)) {
+            is DeviceManager.WaveOpResult.Success -> resyncSelectedWave(waveNumber)
+            is DeviceManager.WaveOpResult.Error -> _waveOpError.value = result.message
+        }
+    }
+
+    fun moveWaveToCategory(waveNumber: Int, categoryName: String) {
+        when (val result = deviceManager.moveWaveToCategory(waveNumber, categoryName)) {
+            is DeviceManager.WaveOpResult.Success -> resyncSelectedWave(waveNumber)
+            is DeviceManager.WaveOpResult.Error -> _waveOpError.value = result.message
+        }
+    }
+
+    /** Refresh the selected-wave snapshot after an in-place edit so the detail view stays in sync. */
+    private fun resyncSelectedWave(waveNumber: Int) {
+        if (_selectedWave.value?.number == waveNumber) {
+            _selectedWave.value = deviceManager.device?.waves?.find { it.number == waveNumber }
+        }
+    }
+
+    fun clearWaveOpError() {
+        _waveOpError.value = null
     }
 
     fun importWave(sourceFile: File, categoryName: String) {

@@ -77,6 +77,67 @@ data class WaveListsHolder(val wavesByName: List<ListedWave>, val wavesByNamePer
         )
     }
 
+    /**
+     * Returns a copy with [waveNumber] renamed to [newName]. Names drive the ordering of the
+     * by-name views, so those are re-sorted; the by-number view keeps its order (only the label
+     * changes). Category membership is untouched.
+     */
+    fun withRenamedWave(waveNumber: Int, newName: String): WaveListsHolder {
+        fun rename(w: ListedWave) = if (w.number == waveNumber) w.copy(name = newName) else w
+
+        val newByName = wavesByName.map(::rename).sortedBy { it.name.lowercase() }
+
+        val updatedByName = LinkedHashMap<Category, List<ListedWave>>()
+        for ((category, waves) in wavesByNamePerCategory) {
+            updatedByName[category] = waves.map(::rename).sortedBy { it.name.lowercase() }
+        }
+
+        val updatedByNum = LinkedHashMap<Category, List<ListedWave>>()
+        for ((category, waves) in wavesByNumPerCategory) {
+            updatedByNum[category] = waves.map(::rename)
+        }
+
+        return copy(
+            wavesByName = newByName,
+            wavesByNamePerCategory = updatedByName,
+            wavesByNumPerCategory = updatedByNum
+        )
+    }
+
+    /**
+     * Returns a copy with [waveNumber] moved into the category named [targetCategoryName]. The wave
+     * is removed from whatever category currently holds it and inserted into the target — sorted by
+     * name in the by-name view and by number in the by-number view. The flat by-name list is global
+     * and so is unaffected. No-op if the target category does not exist or the wave is unknown.
+     */
+    fun withMovedWaveToCategory(waveNumber: Int, targetCategoryName: String): WaveListsHolder {
+        val targetByNameKey = wavesByNamePerCategory.keys.firstOrNull { it.name == targetCategoryName }
+            ?: return this
+        val listed = wavesByName.firstOrNull { it.number == waveNumber } ?: return this
+
+        val updatedByName = LinkedHashMap<Category, List<ListedWave>>()
+        for ((category, waves) in wavesByNamePerCategory) {
+            val without = waves.filterNot { it.number == waveNumber }
+            updatedByName[category] =
+                if (category == targetByNameKey) (without + listed).sortedBy { it.name.lowercase() }
+                else without
+        }
+
+        val targetByNumKey = wavesByNumPerCategory.keys.firstOrNull { it.name == targetCategoryName }
+        val updatedByNum = LinkedHashMap<Category, List<ListedWave>>()
+        for ((category, waves) in wavesByNumPerCategory) {
+            val without = waves.filterNot { it.number == waveNumber }
+            updatedByNum[category] =
+                if (category == targetByNumKey) (without + listed).sortedBy { it.number }
+                else without
+        }
+
+        return copy(
+            wavesByNamePerCategory = updatedByName,
+            wavesByNumPerCategory = updatedByNum
+        )
+    }
+
     fun renameCategory(oldName: String, newName: String): WaveListsHolder {
         if (oldName == newName) return this
         if (wavesByNamePerCategory.keys.any { it.name == newName }) return this

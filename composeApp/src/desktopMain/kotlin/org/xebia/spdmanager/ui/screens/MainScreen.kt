@@ -43,6 +43,7 @@ fun MainScreen() {
     val deleteConfirm by mainViewModel.deleteConfirm.collectAsState()
     val deleteBlocked by mainViewModel.deleteBlocked.collectAsState()
     val deleteError by mainViewModel.deleteError.collectAsState()
+    val waveOpError by mainViewModel.waveOpError.collectAsState()
     val listsSelectedTab by mainViewModel.listsSelectedTab.collectAsState()
     val dragInfo by mainViewModel.dragInfo.collectAsState()
     val dragPosition by mainViewModel.dragPosition.collectAsState()
@@ -120,7 +121,12 @@ fun MainScreen() {
             onStartWaveDrag = mainViewModel::startWaveDrag,
             onUpdateDragPosition = mainViewModel::updateDragPosition,
             onEndWaveDrag = mainViewModel::endWaveDrag,
-            onCancelWaveDrag = mainViewModel::cancelWaveDrag
+            onCancelWaveDrag = mainViewModel::cancelWaveDrag,
+            onRenameWave = mainViewModel::renameWave,
+            onMoveWaveToCategory = mainViewModel::moveWaveToCategory,
+            categoryOfWave = mainViewModel::categoryOfWave,
+            waveOpError = waveOpError,
+            onClearWaveOpError = mainViewModel::clearWaveOpError
         )
     }
 
