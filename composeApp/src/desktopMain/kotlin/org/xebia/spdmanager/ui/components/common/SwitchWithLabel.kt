@@ -51,12 +51,12 @@ fun <T : Enum<T>> ToggleSwitchWithLabel(
             uncheckedTrackColor = ColorDivider
         )
     }
-    Column(modifier = Modifier.width(180.dp).padding(vertical = Spacing.m)) {
+    Column(modifier = Modifier.width(180.dp).padding(vertical = Spacing.xs)) {
         Text(
-            text = "$label: ${selectedItem.name}",
+            text = label,
             style = Typography.label,
             color = ColorTextSecondary,
-            modifier = Modifier.padding(bottom = Spacing.s)
+            modifier = Modifier.padding(bottom = Spacing.xs)
         )
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
@@ -71,7 +71,7 @@ fun <T : Enum<T>> ToggleSwitchWithLabel(
                     onItemSelected(if (checked) onItem else offItem)
                 },
                 colors = switchColors,
-                modifier = Modifier.padding(horizontal = Spacing.m)
+                modifier = Modifier.padding(horizontal = Spacing.s)
             )
             Text(
                 text = onLabel,

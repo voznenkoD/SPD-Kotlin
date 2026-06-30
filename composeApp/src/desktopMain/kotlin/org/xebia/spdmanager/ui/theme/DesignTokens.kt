@@ -37,20 +37,20 @@ val ShapeCard = RoundedCornerShape(4.dp)
 
 // --- Base Typography (unscaled) ---
 
-private const val TITLE_SIZE = 13f
-private const val BODY_SIZE = 11f
-private const val LABEL_SIZE = 10f
+private const val TITLE_SIZE = 12f
+private const val BODY_SIZE = 10f
+private const val LABEL_SIZE = 9f
 private const val CAPTION_SIZE = 9f
-private const val MONO_SIZE = 10f
+private const val MONO_SIZE = 9f
 
 // --- Base Spacing (unscaled) ---
 
 private const val SPACE_XS_VAL = 1f
 private const val SPACE_S_VAL = 2f
-private const val SPACE_M_VAL = 4f
-private const val SPACE_L_VAL = 6f
-private const val SPACE_XL_VAL = 8f
-private const val SPACE_XXL_VAL = 16f
+private const val SPACE_M_VAL = 3f
+private const val SPACE_L_VAL = 5f
+private const val SPACE_XL_VAL = 7f
+private const val SPACE_XXL_VAL = 14f
 
 // --- Base Heights (unscaled) ---
 
