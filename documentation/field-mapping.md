@@ -186,12 +186,12 @@ Centralized reference for all field transformations between domain models and ra
 
 ### MasterEffectConfig → MEfctPrm fields
 
-| Domain field | Raw fields | Read | Write | Possible values |
-|---|---|---|---|---|
-| `masterEffectConfig.filter` | `fltrPreset`, `fltrType`, `fltrPrm0`–`fltrPrm19` | `FilterEffect.fromValues(preset, type, params)` | Unpack to preset + type + 20 params | FilterPreset: SIMPLE_LFP=0, SIMPLE_BPF=1, SIMPLE_HPF=2, LPF_SYNC_MOD=3, BPF_SYNC_MOD=4, HPF_SYNC_MOD=5 |
-| `masterEffectConfig.delay` | `dlyPreset`, `drType`, `drPrm0`–`drPrm19` | `DelayEffect.fromValues(preset, type, params)` | Unpack to preset + type + 20 params | DelayPreset: STEREO_NORMAL=0, STEREO_SYNC=1, PAN_QUARTER=2, PAN_DOTTED_EIGHT=3, PAN_DOUBLE=4 |
-| `masterEffectConfig.sloop` | `sloopPreset`, `spType`, `spPrm0`–`spPrm19` | `SLoopEffect.fromValues(preset, type, params)` | Unpack to preset + type + 20 params | SLoopPreset: MANUAL=0, AUTO_QUARTER=1, AUTO_EIGHT=2, AUTO_SIXTEEN=3, AUTO_FREERUN=4 |
-| `masterEffectConfig.fx` | `fxType`, `fxPrm0`–`fxPrm19` | `FxEffect.fromValues(type, params)` | Unpack to type + 20 params | FXType: THRU=0, STEREO_DLY=1, … SLICER=20 (see FXType enum) |
+| Domain field | Raw fields | Read | Write | Possible values                                                                                        |
+|---|---|---|---|--------------------------------------------------------------------------------------------------------|
+| `masterEffectConfig.filter` | `fltrPreset`, `fltrType`, `fltrPrm0`–`fltrPrm19` | `FilterEffect.fromValues(preset, type, params)` | Unpack to preset + type + 20 params | FilterPreset: SIMPLE_LPF=0, SIMPLE_BPF=1, SIMPLE_HPF=2, LPF_SYNC_MOD=3, BPF_SYNC_MOD=4, HPF_SYNC_MOD=5 |
+| `masterEffectConfig.delay` | `dlyPreset`, `drType`, `drPrm0`–`drPrm19` | `DelayEffect.fromValues(preset, type, params)` | Unpack to preset + type + 20 params | DelayPreset: STEREO_NORMAL=0, STEREO_SYNC=1, PAN_QUARTER=2, PAN_DOTTED_EIGHT=3, PAN_DOUBLE=4           |
+| `masterEffectConfig.sloop` | `sloopPreset`, `spType`, `spPrm0`–`spPrm19` | `SLoopEffect.fromValues(preset, type, params)` | Unpack to preset + type + 20 params | SLoopPreset: MANUAL=0, AUTO_QUARTER=1, AUTO_EIGHT=2, AUTO_SIXTEEN=3, AUTO_FREERUN=4                    |
+| `masterEffectConfig.fx` | `fxType`, `fxPrm0`–`fxPrm19` | `FxEffect.fromValues(type, params)` | Unpack to type + 20 params | FXType: THRU=0, STEREO_DLY=1, … SLICER=20 (see FXType enum)                                            |
 
 ---
 

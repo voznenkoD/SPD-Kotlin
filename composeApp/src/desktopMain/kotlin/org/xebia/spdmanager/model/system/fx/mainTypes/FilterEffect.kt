@@ -46,7 +46,7 @@ data class FilterEffect(
 }
 
 enum class FilterPreset(val value: Int) {
-    SIMPLE_LFP(0),
+    SIMPLE_LPF(0),
     SIMPLE_BPF(1),
     SIMPLE_HPF(2),
     LPF_SYNC_MOD(3),
@@ -55,7 +55,7 @@ enum class FilterPreset(val value: Int) {
 
     companion object {
         fun fromValue(value: Int): FilterPreset {
-            return entries.find { it.value == value } ?: SIMPLE_LFP
+            return entries.find { it.value == value } ?: SIMPLE_LPF
         }
     }
 }

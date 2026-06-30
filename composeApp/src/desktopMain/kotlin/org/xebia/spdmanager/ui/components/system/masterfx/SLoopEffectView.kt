@@ -2,7 +2,6 @@ package org.xebia.spdmanager.ui.components.system.masterfx
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -12,8 +11,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import org.xebia.spdmanager.ui.theme.*
+import org.xebia.spdmanager.model.system.fx.applyPreset
 import org.xebia.spdmanager.model.system.fx.common.SyncSwitch
 import org.xebia.spdmanager.model.system.fx.mainTypes.*
+import org.xebia.spdmanager.model.system.fx.reconcilePreset
 import org.xebia.spdmanager.ui.components.common.ButtonRowCompact
 import org.xebia.spdmanager.ui.components.common.IntStepSliderWithLabel
 import org.xebia.spdmanager.ui.components.common.ToggleSwitchWithLabel
@@ -31,7 +32,7 @@ fun SLoopEffectView(
             selectedItem = sLoopEffect.preset,
             items = SLoopPreset.entries.toTypedArray(),
             onItemSelected = { newPreset ->
-                onSLoopChange(sLoopEffect.copy(preset = newPreset))
+                onSLoopChange(sLoopEffect.applyPreset(newPreset))
             }
         )
 
@@ -42,7 +43,7 @@ fun SLoopEffectView(
                 offItem = SLoopMode.MANUAL,
                 onItem = SLoopMode.AUTO,
                 onItemSelected = { newMode ->
-                    onSLoopChange(sLoopEffect.copy(mode = newMode))
+                    onSLoopChange(sLoopEffect.copy(mode = newMode).reconcilePreset())
                 },
                 offLabel = "Manual",
                 onLabel = "Auto"
@@ -76,7 +77,7 @@ fun SLoopEffectView(
                     sLoopEffect.copy(
                         rateSync = newRateSync,
                         rate = newRate
-                    )
+                    ).reconcilePreset()
                 )
             },
             colors = SwitchDefaults.colors(
@@ -92,7 +93,7 @@ fun SLoopEffectView(
                 selectedItem = (sLoopEffect.rate as? SLoopRate.EnumRate)?.rateEnum ?: SLoopRateEnum.fromIndex(0),
                 items = SLoopRateEnum.entries.toTypedArray(),
                 onItemSelected = { newRateEnum ->
-                    onSLoopChange(sLoopEffect.copy(rate = SLoopRate.EnumRate(newRateEnum)))
+                    onSLoopChange(sLoopEffect.copy(rate = SLoopRate.EnumRate(newRateEnum)).reconcilePreset())
                 }
             )
         } else {
@@ -101,6 +102,8 @@ fun SLoopEffectView(
                 value = (sLoopEffect.rate as? SLoopRate.IntRate)?.intRate ?: 0,
                 range = 0..127,
                 onValueChange = { newIntRate ->
+                    // ms rate is a continuous param (only the synced note form is structural),
+                    // so it must never relabel the preset — no reconcile here (mirrors Filter's ms slider).
                     onSLoopChange(sLoopEffect.copy(rate = SLoopRate.IntRate(newIntRate)))
                 }
             )

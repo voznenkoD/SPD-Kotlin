@@ -10,8 +10,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import org.xebia.spdmanager.ui.theme.*
 import org.xebia.spdmanager.model.system.fx.common.*
+import org.xebia.spdmanager.model.system.fx.applyPreset
 import org.xebia.spdmanager.model.system.fx.mainTypes.FilterEffect
 import org.xebia.spdmanager.model.system.fx.mainTypes.FilterPreset
+import org.xebia.spdmanager.model.system.fx.reconcilePreset
 import org.xebia.spdmanager.ui.components.common.ButtonRowCompact
 import org.xebia.spdmanager.ui.components.common.DropdownSelector
 import org.xebia.spdmanager.ui.components.common.IntStepSliderWithLabel
@@ -29,7 +31,7 @@ fun FilterEffectView(
             selectedItem = filterEffect.preset,
             items = FilterPreset.entries.toTypedArray(),
             onItemSelected = { newPreset ->
-                onFilterChange(filterEffect.copy(preset = newPreset))
+                onFilterChange(filterEffect.applyPreset(newPreset))
             }
         )
 
@@ -38,7 +40,7 @@ fun FilterEffectView(
             selectedItem = filterEffect.type,
             items = FilterType.entries.toTypedArray(),
             onItemSelected = { newType ->
-                onFilterChange(filterEffect.copy(type = newType))
+                onFilterChange(filterEffect.copy(type = newType).reconcilePreset())
             }
         )
 
@@ -66,7 +68,7 @@ fun FilterEffectView(
                     filterEffect.copy(
                         rateSync = newRateSync,
                         modRate = newModRate
-                    )
+                    ).reconcilePreset()
                 )
             },
             colors = SwitchDefaults.colors(

@@ -56,7 +56,7 @@ MasterOut, SubOut, PhonesOnly
 
 | Setting  | Options                                                                    |
 |----------|----------------------------------------------------------------------------|
-| Type     | SimpleLFP, Simple BPF, SimpleHPF, LPF+SYNC MOD, BPF+SYNC MOD, HPF+SYNC MOD |
+| Type     | SimpleLPF, Simple BPF, SimpleHPF, LPF+SYNC MOD, BPF+SYNC MOD, HPF+SYNC MOD |
 | Mode     | LowPass, BandPass, HighPass *(LowPass)*                                    |
 | Slope    | -12, -24, -36 dB *(-36)*                                                   |
 | RateSync | OFF, ON *(on)*                                                             |
